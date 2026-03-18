@@ -3,22 +3,49 @@ using System.Text.Json.Serialization;
 
 namespace Incursa.OpenAI.ChatKit;
 
+/// <summary>
+/// Represents a single widget component node.
+/// </summary>
 public class WidgetComponent
 {
+    /// <summary>
+    /// Gets the optional stable key used by the client.
+    /// </summary>
     public string? Key { get; init; }
 
+    /// <summary>
+    /// Gets the optional component identifier.
+    /// </summary>
     public string? Id { get; init; }
 
+    /// <summary>
+    /// Gets the component type name.
+    /// </summary>
     public required string Type { get; init; }
 
+    /// <summary>
+    /// Gets the optional child components.
+    /// </summary>
     public List<WidgetComponent>? Children { get; init; }
 
+    /// <summary>
+    /// Gets arbitrary component properties serialized as extension data.
+    /// </summary>
     [JsonExtensionData]
     public IDictionary<string, object?> Properties { get; init; } = new Dictionary<string, object?>(StringComparer.Ordinal);
 
+    /// <summary>
+    /// Creates a deep clone of the component using ChatKit JSON serialization.
+    /// </summary>
+    /// <returns>A cloned widget component.</returns>
     public WidgetComponent DeepClone()
         => ChatKitJson.Deserialize<WidgetComponent>(ChatKitJson.SerializeToUtf8Bytes(this))!;
 
+    /// <summary>
+    /// Attempts to read a component property as a string.
+    /// </summary>
+    /// <param name="propertyName">The property name to read.</param>
+    /// <returns>The string value when present; otherwise, <see langword="null"/>.</returns>
     public string? TryGetString(string propertyName)
     {
         if (!Properties.TryGetValue(propertyName, out object? value) || value is null)
@@ -34,6 +61,12 @@ public class WidgetComponent
         };
     }
 
+    /// <summary>
+    /// Attempts to read a component property as a Boolean value.
+    /// </summary>
+    /// <param name="propertyName">The property name to read.</param>
+    /// <param name="value">When this method returns, contains the parsed Boolean value if one was found.</param>
+    /// <returns><see langword="true"/> when the property could be interpreted as a Boolean; otherwise, <see langword="false"/>.</returns>
     public bool TryGetBoolean(string propertyName, out bool value)
     {
         value = false;
@@ -56,10 +89,22 @@ public class WidgetComponent
     }
 }
 
+/// <summary>
+/// Represents the root component of a widget tree.
+/// </summary>
 public sealed class WidgetRoot : WidgetComponent;
 
+/// <summary>
+/// Provides helpers for computing and streaming widget updates.
+/// </summary>
 public static class WidgetStreaming
 {
+    /// <summary>
+    /// Computes the minimal set of thread item updates needed to transform one widget tree into another.
+    /// </summary>
+    /// <param name="before">The previously rendered widget tree.</param>
+    /// <param name="after">The updated widget tree.</param>
+    /// <returns>The thread item updates required to represent the change.</returns>
     public static IReadOnlyList<ThreadItemUpdate> Diff(WidgetRoot before, WidgetRoot after)
     {
         if (RequiresFullReplace(before, after))
@@ -104,6 +149,14 @@ public static class WidgetStreaming
         return updates;
     }
 
+    /// <summary>
+    /// Streams the initial widget item event for a widget tree.
+    /// </summary>
+    /// <param name="thread">The thread that owns the widget item.</param>
+    /// <param name="widget">The widget tree to emit.</param>
+    /// <param name="itemId">The identifier of the widget item.</param>
+    /// <param name="copyText">Optional plain-text copy associated with the widget.</param>
+    /// <returns>An async sequence of thread stream events for the widget.</returns>
     public static async IAsyncEnumerable<ThreadStreamEvent> StreamAsync(
         ThreadMetadata thread,
         WidgetRoot widget,

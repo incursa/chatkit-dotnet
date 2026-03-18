@@ -4,8 +4,20 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Incursa.OpenAI.ChatKit.AspNetCore;
 
+/// <summary>
+/// Provides ASP.NET Core endpoint mapping helpers for ChatKit servers.
+/// </summary>
 public static class ChatKitEndpointRouteBuilderExtensions
 {
+    /// <summary>
+    /// Maps a POST endpoint that forwards ChatKit protocol requests to a <see cref="ChatKitServer{TContext}"/>.
+    /// </summary>
+    /// <typeparam name="TServer">The ChatKit server type resolved from dependency injection.</typeparam>
+    /// <typeparam name="TContext">The request context type created for each HTTP call.</typeparam>
+    /// <param name="endpoints">The route builder used to register the endpoint.</param>
+    /// <param name="pattern">The route pattern that should receive ChatKit requests.</param>
+    /// <param name="contextFactory">Creates the ChatKit request context from the current <see cref="HttpContext"/>.</param>
+    /// <returns>The endpoint convention builder for additional endpoint customization.</returns>
     public static IEndpointConventionBuilder MapChatKit<TServer, TContext>(
         this IEndpointRouteBuilder endpoints,
         string pattern,

@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
     <IsPackable>true</IsPackable>
     <Description>ASP.NET Core hosting layer for Incursa.OpenAI.ChatKit.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>

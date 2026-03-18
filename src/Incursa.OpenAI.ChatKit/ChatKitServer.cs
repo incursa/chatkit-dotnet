@@ -4,37 +4,106 @@ using System.Text.Json.Nodes;
 
 namespace Incursa.OpenAI.ChatKit;
 
+/// <summary>
+/// Implements the core ChatKit protocol pipeline for a specific application context.
+/// </summary>
+/// <typeparam name="TContext">The application request context type.</typeparam>
 public abstract class ChatKitServer<TContext>
 {
     private const int DefaultPageSize = 20;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatKitServer{TContext}"/> class.
+    /// </summary>
+    /// <param name="store">The thread and item store backing the server.</param>
+    /// <param name="attachmentStore">The optional attachment store used for upload workflows.</param>
     protected ChatKitServer(ChatKitStore<TContext> store, AttachmentStore<TContext>? attachmentStore = null)
     {
         Store = store;
         AttachmentStore = attachmentStore;
     }
 
+    /// <summary>
+    /// Gets the thread store backing the server.
+    /// </summary>
     protected ChatKitStore<TContext> Store { get; }
 
+    /// <summary>
+    /// Gets the optional attachment store backing the server.
+    /// </summary>
     protected AttachmentStore<TContext>? AttachmentStore { get; }
 
+    /// <summary>
+    /// Produces the assistant response stream for a user message.
+    /// </summary>
+    /// <param name="thread">The target thread metadata.</param>
+    /// <param name="inputUserMessage">The newly added user message, when one triggered the response.</param>
+    /// <param name="context">The application request context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>An async sequence of ChatKit stream events.</returns>
     public abstract IAsyncEnumerable<ThreadStreamEvent> RespondAsync(ThreadMetadata thread, UserMessageItem? inputUserMessage, TContext context, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Records user feedback for previously emitted thread items.
+    /// </summary>
+    /// <param name="threadId">The thread identifier.</param>
+    /// <param name="itemIds">The item identifiers receiving feedback.</param>
+    /// <param name="feedback">The feedback kind submitted by the client.</param>
+    /// <param name="context">The application request context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public virtual Task AddFeedbackAsync(string threadId, IReadOnlyList<string> itemIds, string feedback, TContext context, CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 
+    /// <summary>
+    /// Transcribes audio input into text.
+    /// </summary>
+    /// <param name="audioInput">The audio payload to transcribe.</param>
+    /// <param name="context">The application request context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The transcription result.</returns>
     public virtual Task<TranscriptionResult> TranscribeAsync(AudioInput audioInput, TContext context, CancellationToken cancellationToken = default)
         => throw new NotImplementedException("TranscribeAsync must be overridden to support input.transcribe.");
 
+    /// <summary>
+    /// Handles an asynchronous custom action emitted by the client.
+    /// </summary>
+    /// <param name="thread">The target thread metadata.</param>
+    /// <param name="action">The client action payload.</param>
+    /// <param name="sender">The widget item that triggered the action, when available.</param>
+    /// <param name="context">The application request context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>An async sequence of ChatKit stream events.</returns>
     public virtual IAsyncEnumerable<ThreadStreamEvent> ActionAsync(ThreadMetadata thread, ChatKitAction action, WidgetItem? sender, TContext context, CancellationToken cancellationToken = default)
         => throw new NotImplementedException("ActionAsync must be overridden to react to actions.");
 
+    /// <summary>
+    /// Handles a synchronous custom action emitted by the client.
+    /// </summary>
+    /// <param name="thread">The target thread metadata.</param>
+    /// <param name="action">The client action payload.</param>
+    /// <param name="sender">The widget item that triggered the action, when available.</param>
+    /// <param name="context">The application request context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The synchronous custom action response.</returns>
     public virtual Task<SyncCustomActionResponse> SyncActionAsync(ThreadMetadata thread, ChatKitAction action, WidgetItem? sender, TContext context, CancellationToken cancellationToken = default)
         => throw new NotImplementedException("SyncActionAsync must be overridden to react to sync actions.");
 
+    /// <summary>
+    /// Returns stream options for the current response.
+    /// </summary>
+    /// <param name="thread">The target thread metadata.</param>
+    /// <param name="context">The application request context.</param>
+    /// <returns>The stream options to emit before streaming begins.</returns>
     public virtual StreamOptions GetStreamOptions(ThreadMetadata thread, TContext context)
         => new() { AllowCancel = true };
 
+    /// <summary>
+    /// Handles cleanup when a response stream is cancelled.
+    /// </summary>
+    /// <param name="thread">The target thread metadata.</param>
+    /// <param name="pendingItems">Items that had been started but not yet completed.</param>
+    /// <param name="context">The application request context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public virtual async Task HandleStreamCancelledAsync(ThreadMetadata thread, IReadOnlyList<ThreadItem> pendingItems, TContext context, CancellationToken cancellationToken = default)
     {
         foreach (AssistantMessageItem item in pendingItems.OfType<AssistantMessageItem>())
@@ -59,9 +128,23 @@ public abstract class ChatKitServer<TContext>
             cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Processes a JSON request string and returns either a streaming or non-streaming ChatKit result.
+    /// </summary>
+    /// <param name="request">The JSON request string.</param>
+    /// <param name="context">The application request context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The processed ChatKit result.</returns>
     public Task<ChatKitProcessResult> ProcessAsync(string request, TContext context, CancellationToken cancellationToken = default)
         => ProcessAsync(Encoding.UTF8.GetBytes(request), context, cancellationToken);
 
+    /// <summary>
+    /// Processes a UTF-8 encoded request payload and returns either a streaming or non-streaming ChatKit result.
+    /// </summary>
+    /// <param name="request">The UTF-8 encoded request payload.</param>
+    /// <param name="context">The application request context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The processed ChatKit result.</returns>
     public async Task<ChatKitProcessResult> ProcessAsync(byte[] request, TContext context, CancellationToken cancellationToken = default)
     {
         ChatKitRequest parsedRequest = ChatKitJson.DeserializeRequest(request);

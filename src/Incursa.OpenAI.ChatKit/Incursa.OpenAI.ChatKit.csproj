@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
     <IsPackable>true</IsPackable>
     <Description>Core ChatKit runtime for .NET: exact wire-compatible request and event models, server routing, widget streaming, and store abstractions.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -20,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseLocalIncursaAgentsProject)' != 'true' or !Exists('$(LocalIncursaAgentsProjectPath)')">
-    <PackageReference Include="Incursa.OpenAI.Agents" Version="1.0.22" />
+    <PackageReference Include="Incursa.OpenAI.Agents" Version="1.0.23" />
   </ItemGroup>
 
   <ItemGroup>
