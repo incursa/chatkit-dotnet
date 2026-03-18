@@ -1,1 +1,143 @@
+#nullable enable
+namespace Incursa.OpenAI.ChatKit.AspNetCore
+{
+    public sealed class ChatKitAspNetCoreOptions
+    {
+        public ChatKitAspNetCoreOptions() { }
+        public string? ActionEndpoint { get; set; }
+        public string? ApiUrl { get; set; }
+        public ChatKitComposerOptions Composer { get; }
+        public string DefaultHeight { get; set; }
+        public string? DomainKey { get; set; }
+        public string? FrameTitle { get; set; }
+        public bool ForwardWidgetActions { get; set; }
+        public ChatKitHeaderOptions Header { get; }
+        public ChatKitHistoryOptions History { get; }
+        public string? InitialThread { get; set; }
+        public string? Locale { get; set; }
+        public string? SessionEndpoint { get; set; }
+        public ChatKitStartScreenOptions StartScreen { get; }
+        public ChatKitThemeOptions Theme { get; }
+        public ChatKitThreadItemActionsOptions ThreadItemActions { get; }
+    }
 
+    public static class ChatKitAspNetCoreServiceCollectionExtensions
+    {
+        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddIncursaOpenAIChatKitAspNetCore(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions>? configure = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddIncursaOpenAIChatKitAspNetCore(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration) { }
+    }
+
+    public sealed class ChatKitComposerOptions
+    {
+        public ChatKitComposerOptions() { }
+        public string? Placeholder { get; set; }
+    }
+
+    public static class ChatKitEndpointRouteBuilderExtensions
+    {
+        public static Microsoft.AspNetCore.Builder.IEndpointConventionBuilder MapChatKit<TServer, TContext>(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder endpoints, string pattern, System.Func<Microsoft.AspNetCore.Http.HttpContext, TContext> contextFactory)
+            where TServer : global::Incursa.OpenAI.ChatKit.ChatKitServer<TContext> { }
+    }
+
+    public sealed class ChatKitHeaderOptions
+    {
+        public ChatKitHeaderOptions() { }
+        public bool? Enabled { get; set; }
+        public string? TitleText { get; set; }
+    }
+
+    public sealed class ChatKitHistoryOptions
+    {
+        public ChatKitHistoryOptions() { }
+        public bool? Enabled { get; set; }
+        public bool? ShowDelete { get; set; }
+        public bool? ShowRename { get; set; }
+    }
+
+    public sealed class ChatKitStartPrompt
+    {
+        public ChatKitStartPrompt() { }
+        public string? Icon { get; set; }
+        public string? Label { get; set; }
+        public string? Prompt { get; set; }
+    }
+
+    public sealed class ChatKitStartScreenOptions
+    {
+        public ChatKitStartScreenOptions() { }
+        public string? Greeting { get; set; }
+        public System.Collections.Generic.List<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitStartPrompt> Prompts { get; }
+    }
+
+    public sealed class ChatKitThemeOptions
+    {
+        public ChatKitThemeOptions() { }
+        public string? ColorScheme { get; set; }
+        public string? Density { get; set; }
+        public string? Radius { get; set; }
+    }
+
+    public sealed class ChatKitThreadItemActionsOptions
+    {
+        public ChatKitThreadItemActionsOptions() { }
+        public bool? Feedback { get; set; }
+        public bool? Retry { get; set; }
+    }
+}
+
+namespace Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers
+{
+    public abstract class IncursaChatKitTagHelperBase : Microsoft.AspNetCore.Razor.TagHelpers.TagHelper
+    {
+        protected IncursaChatKitTagHelperBase(System.IServiceProvider serviceProvider, Microsoft.Extensions.Logging.ILogger logger) { }
+        public string? Class { get; set; }
+        public string? Height { get; set; }
+        public string? Id { get; set; }
+        protected string? ResolveActionEndpoint(string? actionEndpoint, bool forwardWidgetActions) { }
+        protected string? ResolveApiUrl(string? apiUrl) { }
+        protected string? ResolveDomainKey(string? domainKey) { }
+        protected string ResolveHeight(string? height) { }
+        protected System.IServiceProvider ResolveServices() { }
+        protected string ResolveSessionEndpoint(string? sessionEndpoint) { }
+        protected Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions ResolveUiOptions() { }
+        public Microsoft.AspNetCore.Mvc.Rendering.ViewContext ViewContext { get; set; }
+    }
+
+    public sealed class IncursaChatKitAssetsTagHelper : Microsoft.AspNetCore.Razor.TagHelpers.TagHelper
+    {
+        public IncursaChatKitAssetsTagHelper() { }
+        public bool IncludeCdn { get; set; }
+        public bool IncludeCss { get; set; }
+        public bool IncludeJs { get; set; }
+    }
+
+    public sealed class IncursaChatKitTagHelper : Microsoft.AspNetCore.Razor.TagHelpers.TagHelper
+    {
+        public IncursaChatKitTagHelper(System.IServiceProvider serviceProvider, Microsoft.Extensions.Logging.ILogger<Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper> logger) { }
+        public string? ActionEndpoint { get; set; }
+        public string? ApiUrl { get; set; }
+        public string? Class { get; set; }
+        public string? DomainKey { get; set; }
+        public bool? FeedbackEnabled { get; set; }
+        public string? FrameTitle { get; set; }
+        public bool? ForwardWidgetActions { get; set; }
+        public string? Greeting { get; set; }
+        public bool? HeaderEnabled { get; set; }
+        public string? HeaderTitle { get; set; }
+        public string? Height { get; set; }
+        public bool? HistoryEnabled { get; set; }
+        public bool? HistoryShowDelete { get; set; }
+        public bool? HistoryShowRename { get; set; }
+        public string? Id { get; set; }
+        public string? InitialThread { get; set; }
+        public string? Locale { get; set; }
+        public string? Placeholder { get; set; }
+        public bool? RetryEnabled { get; set; }
+        public string? SessionEndpoint { get; set; }
+        public System.Collections.Generic.IEnumerable<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitStartPrompt>? StarterPrompts { get; set; }
+        public string? Theme { get; set; }
+        public string? ThemeDensity { get; set; }
+        public string? ThemeRadius { get; set; }
+        public Microsoft.AspNetCore.Mvc.Rendering.ViewContext ViewContext { get; set; }
+    }
+}

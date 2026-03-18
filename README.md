@@ -7,19 +7,19 @@
 [![NuGet ASP.NET Core](https://img.shields.io/nuget/v/Incursa.OpenAI.ChatKit.AspNetCore.svg)](https://www.nuget.org/packages/Incursa.OpenAI.ChatKit.AspNetCore/)
 [![License](https://img.shields.io/github/license/incursa/chatkit-dotnet)](LICENSE)
 
-`Incursa.OpenAI.ChatKit` is a `.NET 10` translation of the server-side ChatKit library from `openai/chatkit-python`.
+`Incursa.OpenAI.ChatKit` is a `.NET 10` translation of the server-side ChatKit library from `openai/chatkit-python`, with an ASP.NET Core extension package for endpoint hosting and Razor-based UI wrapping.
 
 Upstream source of truth: [openai/chatkit-python](https://github.com/openai/chatkit-python).
 
 ## Packages
 
 - `Incursa.OpenAI.ChatKit`: core ChatKit models, request routing, store abstractions, widget diff helpers, and agent integration helpers.
-- `Incursa.OpenAI.ChatKit.AspNetCore`: ASP.NET Core endpoint mapping and HTTP/SSE response handling for `/chatkit`.
+- `Incursa.OpenAI.ChatKit.AspNetCore`: ASP.NET Core endpoint mapping, Razor tag helpers, and packaged browser assets for ChatKit hosts.
 
 ## Scope
 
 - Includes exact wire-shape ChatKit request and event handling for the currently translated surface.
-- Includes a runnable ASP.NET Core quickstart sample and repo-managed quality tooling.
+- Includes a runnable ASP.NET Core quickstart sample, a Razor UI wrapper package, and repo-managed quality tooling.
 - Reuses `Incursa.OpenAI.Agents` where ChatKit needs agent-side interop instead of duplicating that runtime here.
 - Excludes unrelated agent orchestration features that belong in the agents repo rather than ChatKit.
 

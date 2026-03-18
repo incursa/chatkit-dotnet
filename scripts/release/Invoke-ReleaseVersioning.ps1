@@ -273,7 +273,13 @@ $hadWorkingTreeChanges = -not [string]::IsNullOrWhiteSpace(($initialStatus | Out
 $headReleaseTags = @(Get-HeadReleaseTags)
 
 if ($headReleaseTags.Count -gt 0) {
-    throw "Current HEAD already has release tag(s): $($headReleaseTags -join ', ')"
+    if ($hadWorkingTreeChanges) {
+        Write-Host "Current HEAD already has release tag(s): $($headReleaseTags -join ', ')."
+        Write-Host "Dirty working tree detected; release versioning will continue from a new release commit."
+    }
+    else {
+        throw "Current HEAD already has release tag(s): $($headReleaseTags -join ', ')"
+    }
 }
 
 Write-Host "Current props version: $currentVersion"
@@ -299,6 +305,10 @@ if ($LASTEXITCODE -ne 0) {
 
 $status = Invoke-Git -Arguments @("status", "--porcelain")
 $hasChanges = -not [string]::IsNullOrWhiteSpace(($status | Out-String).Trim())
+
+if ($hadWorkingTreeChanges -and $NoCommit -and -not $NoTag) {
+    throw "Cannot create a release tag from a dirty working tree when -NoCommit is specified. Commit the release changes or also pass -NoTag."
+}
 
 if (-not $NoCommit -and $hadWorkingTreeChanges) {
     Invoke-Git -Arguments @("add", "-A") | Out-Null

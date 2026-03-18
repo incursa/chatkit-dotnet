@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,14 +7,12 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
     <IsPackable>true</IsPackable>
-    <Description>ASP.NET Core hosting layer for Incursa.OpenAI.ChatKit.</Description>
+    <Description>ASP.NET Core hosting, Razor tag helpers, and packaged UI assets for Incursa.OpenAI.ChatKit.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>openai;chatkit;aspnetcore;minimal-api;sse</PackageTags>
+    <PackageTags>openai;chatkit;aspnetcore;razor;taghelpers;sse</PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
-
-  <ItemGroup>
-  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
