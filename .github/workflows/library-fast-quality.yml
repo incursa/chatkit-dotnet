@@ -1,0 +1,106 @@
+name: Library Fast Quality
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  fast-library-lane:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: library-fast-quality-${{ github.ref }}
+      cancel-in-progress: true
+    outputs:
+      traceability_status: ${{ steps.traceability.outcome }}
+      tests_status: ${{ steps.fast_tests.outcome }}
+      coverage_status: ${{ steps.coverage.outcome }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Incursa.OpenAI.ChatKit.slnx
+
+      - name: Build
+        run: dotnet build Incursa.OpenAI.ChatKit.slnx --no-restore --configuration Release -p:ContinuousIntegrationBuild=true
+
+      - name: Validate library traceability
+        id: traceability
+        shell: pwsh
+        run: pwsh -File scripts/quality/validate-library-traceability.ps1
+
+      - name: Run fast tests
+        id: fast_tests
+        shell: pwsh
+        run: pwsh -File scripts/quality/run-blocking-tests.ps1 -NoRestore -NoBuild
+
+      - name: Coverage gate
+        id: coverage
+        shell: pwsh
+        run: pwsh -File scripts/quality/run-library-coverage.ps1 -LineThreshold 20 -NoRestore -NoBuild
+
+      - name: Upload quality artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: library-fast-quality-artifacts
+          path: |
+            artifacts/library-traceability-summary.md
+            artifacts/coverage/library-coverage-summary.md
+            artifacts/coverage/libraries/
+
+  report:
+    runs-on: ubuntu-latest
+    needs:
+      - fast-library-lane
+    if: always()
+    steps:
+      - name: Write CI summary
+        shell: bash
+        run: |
+          overall="✅ Passed"
+          if [[ "${{ needs.fast-library-lane.result }}" != "success" ]]; then
+            overall="❌ Failed"
+          fi
+
+          traceability="${{ needs.fast-library-lane.outputs.traceability_status }}"
+          tests="${{ needs.fast-library-lane.outputs.tests_status }}"
+          coverage="${{ needs.fast-library-lane.outputs.coverage_status }}"
+
+          map_status() {
+            case "$1" in
+              success) echo "✅" ;;
+              failure) echo "❌" ;;
+              cancelled) echo "⚠️" ;;
+              skipped) echo "⚠️" ;;
+              *) echo "⚠️" ;;
+            esac
+          }
+
+          {
+            echo "# Library Quality Summary"
+            echo
+            echo "**Workflow:** Library Fast Quality"
+            echo "**Ref:** ${{ github.ref_name }}"
+            echo "**Commit:** ${{ github.sha }}"
+            echo "**Result:** ${overall}"
+            echo
+            echo "## Executive Gates"
+            echo "| Gate | Status | Notes |"
+            echo "| --- | --- | --- |"
+            echo "| Build + restore | $(map_status "${{ needs.fast-library-lane.result }}") | Fast lane execution result |"
+            echo "| Public API + spec traceability | $(map_status "$traceability") | `specs/libraries` matrix and API baseline validation |"
+            echo "| Blocking tests | $(map_status "$tests") | Non-Docker repo validation lane |"
+            echo "| Coverage | $(map_status "$coverage") | Package-level line threshold gate |"
+            echo
+            echo "## Artifacts"
+            echo "- `library-fast-quality-artifacts`"
+            echo "  - `artifacts/library-traceability-summary.md`"
+            echo "  - `artifacts/coverage/library-coverage-summary.md`"
+            echo "  - `artifacts/coverage/libraries/`"
+          } >> "$GITHUB_STEP_SUMMARY"

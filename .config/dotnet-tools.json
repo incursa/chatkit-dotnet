@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-stryker": {
+      "version": "4.12.0",
+      "commands": [
+        "dotnet-stryker"
+      ],
+      "rollForward": false
+    },
+    "incursa.workbench": {
+      "version": "2026.3.8.452",
+      "commands": [
+        "workbench"
+      ],
+      "rollForward": false
+    },
+    "incursa.testdocs.cli": {
+      "version": "6.0.5",
+      "commands": [
+        "incursa-testdocs"
+      ],
+      "rollForward": false
+    }
+  }
+}

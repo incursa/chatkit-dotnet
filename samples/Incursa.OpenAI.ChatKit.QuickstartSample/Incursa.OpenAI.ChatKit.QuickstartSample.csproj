@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Incursa.OpenAI.ChatKit\Incursa.OpenAI.ChatKit.csproj" />
+    <ProjectReference Include="..\..\src\Incursa.OpenAI.ChatKit.AspNetCore\Incursa.OpenAI.ChatKit.AspNetCore.csproj" />
+  </ItemGroup>
+
+</Project>

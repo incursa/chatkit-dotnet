@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "v*.*.*"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ci-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Incursa.OpenAI.ChatKit.slnx
+
+      - name: Build
+        run: dotnet build Incursa.OpenAI.ChatKit.slnx --no-restore --configuration Release -p:ContinuousIntegrationBuild=true
+
+      - name: Run blocking tests
+        shell: pwsh
+        run: |
+          & (Join-Path $env:GITHUB_WORKSPACE "scripts/quality/run-blocking-tests.ps1") -NoRestore -NoBuild

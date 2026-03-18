@@ -1,0 +1,79 @@
+version: 1
+domain: Incursa OpenAI ChatKit testing evidence
+scope:
+  solutionPath: Incursa.OpenAI.ChatKit.slnx
+  includes:
+    - src/**
+    - tests/**
+    - runsettings/**
+    - scripts/quality/**
+    - docs/**
+    - .github/workflows/library-fast-quality.yml
+    - .github/workflows/workbench-quality.yml
+    - .github/workflows/testdocs.yml
+  excludes:
+    - src/**/bin/**
+    - src/**/obj/**
+    - tests/**/bin/**
+    - tests/**/obj/**
+    - artifacts/**
+coverage:
+  lineMin: 0.00
+  branchMin: 0.00
+expectations:
+  confidenceTarget: advisory confidence based on a required smoke precheck, the required non-Docker blocking lane, and advisory Workbench evidence from the curated advisory lane
+  evidence:
+    - inventory
+    - results
+    - coverage
+artifacts:
+  smokeResults: artifacts/test-results/smoke
+  blockingResults: artifacts/test-results/blocking
+  observationalResults: artifacts/test-results/observational
+  advisoryResults: artifacts/test-results/advisory
+  advisoryCoverage: artifacts/coverage/advisory
+  normalizedQuality: artifacts/quality/testing
+lanes:
+  smoke:
+    entrypoint: scripts/quality/run-smoke-tests.ps1
+    policy: required
+    intent: curated fast precheck across explicit Category=Smoke tests covering core serialization, routing, widget diffing, and ASP.NET Core endpoint mapping
+  blocking:
+    entrypoint: scripts/quality/run-blocking-tests.ps1
+    policy: required
+    intent: main CI-safe validation lane for the maintained ChatKit solution using non-Docker tests
+  observational:
+    entrypoint: scripts/quality/run-observational-tests.ps1
+    policy: advisory
+    intent: visible non-blocking KnownIssue tests
+    currentState: no KnownIssue tests are currently authored in this repository
+  advisory:
+    entrypoint: scripts/quality/run-quality-evidence.ps1
+    policy: advisory
+    intent: broader confidence and Workbench evidence lane using advisory TRX plus package coverage artifacts for the core and ASP.NET Core ChatKit surfaces
+related:
+  docs:
+    - docs/testing-operating-model.md
+    - docs/testing-known-issues.md
+    - docs/testing/README.md
+    - docs/quality/library-hardening-baseline.md
+    - docs/quality/repo-scope-boundary.md
+  files:
+    - runsettings/smoke.runsettings
+    - runsettings/blocking.runsettings
+    - runsettings/observational.runsettings
+    - scripts/quality/run-smoke-tests.ps1
+    - scripts/quality/run-blocking-tests.ps1
+    - scripts/quality/run-observational-tests.ps1
+    - scripts/quality/run-advisory-quality-tests.ps1
+    - scripts/quality/run-quality-evidence.ps1
+    - scripts/quality/run-workbench-evidence.ps1
+    - scripts/quality/run-library-coverage.ps1
+    - .github/workflows/library-fast-quality.yml
+    - .github/workflows/workbench-quality.yml
+    - .github/workflows/testdocs.yml
+intentionalGaps:
+  - subject: Empty observational lane in the first pass
+    rationale: The KnownIssue taxonomy and artifact path are standardized, but no current tests are intentionally left failing in automation.
+  - subject: Advisory-only mutation execution
+    rationale: Mutation configs are wired for the public ChatKit packages, but remain outside the default required CI lane to keep the happy path fast.

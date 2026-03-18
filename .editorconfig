@@ -1,0 +1,192 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+[*.md]
+trim_trailing_whitespace = false
+indent_size = 2
+
+[*.{json,yml,yaml,props,targets,csproj,sln,slnx,xml}]
+indent_size = 2
+
+[*.{cmd,bat}]
+end_of_line = crlf
+
+[*.cs]
+dotnet_diagnostic.IDE0055.severity = warning
+dotnet_diagnostic.IDE0065.severity = suggestion
+dotnet_diagnostic.IDE0161.severity = error
+dotnet_diagnostic.IDE1006.severity = warning
+dotnet_diagnostic.SA1101.severity = none
+dotnet_diagnostic.SA0001.severity = none
+dotnet_diagnostic.SA1009.severity = none
+dotnet_diagnostic.SA1010.severity = none
+dotnet_diagnostic.SA1011.severity = none
+dotnet_diagnostic.SA1106.severity = none
+dotnet_diagnostic.SA1116.severity = none
+dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1202.severity = none
+dotnet_diagnostic.SA1203.severity = none
+dotnet_diagnostic.SA1204.severity = none
+dotnet_diagnostic.SA1210.severity = none
+dotnet_diagnostic.SA1309.severity = none
+dotnet_diagnostic.SA1408.severity = none
+dotnet_diagnostic.SA1500.severity = none
+dotnet_diagnostic.SA1502.severity = none
+dotnet_diagnostic.SA1508.severity = none
+dotnet_diagnostic.SA1513.severity = none
+dotnet_diagnostic.SA1516.severity = none
+dotnet_diagnostic.SA1518.severity = none
+dotnet_diagnostic.SA1649.severity = none
+
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:error
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+dotnet_style_qualification_for_field = false:error
+dotnet_style_qualification_for_property = false:error
+dotnet_style_qualification_for_method = false:error
+dotnet_style_qualification_for_event = false:error
+
+csharp_style_namespace_declarations = file_scoped:error
+csharp_using_directive_placement = outside_namespace:error
+csharp_prefer_braces = true:error
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = false:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
+
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+csharp_indent_case_contents = true
+csharp_indent_case_contents_when_block = true
+csharp_indent_switch_labels = true
+csharp_indent_labels = one_less_than_current
+
+csharp_space_after_cast = false
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_after_comma = true
+csharp_space_after_dot = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_after_semicolon_in_for_statement = true
+csharp_space_around_binary_operators = before_and_after
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_before_comma = false
+csharp_space_before_dot = false
+csharp_space_before_open_square_brackets = false
+csharp_space_before_semicolon_in_for_statement = false
+csharp_space_between_empty_square_brackets = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_parentheses = false
+csharp_space_between_square_brackets = false
+
+dotnet_naming_rule.interfaces_must_start_with_i.severity = error
+dotnet_naming_rule.interfaces_must_start_with_i.symbols = interface_symbols
+dotnet_naming_rule.interfaces_must_start_with_i.style = interface_style
+
+dotnet_naming_rule.types_must_be_pascal_case.severity = error
+dotnet_naming_rule.types_must_be_pascal_case.symbols = type_symbols
+dotnet_naming_rule.types_must_be_pascal_case.style = pascal_style
+
+dotnet_naming_rule.non_field_members_must_be_pascal_case.severity = error
+dotnet_naming_rule.non_field_members_must_be_pascal_case.symbols = non_field_member_symbols
+dotnet_naming_rule.non_field_members_must_be_pascal_case.style = pascal_style
+
+dotnet_naming_rule.private_static_readonly_fields_must_be_pascal_case.severity = error
+dotnet_naming_rule.private_static_readonly_fields_must_be_pascal_case.symbols = private_static_readonly_field_symbols
+dotnet_naming_rule.private_static_readonly_fields_must_be_pascal_case.style = pascal_style
+
+dotnet_naming_rule.private_fields_must_be_camel_case.severity = error
+dotnet_naming_rule.private_fields_must_be_camel_case.symbols = private_field_symbols
+dotnet_naming_rule.private_fields_must_be_camel_case.style = camel_no_prefix_style
+
+dotnet_naming_rule.non_private_fields_must_be_pascal_case.severity = error
+dotnet_naming_rule.non_private_fields_must_be_pascal_case.symbols = non_private_field_symbols
+dotnet_naming_rule.non_private_fields_must_be_pascal_case.style = pascal_style
+
+dotnet_naming_rule.constants_must_be_pascal_case.severity = error
+dotnet_naming_rule.constants_must_be_pascal_case.symbols = constant_symbols
+dotnet_naming_rule.constants_must_be_pascal_case.style = pascal_style
+
+dotnet_naming_rule.parameters_must_be_camel_case.severity = error
+dotnet_naming_rule.parameters_must_be_camel_case.symbols = parameter_symbols
+dotnet_naming_rule.parameters_must_be_camel_case.style = camel_no_prefix_style
+
+dotnet_naming_rule.locals_must_be_camel_case.severity = error
+dotnet_naming_rule.locals_must_be_camel_case.symbols = local_symbols
+dotnet_naming_rule.locals_must_be_camel_case.style = camel_no_prefix_style
+
+dotnet_naming_rule.local_functions_must_be_pascal_case.severity = error
+dotnet_naming_rule.local_functions_must_be_pascal_case.symbols = local_function_symbols
+dotnet_naming_rule.local_functions_must_be_pascal_case.style = pascal_style
+
+dotnet_naming_symbols.interface_symbols.applicable_kinds = interface
+dotnet_naming_symbols.interface_symbols.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
+
+dotnet_naming_symbols.type_symbols.applicable_kinds = class, struct, interface, enum, delegate
+dotnet_naming_symbols.type_symbols.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
+
+dotnet_naming_symbols.non_field_member_symbols.applicable_kinds = method, property, event
+dotnet_naming_symbols.non_field_member_symbols.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
+
+dotnet_naming_symbols.private_field_symbols.applicable_kinds = field
+dotnet_naming_symbols.private_field_symbols.applicable_accessibilities = private
+
+dotnet_naming_symbols.private_static_readonly_field_symbols.applicable_kinds = field
+dotnet_naming_symbols.private_static_readonly_field_symbols.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_readonly_field_symbols.required_modifiers = static, readonly
+
+dotnet_naming_symbols.non_private_field_symbols.applicable_kinds = field
+dotnet_naming_symbols.non_private_field_symbols.applicable_accessibilities = public, internal, protected, protected_internal, private_protected
+
+dotnet_naming_symbols.constant_symbols.applicable_kinds = field, local
+dotnet_naming_symbols.constant_symbols.required_modifiers = const
+
+dotnet_naming_symbols.parameter_symbols.applicable_kinds = parameter
+dotnet_naming_symbols.local_symbols.applicable_kinds = local
+dotnet_naming_symbols.local_function_symbols.applicable_kinds = local_function
+
+dotnet_naming_style.interface_style.required_prefix = I
+dotnet_naming_style.interface_style.capitalization = pascal_case
+dotnet_naming_style.interface_style.required_suffix =
+dotnet_naming_style.interface_style.word_separator =
+
+dotnet_naming_style.pascal_style.capitalization = pascal_case
+dotnet_naming_style.pascal_style.required_prefix =
+dotnet_naming_style.pascal_style.required_suffix =
+dotnet_naming_style.pascal_style.word_separator =
+
+dotnet_naming_style.camel_no_prefix_style.capitalization = camel_case
+dotnet_naming_style.camel_no_prefix_style.required_prefix =
+dotnet_naming_style.camel_no_prefix_style.required_suffix =
+dotnet_naming_style.camel_no_prefix_style.word_separator =
+
+roslynator_prefix_field_identifier_with_underscore = false
+
+MA0051.maximum_lines_per_method = 80
+MA0051.maximum_statements_per_method = 50
+MA0051.skip_local_functions = true
+
+[*.cshtml.cs]
+dotnet_diagnostic.MA0048.severity = none
+
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1636.severity = none

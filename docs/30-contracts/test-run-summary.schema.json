@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.com/workbench/test-run-summary.schema.json",
+  "title": "Workbench Test Run Summary",
+  "type": "object",
+  "additionalProperties": true
+}

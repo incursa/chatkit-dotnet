@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Incursa.OpenAI.ChatKit.QuickstartSample/Incursa.OpenAI.ChatKit.QuickstartSample.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Incursa.OpenAI.ChatKit.AspNetCore/Incursa.OpenAI.ChatKit.AspNetCore.csproj" />
+    <Project Path="src/Incursa.OpenAI.ChatKit/Incursa.OpenAI.ChatKit.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests.csproj" />
+    <Project Path="tests/Incursa.OpenAI.ChatKit.Tests/Incursa.OpenAI.ChatKit.Tests.csproj" />
+  </Folder>
+</Solution>

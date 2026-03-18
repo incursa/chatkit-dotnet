@@ -1,0 +1,162 @@
+{
+  "generatedAtUtc": "1970-01-01T00:00:00Z",
+  "repo": {
+    "defaultBranch": "main"
+  },
+  "summary": {
+    "total": 8,
+    "compliant": 8,
+    "missingRequired": 0,
+    "invalidFormat": 0
+  },
+  "byCategory": [
+    {
+      "category": "Incursa.OpenAI.ChatKit",
+      "total": 8,
+      "compliant": 8
+    }
+  ],
+  "byTag": [],
+  "byProject": [
+    {
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests",
+      "total": 1,
+      "compliant": 1
+    },
+    {
+      "project": "Incursa.OpenAI.ChatKit.Tests",
+      "total": 7,
+      "compliant": 7
+    }
+  ],
+  "tests": [
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitEndpointTests.MapChatKit_WritesJsonResponse",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The ASP.NET Core endpoint adapter writes JSON responses for non-streaming ChatKit operations.",
+      "intent": "Protect the HTTP boundary for the translated ChatKit server surface.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-002",
+      "behavior": "Posting a JSON ChatKit request returns a JSON payload with the expected thread data.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs",
+        "line": 17,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitEndpointTests.MapChatKit_WritesJsonResponse"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Threads create requests stream the created thread and assistant response events through the ChatKit pipeline.",
+      "intent": "Protect the core thread routing path used by hosted ChatKit servers.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.create payload produces stream events for thread creation and the completed assistant item.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
+        "line": 91,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.Serialize_ThreadsCreateRequest_UsesExactDiscriminator",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Threads create requests serialize with the upstream ChatKit discriminator and payload field names.",
+      "intent": "Protect exact wire compatibility for the core request envelope.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "Serializing a threads.create request emits the expected type discriminator and content payload shape.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
+        "line": 14,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.Serialize_ThreadsCreateRequest_UsesExactDiscriminator"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.SimpleToAgentInput_MapsUserAndAssistantMessages",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "ChatKit conversation items map into the agent input shape expected by the agents dependency.",
+      "intent": "Protect interop between ChatKit message history and the shared agents runtime.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Simple user and assistant items are translated into the corresponding agent conversation item types and text values.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
+        "line": 127,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.SimpleToAgentInput_MapsUserAndAssistantMessages"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Streaming text widgets emit deltas instead of forcing a root replacement when text is appended.",
+      "intent": "Protect incremental widget updates for ChatKit streaming UI flows.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Diffing compatible before and after widgets returns only the appended text delta and completion state.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
+        "line": 41,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.InitializeUpstreamSyncState_CreatesChatKitDefaults",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The upstream sync state helper bootstraps ChatKit-specific tracked and local state defaults.",
+      "intent": "Protect the repeatable initialization path for the upstream synchronization workflow.",
+      "scenario": "REPO-SYNC-STATE-001",
+      "behavior": "Initializing sync state emits ChatKit upstream metadata and creates both tracked and local state files when missing.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs",
+        "line": 13,
+        "member": "Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.InitializeUpstreamSyncState_CreatesChatKitDefaults"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.NewTranslationPrompt_UsesChatKitConstraintsAndTruncatesDiff",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The upstream sync prompt builder carries the ChatKit translation constraints and trims oversized diff content.",
+      "intent": "Protect the Codex prompt contract used for automated upstream translation runs.",
+      "scenario": "REPO-SYNC-PROMPT-001",
+      "behavior": "Building a prompt includes the ChatKit guidance and notes content while truncating large diff excerpts.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs",
+        "line": 48,
+        "member": "Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.NewTranslationPrompt_UsesChatKitConstraintsAndTruncatesDiff"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.SyncMetadataHelpers_UseChatKitNaming",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The upstream sync metadata helpers produce ChatKit-specific branch, commit, and pull request text.",
+      "intent": "Protect predictable naming for automated sync branches and PRs.",
+      "scenario": "REPO-SYNC-METADATA-001",
+      "behavior": "Generating sync metadata returns the expected ChatKit branch name, commit text, and commit summary body.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs",
+        "line": 85,
+        "member": "Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.SyncMetadataHelpers_UseChatKitNaming"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    }
+  ]
+}

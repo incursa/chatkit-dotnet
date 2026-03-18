@@ -1,0 +1,8 @@
+{
+  "upstreamRepoUrl": "https://github.com/openai/chatkit-python.git",
+  "targetRepoUrl": "https://github.com/incursa/chatkit-dotnet.git",
+  "upstreamLocalPath": "C:\\src\\openai\\chatkit-python",
+  "upstreamBranch": "main",
+  "lastTranslatedSha": null,
+  "lastSuccessUtc": null
+}

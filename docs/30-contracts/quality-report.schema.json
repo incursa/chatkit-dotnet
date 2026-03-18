@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.com/workbench/quality-report.schema.json",
+  "title": "Workbench Quality Report",
+  "type": "object",
+  "additionalProperties": true
+}

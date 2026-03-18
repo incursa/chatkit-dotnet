@@ -1,0 +1,42 @@
+name: Workbench Quality
+
+on:
+  workflow_dispatch:
+
+jobs:
+  advisory-quality:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: workbench-quality-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Incursa.OpenAI.ChatKit.slnx
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Build
+        run: dotnet build Incursa.OpenAI.ChatKit.slnx --no-restore --configuration Release
+
+      - name: Run quality evidence workflow
+        shell: pwsh
+        run: pwsh -File scripts/quality/run-quality-evidence.ps1 -NoRestore -NoBuild
+
+      - name: Upload quality artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workbench-quality-artifacts
+          path: |
+            artifacts/test-results/advisory/
+            artifacts/coverage/advisory/
+            artifacts/quality/testing/

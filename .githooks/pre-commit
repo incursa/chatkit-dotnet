@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+set -eu
+
+if ! python -m pre_commit --version >/dev/null 2>&1; then
+  echo "pre-commit is not installed for the current Python environment." >&2
+  echo "Run: python -m pip install pre-commit" >&2
+  exit 1
+fi
+
+python -m pre_commit run --hook-stage pre-commit --all-files

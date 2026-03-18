@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Version>0.1.0</Version>
+    <Authors>Samuel McAravey</Authors>
+    <Company>Incursa</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>package-icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/incursa/chatkit-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/incursa/chatkit-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+</Project>

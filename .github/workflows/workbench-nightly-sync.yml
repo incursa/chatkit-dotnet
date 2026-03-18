@@ -1,0 +1,51 @@
+name: Workbench Nightly Issue Sync
+
+on:
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  nightly-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: workbench-nightly-sync
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Run Workbench issue sync (dry-run validation)
+        shell: pwsh
+        run: |
+          $outDir = "artifacts/workbench/nightly-sync"
+          New-Item -ItemType Directory -Path $outDir -Force | Out-Null
+          $logPath = Join-Path $outDir "sync.log"
+          dotnet tool run workbench sync -- --items --issues --import-issues --docs --nav --dry-run 2>&1 | Tee-Object -FilePath $logPath
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+          "status=success" | Out-File -FilePath "$outDir/sync.outcome" -Encoding utf8
+
+      - name: Upload nightly sync evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workbench-nightly-sync-log
+          path: artifacts/workbench/nightly-sync/

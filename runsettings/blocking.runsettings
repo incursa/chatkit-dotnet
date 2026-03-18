@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <TestCaseFilter>Category!=Integration&amp;Category!=KnownIssue&amp;Category!=Explicit&amp;Category!=ExtendedTest&amp;RequiresDocker!=true</TestCaseFilter>
+    <MaxCpuCount>2</MaxCpuCount>
+    <BatchSize>10</BatchSize>
+    <DisableAppDomain>true</DisableAppDomain>
+  </RunConfiguration>
+</RunSettings>

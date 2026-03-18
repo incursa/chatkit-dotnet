@@ -1,0 +1,44 @@
+# Incursa.OpenAI.ChatKit
+
+Total tests: 8
+
+- **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitEndpointTests.MapChatKit_WritesJsonResponse**
+  - Summary: The ASP.NET Core endpoint adapter writes JSON responses for non-streaming ChatKit operations.
+  - Intent: Protect the HTTP boundary for the translated ChatKit server surface.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs#L17](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs#L17)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn**
+  - Summary: Threads create requests stream the created thread and assistant response events through the ChatKit pipeline.
+  - Intent: Protect the core thread routing path used by hosted ChatKit servers.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L91](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L91)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.Serialize_ThreadsCreateRequest_UsesExactDiscriminator**
+  - Summary: Threads create requests serialize with the upstream ChatKit discriminator and payload field names.
+  - Intent: Protect exact wire compatibility for the core request envelope.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L14](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L14)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.SimpleToAgentInput_MapsUserAndAssistantMessages**
+  - Summary: ChatKit conversation items map into the agent input shape expected by the agents dependency.
+  - Intent: Protect interop between ChatKit message history and the shared agents runtime.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L127](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L127)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly**
+  - Summary: Streaming text widgets emit deltas instead of forcing a root replacement when text is appended.
+  - Intent: Protect incremental widget updates for ChatKit streaming UI flows.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L41](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L41)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.InitializeUpstreamSyncState_CreatesChatKitDefaults**
+  - Summary: The upstream sync state helper bootstraps ChatKit-specific tracked and local state defaults.
+  - Intent: Protect the repeatable initialization path for the upstream synchronization workflow.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L13](tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L13)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.NewTranslationPrompt_UsesChatKitConstraintsAndTruncatesDiff**
+  - Summary: The upstream sync prompt builder carries the ChatKit translation constraints and trims oversized diff content.
+  - Intent: Protect the Codex prompt contract used for automated upstream translation runs.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L48](tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L48)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.SyncMetadataHelpers_UseChatKitNaming**
+  - Summary: The upstream sync metadata helpers produce ChatKit-specific branch, commit, and pull request text.
+  - Intent: Protect predictable naming for automated sync branches and PRs.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L85](tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L85)

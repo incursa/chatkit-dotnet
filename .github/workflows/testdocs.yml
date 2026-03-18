@@ -1,0 +1,90 @@
+name: Test Documentation
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  testdocs:
+    runs-on: ubuntu-latest
+    env:
+      STRICT_MODE: "true"
+      MIN_COMPLIANCE: "0.90"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Generate test docs
+        shell: pwsh
+        run: |
+          $args = @(
+            "tool",
+            "run",
+            "incursa-testdocs",
+            "--",
+            "generate",
+            "--repoRoot",
+            ".",
+            "--outDir",
+            "./docs/testing/generated"
+          )
+          if ($env:STRICT_MODE -eq "true") {
+            $args += "--strict"
+            $args += "--minCompliance"
+            $args += $env:MIN_COMPLIANCE
+          }
+          dotnet @args
+
+      - name: Upload test docs artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: testdocs
+          path: |
+            docs/testing/generated
+
+      - name: Comment summary on PR
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'docs/testing/generated/stats.json';
+            if (!fs.existsSync(path)) {
+              core.warning('stats.json not found, skipping comment.');
+              return;
+            }
+            const stats = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const summary = stats.summary;
+            const total = summary.total;
+            const compliant = summary.compliant;
+            const missing = summary.missingRequired;
+            const invalid = summary.invalidFormat;
+            const compliance = total === 0 ? '100.0%' : `${((compliant / total) * 100).toFixed(1)}%`;
+            const body = [
+              '## Test Docs Summary',
+              `- Total tests: ${total}`,
+              `- Compliant: ${compliant} (${compliance})`,
+              `- Missing required: ${missing}`,
+              `- Invalid format: ${invalid}`,
+              '',
+              'Artifacts: testdocs (docs/testing/generated)'
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });

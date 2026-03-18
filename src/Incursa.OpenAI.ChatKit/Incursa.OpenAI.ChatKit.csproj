@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <Description>Core ChatKit runtime for .NET: exact wire-compatible request and event models, server routing, widget streaming, and store abstractions.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>openai;chatkit;chat;widgets;agents</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <UseLocalIncursaAgentsProject Condition="'$(UseLocalIncursaAgentsProject)' == '' and '$(USE_LOCAL_INCURSA_AGENTS_PROJECT)' != ''">$(USE_LOCAL_INCURSA_AGENTS_PROJECT)</UseLocalIncursaAgentsProject>
+    <LocalIncursaAgentsRepoRoot Condition="'$(LocalIncursaAgentsRepoRoot)' == '' and '$(LOCAL_INCURSA_AGENTS_REPO_ROOT)' != ''">$(LOCAL_INCURSA_AGENTS_REPO_ROOT)</LocalIncursaAgentsRepoRoot>
+    <LocalIncursaAgentsRepoRoot Condition="'$(LocalIncursaAgentsRepoRoot)' == ''">$(MSBuildThisFileDirectory)..\..\..\openai-agents-dotnet</LocalIncursaAgentsRepoRoot>
+    <LocalIncursaAgentsProjectPath>$(LocalIncursaAgentsRepoRoot)\src\Incursa.OpenAI.Agents\Incursa.OpenAI.Agents.csproj</LocalIncursaAgentsProjectPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(UseLocalIncursaAgentsProject)' == 'true' and Exists('$(LocalIncursaAgentsProjectPath)')">
+    <ProjectReference Include="$(LocalIncursaAgentsProjectPath)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalIncursaAgentsProject)' != 'true' or !Exists('$(LocalIncursaAgentsProjectPath)')">
+    <PackageReference Include="Incursa.OpenAI.Agents" Version="1.0.22" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

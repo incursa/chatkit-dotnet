@@ -1,0 +1,9 @@
+# Library Conformance Matrix
+
+| Scenario ID | Library | Area | Status | Mapped Files |
+| --- | --- | --- | --- | --- |
+| LIB-CHATKIT-CORE-001 | Incursa.OpenAI.ChatKit | PublicApi | Covered | `src/Incursa.OpenAI.ChatKit/PublicAPI.Shipped.txt`, `src/Incursa.OpenAI.ChatKit/PublicAPI.Unshipped.txt`, `tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs` |
+| LIB-CHATKIT-CORE-002 | Incursa.OpenAI.ChatKit | Serialization | Covered | `src/Incursa.OpenAI.ChatKit/ChatKitJson.cs`, `src/Incursa.OpenAI.ChatKit/ChatKitRequests.cs`, `tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs` |
+| LIB-CHATKIT-CORE-003 | Incursa.OpenAI.ChatKit | Routing | Covered | `src/Incursa.OpenAI.ChatKit/ChatKitServer.cs`, `src/Incursa.OpenAI.ChatKit/Store.cs`, `src/Incursa.OpenAI.ChatKit/Widgets.cs`, `tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs` |
+| LIB-CHATKIT-ASPNETCORE-001 | Incursa.OpenAI.ChatKit.AspNetCore | PublicApi | Covered | `src/Incursa.OpenAI.ChatKit.AspNetCore/PublicAPI.Shipped.txt`, `src/Incursa.OpenAI.ChatKit.AspNetCore/PublicAPI.Unshipped.txt`, `tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs` |
+| LIB-CHATKIT-ASPNETCORE-002 | Incursa.OpenAI.ChatKit.AspNetCore | Endpoint | Covered | `src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs`, `tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs` |

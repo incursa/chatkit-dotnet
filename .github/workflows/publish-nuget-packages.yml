@@ -1,0 +1,74 @@
+name: Publish NuGet Packages
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish (for manual dispatch), e.g. 1.0.12
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: publish-packages-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Incursa.OpenAI.ChatKit.slnx
+
+      - name: Validate release/version policy
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          MANUAL_VERSION: ${{ inputs.version }}
+        run: |
+          $tag = if ($env:MANUAL_VERSION) {
+            "v$($env:MANUAL_VERSION.TrimStart('v'))"
+          } else {
+            $env:RELEASE_TAG
+          }
+          if (-not $tag) {
+            throw "Manual publish requires 'version' input."
+          }
+          & "$env:GITHUB_WORKSPACE/scripts/release/validate-public-api-versioning.ps1" -Tag $tag
+
+      - name: Build
+        run: dotnet build Incursa.OpenAI.ChatKit.slnx --no-restore --configuration Release -p:ContinuousIntegrationBuild=true
+
+      - name: Pack packages
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          MANUAL_VERSION: ${{ inputs.version }}
+        run: |
+          if ($env:MANUAL_VERSION) {
+            $version = $env:MANUAL_VERSION.TrimStart("v")
+          }
+          else {
+            $version = $env:RELEASE_TAG.TrimStart("v")
+          }
+
+          New-Item -ItemType Directory -Force artifacts/packages | Out-Null
+          dotnet pack src/Incursa.OpenAI.ChatKit/Incursa.OpenAI.ChatKit.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=$version /p:ContinuousIntegrationBuild=true
+          dotnet pack src/Incursa.OpenAI.ChatKit.AspNetCore/Incursa.OpenAI.ChatKit.AspNetCore.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=$version /p:ContinuousIntegrationBuild=true
+
+      - name: Push to NuGet
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          dotnet nuget push artifacts/packages/*.nupkg --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

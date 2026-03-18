@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker-net/master/src/Stryker.CLI/Stryker.CLI/schema/stryker-config-schema.json",
+  "solution": "Incursa.OpenAI.ChatKit.slnx",
+  "test-projects": [
+    "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests.csproj"
+  ],
+  "project": "src/Incursa.OpenAI.ChatKit.AspNetCore/Incursa.OpenAI.ChatKit.AspNetCore.csproj",
+  "mutate": [
+    "**/ChatKitEndpointRouteBuilderExtensions.cs"
+  ],
+  "test-case-filter": "Category!=Integration&Category!=KnownIssue",
+  "reporters": [
+    "json",
+    "html",
+    "progress"
+  ],
+  "thresholds": {
+    "high": 75,
+    "low": 60,
+    "break": 65
+  }
+}

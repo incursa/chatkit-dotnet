@@ -1,0 +1,98 @@
+default_language_version:
+  python: python3
+
+minimum_pre_commit_version: "4.0.0"
+default_stages: [pre-commit]
+
+exclude: |
+  (?x)(
+    ^artifacts/|
+    ^nupkgs/|
+    ^docs/tabler/|
+    ^src/external/
+  )
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        files: "(?i)\\.(md|markdown|mdx|ya?ml|json|ps1|sh|cmd|bat|csproj|slnx?|props|targets|config|editorconfig|txt)$"
+        exclude: "^src/.+\\.(json|md)$"
+      - id: end-of-file-fixer
+        files: "(?i)\\.(md|markdown|mdx|ya?ml|json|ps1|sh|cmd|bat|csproj|slnx?|props|targets|config|editorconfig|txt)$"
+        exclude: "^src/.+\\.(json|md)$"
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=5120"]
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets|md|markdown|mdx|ya?ml|json|ps1|sh|cmd|bat|config|editorconfig|txt)$"
+      - id: check-xml
+
+  - repo: local
+    hooks:
+      - id: testdocs-generate
+        name: test docs (strict)
+        language: system
+        entry: pwsh -NoProfile -File scripts/quality/run-testdocs-precommit.ps1
+        stages: [pre-commit, manual]
+        files: "(?i)^(tests/.+\\.(cs|csproj)|docs/testing/.+\\.(md|json)|\\.config/dotnet-tools\\.json|global\\.json|scripts/quality/.+\\.ps1|\\.github/workflows/testdocs\\.yml|README\\.md)$"
+        pass_filenames: false
+      - id: library-traceability
+        name: library traceability
+        language: system
+        entry: pwsh -NoProfile -File scripts/quality/validate-library-traceability.ps1
+        stages: [pre-commit, manual]
+        files: "(?i)^(specs/libraries/.+\\.md|tests/.+\\.(cs|csproj)|scripts/quality/validate-library-traceability\\.ps1|\\.github/workflows/library-fast-quality\\.yml|src/.+/PublicAPI\\.(Shipped|Unshipped)\\.txt)$"
+        pass_filenames: false
+      # Keep commit-time hooks fast; move repo maintenance to pre-push/manual stages.
+      - id: dotnet-format-apply
+        name: dotnet format (whitespace+style+analyzers)
+        language: system
+        entry: >
+          pwsh -NoProfile -Command
+          "$sln = Get-ChildItem -Path . -Filter *.slnx -File | Select-Object -First 1;
+          if (-not $sln) { $sln = Get-ChildItem -Path . -Filter *.sln -File | Select-Object -First 1 };
+          if (-not $sln) { throw 'No solution file found at repo root.' };
+          dotnet format $sln.Name"
+        pass_filenames: false
+        stages: [manual]
+      - id: dotnet-build
+        name: dotnet build (manual baseline)
+        language: system
+        entry: >
+          pwsh -NoProfile -Command
+          "$ciSln = Join-Path (Get-Location) 'Incursa.OpenAI.ChatKit.slnx';
+          $rootSlnx = Get-ChildItem -Path . -Filter *.slnx -File | Sort-Object Name | Select-Object -First 1;
+          $rootSln = Get-ChildItem -Path . -Filter *.sln -File | Sort-Object Name | Select-Object -First 1;
+          $solution = if (Test-Path $ciSln) { $ciSln } elseif ($rootSlnx) { $rootSlnx.FullName } elseif ($rootSln) { $rootSln.FullName } else { throw 'No solution file found at repo root.' };
+          dotnet build $solution -c Release"
+        stages: [manual]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets)$"
+        pass_filenames: false
+      - id: smoke-tests
+        name: smoke tests
+        language: system
+        entry: pwsh -NoProfile -File scripts/quality/run-smoke-tests.ps1
+        stages: [pre-push, manual]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets|runsettings|json|ya?ml|ps1)$"
+        pass_filenames: false
+      - id: blocking-tests
+        name: blocking tests
+        language: system
+        entry: pwsh -NoProfile -File scripts/quality/run-blocking-tests.ps1
+        stages: [manual]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets|runsettings|json|ya?ml|ps1)$"
+        pass_filenames: false
+      - id: workbench-quality-evidence
+        name: workbench quality evidence
+        language: system
+        entry: pwsh -NoProfile -File scripts/quality/run-quality-evidence.ps1
+        stages: [manual]
+        files: "(?i)\\.(cs|csproj|sln|slnx|props|targets|runsettings|json|ya?ml|ps1|md)$"
+        pass_filenames: false

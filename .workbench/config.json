@@ -1,0 +1,45 @@
+{
+  "Paths": {
+    "DocsRoot": "docs",
+    "WorkRoot": "docs/70-work",
+    "ItemsDir": "docs/70-work/items",
+    "DoneDir": "docs/70-work/done",
+    "TemplatesDir": "docs/70-work/templates",
+    "WorkboardFile": "docs/70-work/README.md"
+  },
+  "Ids": {
+    "Width": 4,
+    "Prefixes": {
+      "Bug": "BUG",
+      "Task": "TASK",
+      "Spike": "SPIKE"
+    }
+  },
+  "Git": {
+    "BranchPattern": "work/{id}-{slug}",
+    "CommitMessagePattern": "Promote {id}: {title}",
+    "DefaultBaseBranch": "main",
+    "RequireCleanWorkingTree": true
+  },
+  "Github": {
+    "Provider": "octokit",
+    "DefaultDraft": false,
+    "Host": "github.com",
+    "Owner": "incursa",
+    "Repository": "openai-agents-dotnet",
+    "Sync": {
+      "Mode": "generate",
+      "ConflictDefault": "fail",
+      "ScheduleEnabled": true
+    }
+  },
+  "Validation": {
+    "LinkExclude": [],
+    "DocExclude": []
+  },
+  "Tui": {
+    "Theme": "powershell",
+    "UseEmoji": true,
+    "AutoRefreshSeconds": 60
+  }
+}

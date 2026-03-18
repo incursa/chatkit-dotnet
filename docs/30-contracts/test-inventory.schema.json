@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.com/workbench/test-inventory.schema.json",
+  "title": "Workbench Test Inventory",
+  "type": "object",
+  "additionalProperties": true
+}
