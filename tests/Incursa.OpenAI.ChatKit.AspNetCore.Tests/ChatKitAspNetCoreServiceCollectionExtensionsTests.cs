@@ -55,4 +55,17 @@ public sealed class ChatKitAspNetCoreServiceCollectionExtensionsTests
         Assert.Equal("contoso-domain-key", options.DomainKey);
         Assert.Equal("en", options.Locale);
     }
+
+    /// <summary>The API service registration rejects direct API mode without a domain key.</summary>
+    /// <intent>Protect the DI setup from seeding an invalid direct ChatKit API configuration.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-001</scenario>
+    /// <behavior>Calling <c>AddOpenAIChatKitApi</c> without a domain key throws an argument-null exception.</behavior>
+    [Fact]
+    public void AddOpenAIChatKitApi_Throws_WhenDomainKeyIsMissing()
+    {
+        ArgumentNullException exception = Assert.Throws<ArgumentNullException>(() =>
+            new ServiceCollection().AddOpenAIChatKitApi("https://example.contoso.com/chatkit"));
+
+        Assert.Equal("domainKey", exception.ParamName);
+    }
 }

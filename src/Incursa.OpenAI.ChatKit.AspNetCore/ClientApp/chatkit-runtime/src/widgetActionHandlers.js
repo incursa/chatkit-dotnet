@@ -44,6 +44,8 @@ export function resolveWidgetActionHandler(globalScope, lookupPath) {
 }
 
 export function composeWidgetActionHandlers(clientHandler, forwardHandler) {
+  // Hosted mode can run client-side handling, server forwarding, or both.
+  // The client handler runs first so it can veto forwarding by throwing.
   if (typeof clientHandler !== "function" && typeof forwardHandler !== "function") {
     return undefined;
   }
@@ -60,6 +62,8 @@ export function composeWidgetActionHandlers(clientHandler, forwardHandler) {
 }
 
 export function createOnWidgetAction(globalScope, lookupPath) {
+  // Keep the resolved handler dynamic so late page scripts can still register
+  // or replace the callback after the Razor host is rendered.
   return async (action, widgetItem) => {
     const handler = resolveWidgetActionHandler(globalScope, lookupPath);
     await handler(action, widgetItem);

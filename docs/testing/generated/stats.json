@@ -4,24 +4,24 @@
     "defaultBranch": "main"
   },
   "summary": {
-    "total": 20,
-    "compliant": 20,
+    "total": 21,
+    "compliant": 21,
     "missingRequired": 0,
     "invalidFormat": 0
   },
   "byCategory": [
     {
       "category": "Incursa.OpenAI.ChatKit",
-      "total": 20,
-      "compliant": 20
+      "total": 21,
+      "compliant": 21
     }
   ],
   "byTag": [],
   "byProject": [
     {
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests",
-      "total": 12,
-      "compliant": 12
+      "total": 13,
+      "compliant": 13
     },
     {
       "project": "Incursa.OpenAI.ChatKit.Tests",
@@ -42,6 +42,22 @@
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs",
         "line": 40,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_SetsApiModeDefaults"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_Throws_WhenDomainKeyIsMissing",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The API service registration rejects direct API mode without a domain key.",
+      "intent": "Protect the DI setup from seeding an invalid direct ChatKit API configuration.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-001",
+      "behavior": "Calling AddOpenAIChatKitApi without a domain key throws an argument-null exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs",
+        "line": 64,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_Throws_WhenDomainKeyIsMissing"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
@@ -95,17 +111,17 @@
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
     },
     {
-      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperOmitsDomainKey_WhenNotConfigured",
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured",
       "category": "Incursa.OpenAI.ChatKit",
       "tags": [],
-      "summary": "The API host tag helper allows direct browser API mode to omit a domain key when none is configured.",
-      "intent": "Protect parity with the upstream ChatKit client setup, which allows local development without a domain key.",
+      "summary": "The API host tag helper rejects direct browser API mode when no domain key is configured.",
+      "intent": "Protect the direct browser wrapper from serializing an invalid ChatKit API configuration.",
       "scenario": "LIB-CHATKIT-ASPNETCORE-003",
-      "behavior": "Direct browser API mode serializes the API URL without forcing a domain key or local fallback endpoints.",
+      "behavior": "Direct browser API mode emits a render error instead of serializing a config payload when the domain key is missing.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
         "line": 229,
-        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperOmitsDomainKey_WhenNotConfigured"
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
@@ -120,7 +136,7 @@
       "behavior": "Configured direct browser API defaults populate both the API URL and domain key in the serialized host config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 254,
+        "line": 251,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperUsesConfiguredDomainKey_WhenConfigured"
       },
       "status": "compliant",

@@ -21,6 +21,8 @@ function normalizeLookupPath(lookupPath) {
 }
 
 export function resolveClientToolHandlers(globalScope, lookupPath) {
+  // The Razor wrapper cannot serialize real JS functions, so server-side
+  // configuration passes a dotted lookup path such as "window.chatkit.clientTools".
   const segments = normalizeLookupPath(lookupPath);
   let current = globalScope;
 
@@ -44,6 +46,8 @@ export function resolveClientToolHandlers(globalScope, lookupPath) {
 }
 
 export function createOnClientTool(globalScope, lookupPath) {
+  // ChatKit expects a single onClientTool callback. This adapter resolves the
+  // registry object at call time and dispatches to a named handler inside it.
   return async (toolCall) => {
     const handlers = resolveClientToolHandlers(globalScope, lookupPath);
     const handler = handlers[toolCall.name];

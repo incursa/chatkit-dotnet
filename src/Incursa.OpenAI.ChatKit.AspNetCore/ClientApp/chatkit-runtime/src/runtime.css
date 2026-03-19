@@ -4,6 +4,8 @@
 }
 
 .incursa-chatkit-root {
+  /* The local wrapper div gives us a stable box to size before the upstream
+     web component and its iframe finish initializing. */
   display: block;
   width: 100%;
   height: 100%;
@@ -11,6 +13,8 @@
 }
 
 .incursa-chatkit-root .incursa-chatkit-element {
+  /* Stretch the custom element to the host size so ChatKit owns all of the
+     available area inside the Razor placeholder. */
   display: block;
   width: 100%;
   height: 100%;

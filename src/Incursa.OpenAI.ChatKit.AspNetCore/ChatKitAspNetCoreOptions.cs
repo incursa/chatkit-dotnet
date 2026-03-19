@@ -14,6 +14,7 @@ public sealed class ChatKitAspNetCoreOptions
 
     /// <summary>
     /// Gets or sets the domain key sent when <see cref="ApiUrl" /> is used for direct ChatKit API mode.
+    /// This is required whenever the packaged frontend connects directly to a ChatKit API URL.
     /// </summary>
     public string? DomainKey { get; set; }
 

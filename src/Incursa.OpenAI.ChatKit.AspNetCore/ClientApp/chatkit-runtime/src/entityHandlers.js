@@ -43,6 +43,9 @@ function normalizeEntityData(data, context) {
 }
 
 export function validateEntity(entity, context = "ChatKit entity") {
+  // Validate browser-supplied entities before forwarding them to ChatKit so
+  // page-level scripts fail with a clear local error instead of a vague
+  // runtime problem inside the embedded widget.
   if (entity == null || typeof entity !== "object" || Array.isArray(entity)) {
     throw new Error(`${context} must be an object.`);
   }
@@ -103,6 +106,8 @@ export function validateEntitySearchResults(results) {
 }
 
 export function validateEntityPreviewResult(result) {
+  // Preview payloads are opaque widget JSON to us, but ChatKit still requires
+  // the outer { preview } envelope.
   if (result == null || typeof result !== "object" || Array.isArray(result)) {
     throw new Error("ChatKit entity preview handler must return an object.");
   }
@@ -154,6 +159,8 @@ export function resolveEntityHandlers(globalScope, lookupPath) {
 }
 
 export function buildEntitiesOption(globalScope, lookupPath, config) {
+  // This merges simple serializable config from Razor (for example
+  // showComposerMenu) with optional browser callbacks living on the page.
   const hasConfig = config != null && typeof config === "object";
   if (!lookupPath) {
     return hasConfig ? { ...config } : undefined;

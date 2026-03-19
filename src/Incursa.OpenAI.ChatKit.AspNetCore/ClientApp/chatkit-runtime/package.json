@@ -4,17 +4,12 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "test": "node --test src/clientToolHandlers.test.mjs src/entityHandlers.test.mjs src/widgetActionHandlers.test.mjs"
+    "test": "node --test src/clientToolHandlers.test.mjs src/entityHandlers.test.mjs src/widgetActionHandlers.test.mjs src/entry.test.mjs"
   },
   "dependencies": {
-    "@openai/chatkit-react": "^1.5.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@openai/chatkit": "^1.6.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.4.1",
     "typescript": "^5.8.3",
     "vite": "^5.4.14"
   }

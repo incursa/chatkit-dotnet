@@ -1,12 +1,17 @@
 # Incursa.OpenAI.ChatKit
 
-Total tests: 20
+Total tests: 21
 
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_SetsApiModeDefaults**
   - Summary: The API service registration seeds direct browser API defaults.
   - Intent: Protect the DI setup that configures the ASP.NET Core wrapper for direct API mode.
   - Tags: (none)
   - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs#L40](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs#L40)
+- **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_Throws_WhenDomainKeyIsMissing**
+  - Summary: The API service registration rejects direct API mode without a domain key.
+  - Intent: Protect the DI setup from seeding an invalid direct ChatKit API configuration.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs#L64](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs#L64)
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitHosted_ClearsApiModeDefaults**
   - Summary: The hosted service registration clears direct API defaults while preserving hosted configuration.
   - Intent: Protect the DI setup that switches consumers from direct API mode to hosted session mode.
@@ -22,16 +27,16 @@ Total tests: 20
   - Intent: Protect the public Razor wrapper surface added to the ASP.NET Core package.
   - Tags: (none)
   - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitAssetsTagHelperTests.cs#L14](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitAssetsTagHelperTests.cs#L14)
-- **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperOmitsDomainKey_WhenNotConfigured**
-  - Summary: The API host tag helper allows direct browser API mode to omit a domain key when none is configured.
-  - Intent: Protect parity with the upstream ChatKit client setup, which allows local development without a domain key.
+- **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured**
+  - Summary: The API host tag helper rejects direct browser API mode when no domain key is configured.
+  - Intent: Protect the direct browser wrapper from serializing an invalid ChatKit API configuration.
   - Tags: (none)
   - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L229](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L229)
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperUsesConfiguredDomainKey_WhenConfigured**
   - Summary: The API host tag helper forwards the configured domain key in direct browser API mode.
   - Intent: Protect the direct browser ChatKit configuration surface exposed by the ASP.NET Core wrapper.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L254](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L254)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L251](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L251)
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_EmitsError_WhenGenericTagHelperIsUsed**
   - Summary: The generic ChatKit tag helper now requires an explicit mode choice.
   - Intent: Prevent ambiguous Razor configuration that silently switches between local and API-backed modes.

@@ -74,7 +74,7 @@ public static class ChatKitAspNetCoreServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection to update.</param>
     /// <param name="apiUrl">The ChatKit API URL.</param>
-    /// <param name="domainKey">The optional domain key used with the API URL.</param>
+    /// <param name="domainKey">The domain key used with the API URL.</param>
     /// <param name="configure">Optional delegate used to configure <see cref="ChatKitAspNetCoreOptions" />.</param>
     /// <returns>The same <see cref="IServiceCollection" /> instance.</returns>
     public static IServiceCollection AddOpenAIChatKitApi(
@@ -85,6 +85,7 @@ public static class ChatKitAspNetCoreServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(apiUrl);
+        ArgumentException.ThrowIfNullOrWhiteSpace(domainKey);
 
         return services.AddOpenAIChatKit(options =>
         {

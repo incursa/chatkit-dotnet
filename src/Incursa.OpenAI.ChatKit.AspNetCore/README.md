@@ -8,6 +8,7 @@ It adds:
 - `AddOpenAIChatKitApi(...)` and `AddOpenAIChatKitHosted(...)` for explicit frontend hosting modes
 - Razor tag helpers for mounting the ChatKit frontend from MVC or Razor views
 - packaged CSS and JavaScript assets under `_content/Incursa.OpenAI.ChatKit.AspNetCore/chatkit`
+- a thin vanilla-JS bootstrap around the upstream `<openai-chatkit>` web component
 - options for shared UI defaults across a site or application
 
 ## Install
@@ -55,7 +56,7 @@ app.Run();
 Register shared UI defaults for a custom ChatKit API endpoint:
 
 ```csharp
-builder.Services.AddOpenAIChatKitApi("/api/chatkit", configure: options =>
+builder.Services.AddOpenAIChatKitApi("/api/chatkit", "contoso-domain-key", configure: options =>
 {
     options.DefaultHeight = "760px";
     options.StartScreen.Greeting = "How can I help today?";
@@ -78,6 +79,7 @@ Then use the tag helpers from a layout or view:
     id="workspace-assistant"
     class="chatkit-page"
     api-url="/api/chatkit"
+    domain-key="contoso-domain-key"
     disclaimer-text="AI may make mistakes. Verify important details."
     disclaimer-high-contrast="true">
 </incursa-chatkit-api>
@@ -98,8 +100,11 @@ Then point the Razor host at that API endpoint:
 
 ```cshtml
 <incursa-chatkit-api
-    api-url="/api/chatkit" />
+    api-url="/api/chatkit"
+    domain-key="contoso-domain-key" />
 ```
+
+Direct API mode requires a domain key. Configure it either in `AddOpenAIChatKitApi(...)` or on the `<incursa-chatkit-api>` tag helper.
 
 ## Client tool handlers
 
@@ -122,6 +127,7 @@ To expose ChatKit `onClientTool` through the Razor wrapper, register a browser-s
 <incursa-chatkit-assets />
 <incursa-chatkit-api
     api-url="/api/chatkit"
+    domain-key="contoso-domain-key"
     client-tool-handlers="window.chatkitClientTools">
 </incursa-chatkit-api>
 ```
@@ -163,6 +169,7 @@ To expose ChatKit `entities` through the Razor wrapper, register a browser-side 
 <incursa-chatkit-assets />
 <incursa-chatkit-api
     api-url="/api/chatkit"
+    domain-key="contoso-domain-key"
     entity-handlers="window.chatkitEntities"
     entity-show-composer-menu="true">
 </incursa-chatkit-api>
@@ -249,18 +256,43 @@ In direct API mode (`<incursa-chatkit-api>`), `widget-action-handler` still work
 
 ## Updating packaged UI assets
 
+### Source vs generated files
+
+The JavaScript pieces in this package fall into two buckets:
+
+- Handwritten source:
+  - `ClientApp/chatkit-runtime/src/entry.js`
+  - `ClientApp/chatkit-runtime/src/runtimeHost.js`
+  - `ClientApp/chatkit-runtime/src/clientToolHandlers.js`
+  - `ClientApp/chatkit-runtime/src/entityHandlers.js`
+  - `ClientApp/chatkit-runtime/src/widgetActionHandlers.js`
+  - `ClientApp/chatkit-runtime/src/runtime.css`
+- Generated bundle:
+  - `wwwroot/chatkit/chatkit.js`
+  - `wwwroot/chatkit/chatkit.css`
+
+The browser startup flow is:
+
+1. `<incursa-chatkit-assets />` renders the upstream CDN script and the local module bundle.
+2. The CDN script defines the upstream `<openai-chatkit>` custom element.
+3. The local bundle finds each `data-incursa-chatkit-host` element rendered by the Razor tag helper.
+4. The local bundle parses `data-incursa-chatkit-config`, creates `<openai-chatkit>`, and calls `setOptions(...)`.
+5. Optional browser callback registries such as `client-tool-handlers`, `entity-handlers`, and `widget-action-handler` are resolved from dotted lookup paths like `window.chatkit.clientTools`.
+
 This package intentionally carries both:
 
 - editable frontend source in `ClientApp/chatkit-runtime`
 - generated package assets in `wwwroot/chatkit`
 
-When `@openai/chatkit-react` or related npm dependencies need to move forward:
+When the packaged ChatKit bootstrap or related npm dependencies need to move forward:
 
 ```bash
 cd src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime
 npm install
 npm run build
 ```
+
+`<incursa-chatkit-assets />` renders both the upstream ChatKit CDN script that defines `<openai-chatkit>` and the local package bootstrap that applies your serialized Razor config with `setOptions(...)`.
 
 Commit both the dependency file changes and the regenerated files under `wwwroot/chatkit`.
 

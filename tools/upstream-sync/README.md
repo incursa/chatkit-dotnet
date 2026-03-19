@@ -42,7 +42,7 @@ The first invocation bootstraps the state by recording the current upstream `mai
 
   In GitHub Actions, the daily Python check uses this mode to open an issue when new upstream commits are detected.
 
-- Update the packaged ChatKit runtime from the latest `@openai/chatkit-react` release:
+- Update the packaged ChatKit runtime from the latest `@openai/chatkit` release:
   ```
   pwsh tools/upstream-sync/Invoke-UpstreamChatKitRuntimeSync.ps1
   ```
@@ -68,4 +68,4 @@ Codex is run via `codex exec --dangerously-bypass-approvals-and-sandbox` from th
 
 Successful syncs commit the translated files plus the updated `state.json`, push a `sync/chatkit-upstream-<shortsha>` branch, and call `gh pr create` with a title/body that references the upstream range and commits. Failed runs leave the branch and working tree intact for inspection; `state.json` is only updated when both translation and validation succeed.
 
-The npm runtime sync updates `src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/package.json`, `package-lock.json`, and the generated `wwwroot/chatkit` bundle when a newer `@openai/chatkit-react` release is available.
+The npm runtime sync updates `src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/package.json`, `package-lock.json`, and the generated `wwwroot/chatkit` bundle when a newer `@openai/chatkit` release is available.

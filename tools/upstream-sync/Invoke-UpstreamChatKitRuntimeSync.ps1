@@ -34,11 +34,11 @@ if (-not (Test-Path $PackageLockPath)) {
     throw "ChatKit runtime package-lock.json was not found at '$PackageLockPath'."
 }
 
-function Get-LatestChatKitReactVersion {
-    Write-SyncLog 'INFO' 'Checking npm for the latest @openai/chatkit-react version.'
-    $latestVersion = (& npm view @openai/chatkit-react version | Select-Object -Last 1).Trim()
+function Get-LatestChatKitPackageVersion {
+    Write-SyncLog 'INFO' 'Checking npm for the latest @openai/chatkit version.'
+    $latestVersion = (& npm view @openai/chatkit version | Select-Object -Last 1).Trim()
     if (-not $latestVersion) {
-        throw 'Unable to determine the latest @openai/chatkit-react version from npm.'
+        throw 'Unable to determine the latest @openai/chatkit version from npm.'
     }
 
     return $latestVersion
@@ -46,13 +46,13 @@ function Get-LatestChatKitReactVersion {
 
 function Get-CurrentLockedVersion {
     $packageLock = Get-Content $PackageLockPath -Raw | ConvertFrom-Json -AsHashtable
-    $entry = $packageLock['packages']['node_modules/@openai/chatkit-react']
+    $entry = $packageLock['packages']['node_modules/@openai/chatkit']
     if (-not $entry) {
-        throw "Package lock entry for '@openai/chatkit-react' was not found."
+        throw "Package lock entry for '@openai/chatkit' was not found."
     }
 
     if (-not $entry['version']) {
-        throw "Package lock entry for '@openai/chatkit-react' did not include a version."
+        throw "Package lock entry for '@openai/chatkit' did not include a version."
     }
 
     return $entry['version']
@@ -63,10 +63,10 @@ function Invoke-NpmInstall {
 
     Push-Location $RuntimePath
     try {
-        Write-SyncLog 'INFO' "Updating @openai/chatkit-react to version $Version."
-        & npm install "@openai/chatkit-react@$Version"
+        Write-SyncLog 'INFO' "Updating @openai/chatkit to version $Version."
+        & npm install "@openai/chatkit@$Version"
         if ($LASTEXITCODE -ne 0) {
-            throw "npm install @openai/chatkit-react@$Version failed with exit code $LASTEXITCODE."
+            throw "npm install @openai/chatkit@$Version failed with exit code $LASTEXITCODE."
         }
     } finally {
         Pop-Location
@@ -100,14 +100,14 @@ function Invoke-NpmBuild {
 }
 
 $currentVersion = Get-CurrentLockedVersion
-$latestVersion = Get-LatestChatKitReactVersion
+$latestVersion = Get-LatestChatKitPackageVersion
 
 if ($currentVersion -eq $latestVersion) {
-    Write-SyncLog 'INFO' "@openai/chatkit-react is already at the latest version ($currentVersion)."
+    Write-SyncLog 'INFO' "@openai/chatkit is already at the latest version ($currentVersion)."
     return
 }
 
-Write-SyncLog 'INFO' "@openai/chatkit-react will be updated from $currentVersion to $latestVersion."
+Write-SyncLog 'INFO' "@openai/chatkit will be updated from $currentVersion to $latestVersion."
 Invoke-NpmInstall -Version $latestVersion
 
 if (-not $SkipTests) {

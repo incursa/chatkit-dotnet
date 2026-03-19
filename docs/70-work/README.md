@@ -16,6 +16,7 @@ _None._
 - [TASK-0002 - Add ChatKit `disclaimer` option parity to the ASP.NET Core wrapper](items/TASK-0002-chatkit-disclaimer-option-parity.md)
 - [TASK-0003 - Add ChatKit `entities` parity to the ASP.NET Core wrapper](items/TASK-0003-chatkit-entities-option-parity.md)
 - [TASK-0004 - Add full ChatKit `widgets` option parity to the ASP.NET Core wrapper](items/TASK-0004-chatkit-widget-client-action-option-parity.md)
+- [TASK-0008 - Replace the React bootstrap with a direct ChatKit web-component host](items/TASK-0008-chatkit-direct-web-component-host.md)
 
 <details>
 <summary>Draft (backlog) (3)</summary>

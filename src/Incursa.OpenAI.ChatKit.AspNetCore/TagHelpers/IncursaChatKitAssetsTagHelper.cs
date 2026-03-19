@@ -8,6 +8,8 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers;
 [HtmlTargetElement("incursa-chatkit-assets")]
 public sealed class IncursaChatKitAssetsTagHelper : TagHelper
 {
+    // These per-render keys prevent a layout and a child view from both emitting
+    // duplicate CSS/script tags for the same request.
     private const string CssRenderedKey = "__IncursaOpenAIChatKitAssetsCssRendered";
     private const string JsRenderedKey = "__IncursaOpenAIChatKitAssetsJsRendered";
     private const string CdnRenderedKey = "__IncursaOpenAIChatKitAssetsCdnRendered";
@@ -47,12 +49,15 @@ public sealed class IncursaChatKitAssetsTagHelper : TagHelper
         if (IncludeCdn && !context.Items.ContainsKey(CdnRenderedKey))
         {
             context.Items[CdnRenderedKey] = true;
+            // The CDN script defines the upstream <openai-chatkit> custom element.
             parts.Add("<script src=\"https://cdn.platform.openai.com/deployments/chatkit/chatkit.js\"></script>");
         }
 
         if (IncludeJs && !context.Items.ContainsKey(JsRenderedKey))
         {
             context.Items[JsRenderedKey] = true;
+            // The local module reads the serialized Razor config and calls setOptions(...)
+            // on the already-defined web component.
             parts.Add($"<script type=\"module\" src=\"{AssetBasePath}/chatkit.js\"></script>");
         }
 

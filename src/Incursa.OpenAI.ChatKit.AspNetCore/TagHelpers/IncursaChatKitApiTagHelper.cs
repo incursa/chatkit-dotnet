@@ -42,6 +42,12 @@ public sealed class IncursaChatKitApiTagHelper : IncursaChatKitTagHelper
         }
 
         ChatKitHostClientConfig config = BuildFlexibleClientConfig();
+        if (string.IsNullOrWhiteSpace(config.DomainKey))
+        {
+            throw new InvalidOperationException(
+                "The <incursa-chatkit-api> tag helper requires 'domain-key'.");
+        }
+
         return new ChatKitHostClientConfig
         {
             ApiUrl = config.ApiUrl,

@@ -36,7 +36,7 @@ The Razor wrapper:
 
 - emits packaged CSS and JavaScript from `_content/Incursa.OpenAI.ChatKit.AspNetCore/chatkit`
 - serializes host configuration into `data-incursa-chatkit-config`
-- mounts `@openai/chatkit-react` without per-page bootstrapping code
+- mounts the upstream `<openai-chatkit>` web component without per-page bootstrapping code
 - supports both conventional local endpoints and direct browser ChatKit API connections
 
 ## Minimal host sample
@@ -66,10 +66,13 @@ app.MapChatKit<DemoChatKitServer, Dictionary<string, object?>>(
 
 <incursa-chatkit-assets />
 <incursa-chatkit-api
-    api-url="/api/chatkit" />
+    api-url="/api/chatkit"
+    domain-key="contoso-domain-key" />
 ```
 
 Use `<incursa-chatkit-api>` when your application hosts its own ChatKit server through `MapChatKit(...)`. Use `<incursa-chatkit-hosted>` when the browser should use OpenAI-hosted ChatKit through session and action endpoints. The generic `<incursa-chatkit>` tag helper now throws and requires callers to choose one of these explicit modes.
+
+Direct API mode requires a domain key. Set it either through `AddOpenAIChatKitApi(...)` defaults or with the `domain-key` tag-helper attribute.
 
 Client tool handlers use a browser-side registry lookup instead of serialized delegates. Register an object on the page, then reference it from the host tag helper:
 
@@ -92,6 +95,7 @@ Client tool handlers use a browser-side registry lookup instead of serialized de
 <incursa-chatkit-assets />
 <incursa-chatkit-api
     api-url="/api/chatkit"
+    domain-key="contoso-domain-key"
     client-tool-handlers="window.chatkitClientTools" />
 ```
 
@@ -129,11 +133,12 @@ Entity handlers follow the same browser-registry pattern:
 <incursa-chatkit-assets />
 <incursa-chatkit-api
     api-url="/api/chatkit"
+    domain-key="contoso-domain-key"
     entity-handlers="window.chatkitEntities"
     entity-show-composer-menu="true" />
 ```
 
-The runtime validates the returned entity array and preview payload shape before forwarding them into `useChatKit(...)`. Submitted tags arrive on the server as `UserMessageTagContent` entries so application code can map them back to domain objects.
+The runtime validates the returned entity array and preview payload shape before forwarding them into `setOptions(...)`. Submitted tags arrive on the server as `UserMessageTagContent` entries so application code can map them back to domain objects.
 
 When you need to refresh the packaged browser runtime after updating the frontend npm dependencies:
 

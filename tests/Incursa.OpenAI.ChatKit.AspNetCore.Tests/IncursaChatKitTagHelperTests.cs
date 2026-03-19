@@ -221,16 +221,16 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.False(config["widgetActions"]?["forwardToEndpoint"]?.GetValue<bool>());
     }
 
-    /// <summary>The API host tag helper allows direct browser API mode to omit a domain key when none is configured.</summary>
-    /// <intent>Protect parity with the upstream ChatKit client setup, which allows local development without a domain key.</intent>
+    /// <summary>The API host tag helper rejects direct browser API mode when no domain key is configured.</summary>
+    /// <intent>Protect the direct browser wrapper from serializing an invalid ChatKit API configuration.</intent>
     /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
-    /// <behavior>Direct browser API mode serializes the API URL without forcing a domain key or local fallback endpoints.</behavior>
+    /// <behavior>Direct browser API mode emits a render error instead of serializing a config payload when the domain key is missing.</behavior>
     [Fact]
-    public async Task ProcessAsync_ApiTagHelperOmitsDomainKey_WhenNotConfigured()
+    public async Task ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured()
     {
         ServiceProvider services = new ServiceCollection()
             .AddLogging()
-            .AddOpenAIChatKitApi("https://example.contoso.com/chatkit")
+            .AddOpenAIChatKit()
             .BuildServiceProvider();
 
         IncursaChatKitApiTagHelper tagHelper = CreateApiTagHelper(services);
@@ -239,11 +239,8 @@ public sealed class IncursaChatKitTagHelperTests
         TagHelperOutput output = CreateOutput();
         await tagHelper.ProcessAsync(CreateContext(), output);
 
-        JsonNode config = ParseConfig(output);
-        Assert.Equal("https://example.contoso.com/chatkit", config["apiUrl"]?.GetValue<string>());
-        Assert.Null(config["domainKey"]);
-        Assert.Null(config["sessionEndpoint"]);
-        Assert.Null(config["actionEndpoint"]);
+        Assert.Equal("true", output.Attributes["data-incursa-chatkit-error"]?.Value);
+        Assert.Null(output.Attributes["data-incursa-chatkit-config"]);
     }
 
     /// <summary>The API host tag helper forwards the configured domain key in direct browser API mode.</summary>

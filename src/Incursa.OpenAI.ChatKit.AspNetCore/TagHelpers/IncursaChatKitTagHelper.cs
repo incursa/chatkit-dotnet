@@ -50,6 +50,7 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
 
     /// <summary>
     /// Gets or sets the domain key used with <see cref="ApiUrl" /> in direct ChatKit API mode.
+    /// This is required whenever <see cref="ApiUrl" /> is set.
     /// </summary>
     [HtmlAttributeName("domain-key")]
     public string? DomainKey { get; set; }

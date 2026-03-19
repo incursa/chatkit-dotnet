@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseLocalIncursaAgentsProject)' != 'true' or !Exists('$(LocalIncursaAgentsProjectPath)')">
-    <PackageReference Include="Incursa.OpenAI.Agents" Version="1.0.23" />
+    <PackageReference Include="Incursa.OpenAI.Agents" Version="1.0.24" />
   </ItemGroup>
 
   <ItemGroup>
