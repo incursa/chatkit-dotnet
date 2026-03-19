@@ -154,24 +154,26 @@ async function sameOriginFetch(
   });
 }
 
-function requireDomainKey(domainKey?: string): string {
-  if (!domainKey || domainKey.trim().length === 0) {
-    throw new Error(
-      "ChatKit custom API mode requires a domain key. Set `domain-key` on the tag helper or configure ChatKitAspNetCoreOptions.DomainKey."
-    );
-  }
+function buildCustomApiOptions(config: ChatKitHostConfig): UseChatKitOptions["api"] {
+  const domainKey = config.domainKey?.trim();
 
-  return domainKey;
+  return {
+    url: config.apiUrl!,
+    fetch: sameOriginFetch,
+    // Upstream docs allow omitting the domain key for local development even
+    // though the published type declarations currently model it as required.
+    ...(domainKey
+      ? {
+          domainKey
+        }
+      : {})
+  } as UseChatKitOptions["api"];
 }
 
 function buildOptions(config: ChatKitHostConfig): UseChatKitOptions {
   const options: UseChatKitOptions = config.apiUrl
     ? {
-        api: {
-          url: config.apiUrl,
-          domainKey: requireDomainKey(config.domainKey),
-          fetch: sameOriginFetch
-        }
+        api: buildCustomApiOptions(config)
       }
     : {
         api: {

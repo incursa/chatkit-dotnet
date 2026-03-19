@@ -124,6 +124,59 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.False(config["widgetActions"]?["forwardToEndpoint"]?.GetValue<bool>());
     }
 
+    /// <summary>The host tag helper allows hosted API mode to omit a domain key when none is configured.</summary>
+    /// <intent>Protect parity with the upstream ChatKit client setup, which allows local development without a domain key.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Hosted API mode serializes the API URL without forcing a domain key or local fallback endpoints.</behavior>
+    [Fact]
+    public async Task ProcessAsync_OmitsDomainKey_WhenHostedApiModeDoesNotConfigureOne()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddIncursaOpenAIChatKitAspNetCore()
+            .BuildServiceProvider();
+
+        IncursaChatKitTagHelper tagHelper = CreateTagHelper(services);
+        tagHelper.ApiUrl = "https://example.contoso.com/chatkit";
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.Equal("https://example.contoso.com/chatkit", config["apiUrl"]?.GetValue<string>());
+        Assert.Null(config["domainKey"]);
+        Assert.Null(config["sessionEndpoint"]);
+        Assert.Null(config["actionEndpoint"]);
+    }
+
+    /// <summary>The host tag helper forwards the configured domain key in hosted API mode.</summary>
+    /// <intent>Protect the hosted ChatKit browser configuration surface exposed by the ASP.NET Core wrapper.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Configured hosted API defaults populate both the API URL and domain key in the serialized host config.</behavior>
+    [Fact]
+    public async Task ProcessAsync_UsesConfiguredDomainKey_WhenHostedApiModeIsConfigured()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddIncursaOpenAIChatKitAspNetCore(options =>
+            {
+                options.ApiUrl = "https://example.contoso.com/chatkit";
+                options.DomainKey = "contoso-domain-key";
+            })
+            .BuildServiceProvider();
+
+        IncursaChatKitTagHelper tagHelper = CreateTagHelper(services);
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.Equal("https://example.contoso.com/chatkit", config["apiUrl"]?.GetValue<string>());
+        Assert.Equal("contoso-domain-key", config["domainKey"]?.GetValue<string>());
+        Assert.Null(config["sessionEndpoint"]);
+        Assert.Null(config["actionEndpoint"]);
+    }
+
     private static TagHelperContext CreateContext()
     {
         return new TagHelperContext(

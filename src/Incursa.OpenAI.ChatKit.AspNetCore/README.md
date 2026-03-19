@@ -1,15 +1,57 @@
 # Incursa.OpenAI.ChatKit.AspNetCore
 
-`Incursa.OpenAI.ChatKit.AspNetCore` provides ASP.NET Core hosting helpers, Razor tag helpers, and packaged browser assets for `Incursa.OpenAI.ChatKit`.
+`Incursa.OpenAI.ChatKit.AspNetCore` is the ASP.NET Core integration package for `Incursa.OpenAI.ChatKit`.
 
-## What this package contains
+It adds:
 
-- `MapChatKit<TServer, TContext>(...)` for HTTP endpoint and SSE response handling
-- `<incursa-chatkit-assets />` to emit the packaged CSS, package runtime, and ChatKit CDN script
-- `<incursa-chatkit />` to render a browser mount point with serialized host configuration
-- `ChatKitAspNetCoreOptions` and `AddIncursaOpenAIChatKitAspNetCore(...)` for shared UI defaults
+- `MapChatKit<TServer, TContext>(...)` for HTTP and SSE endpoint handling
+- Razor tag helpers for mounting the ChatKit frontend from MVC or Razor views
+- packaged CSS and JavaScript assets under `_content/Incursa.OpenAI.ChatKit.AspNetCore/chatkit`
+- options for shared UI defaults across a site or application
 
-## Registration
+## Install
+
+Use this package together with the core runtime package:
+
+```bash
+dotnet add package Incursa.OpenAI.ChatKit
+dotnet add package Incursa.OpenAI.ChatKit.AspNetCore
+```
+
+## What this package is for
+
+- exposing a ChatKit-compatible endpoint from ASP.NET Core
+- rendering the ChatKit frontend from Razor layouts, pages, or views
+- shipping a repo-managed browser runtime without hand-written page bootstrapping
+
+## What this package is not for
+
+- replacing the core `Incursa.OpenAI.ChatKit` runtime
+- generating ChatKit UI assets during normal `dotnet build`
+- forcing a specific MVC or Razor Pages structure on your app
+
+## Endpoint mapping
+
+Register your server and map the ChatKit endpoint:
+
+```csharp
+using Incursa.OpenAI.ChatKit;
+using Incursa.OpenAI.ChatKit.AspNetCore;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<DemoChatKitServer>();
+
+WebApplication app = builder.Build();
+app.MapChatKit<DemoChatKitServer, Dictionary<string, object?>>(
+    "/chatkit",
+    _ => new Dictionary<string, object?>());
+
+app.Run();
+```
+
+## Razor UI wrapper
+
+Register shared UI defaults:
 
 ```csharp
 builder.Services.AddIncursaOpenAIChatKitAspNetCore(options =>
@@ -20,14 +62,7 @@ builder.Services.AddIncursaOpenAIChatKitAspNetCore(options =>
 });
 ```
 
-You can also bind the options from configuration:
-
-```csharp
-builder.Services.AddIncursaOpenAIChatKitAspNetCore(
-    builder.Configuration.GetSection("ChatKit"));
-```
-
-## Razor usage
+Then use the tag helpers from a layout or view:
 
 ```cshtml
 @addTagHelper *, Incursa.OpenAI.ChatKit.AspNetCore
@@ -42,7 +77,7 @@ builder.Services.AddIncursaOpenAIChatKitAspNetCore(
 </incursa-chatkit>
 ```
 
-If you use the conventional local endpoints, the host tag helper can infer them automatically:
+If your application uses the conventional local endpoints, the host tag helper can infer them automatically:
 
 ```cshtml
 <incursa-chatkit-assets />
@@ -51,7 +86,7 @@ If you use the conventional local endpoints, the host tag helper can infer them 
 
 ## Hosted API mode
 
-The packaged frontend can also connect directly to a hosted ChatKit API:
+If the frontend should connect directly to a hosted ChatKit API instead of local session and action endpoints:
 
 ```cshtml
 <incursa-chatkit-assets />
@@ -61,11 +96,14 @@ The packaged frontend can also connect directly to a hosted ChatKit API:
 </incursa-chatkit>
 ```
 
-## Updating the packaged UI assets
+## Updating packaged UI assets
 
-The package includes both generated assets under `wwwroot/chatkit` and the source used to rebuild them under `ClientApp/chatkit-runtime`.
+This package intentionally carries both:
 
-To update the packaged UI when `@openai/chatkit-react` or related frontend dependencies change:
+- editable frontend source in `ClientApp/chatkit-runtime`
+- generated package assets in `wwwroot/chatkit`
+
+When `@openai/chatkit-react` or related npm dependencies need to move forward:
 
 ```bash
 cd src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime
@@ -73,4 +111,8 @@ npm install
 npm run build
 ```
 
-Commit the updated dependency files and the regenerated files under `wwwroot/chatkit`.
+Commit both the dependency file changes and the regenerated files under `wwwroot/chatkit`.
+
+## Related package
+
+- `Incursa.OpenAI.ChatKit`: core ChatKit models, routing, stores, and server runtime

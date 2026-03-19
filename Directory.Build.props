@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Version>1.0.15</Version>
+    <Version>1.0.16</Version>
     <Authors>Samuel McAravey</Authors>
     <Company>Incursa</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -11,4 +11,5 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 </Project>
+
 
