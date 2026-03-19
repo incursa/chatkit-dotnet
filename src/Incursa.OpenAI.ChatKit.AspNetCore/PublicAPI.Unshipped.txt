@@ -1,1 +1,37 @@
 #nullable enable
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreServiceCollectionExtensions.AddOpenAIChatKitApi(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, string apiUrl, string? domainKey = null, System.Action<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions>? configure = null) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreServiceCollectionExtensions.AddOpenAIChatKitHosted(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions>? configure = null) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.ClientToolHandlers.get -> string?
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.ClientToolHandlers.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.Disclaimer.get -> Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.Entities.get -> Incursa.OpenAI.ChatKit.AspNetCore.ChatKitEntitiesOptions
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.EntityHandlers.get -> string?
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.EntityHandlers.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.WidgetActionHandler.get -> string?
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.WidgetActionHandler.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions.HighContrast.get -> bool?
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions.HighContrast.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions.Text.get -> string?
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions.Text.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitEntitiesOptions
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitEntitiesOptions.ShowComposerMenu.get -> bool?
+Incursa.OpenAI.ChatKit.AspNetCore.ChatKitEntitiesOptions.ShowComposerMenu.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitApiTagHelper
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitApiTagHelper.IncursaChatKitApiTagHelper(System.IServiceProvider serviceProvider, Microsoft.Extensions.Logging.ILogger<Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitApiTagHelper> logger) -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitHostedTagHelper
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitHostedTagHelper.IncursaChatKitHostedTagHelper(System.IServiceProvider serviceProvider, Microsoft.Extensions.Logging.ILogger<Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitHostedTagHelper> logger) -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.IncursaChatKitTagHelper(System.IServiceProvider serviceProvider, Microsoft.Extensions.Logging.ILogger logger) -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.ClientToolHandlers.get -> string?
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.ClientToolHandlers.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.DisclaimerHighContrast.get -> bool?
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.DisclaimerHighContrast.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.DisclaimerText.get -> string?
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.DisclaimerText.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.EntityHandlers.get -> string?
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.EntityHandlers.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.EntityShowComposerMenu.get -> bool?
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.EntityShowComposerMenu.set -> void
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.WidgetActionHandler.get -> string?
+Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.WidgetActionHandler.set -> void

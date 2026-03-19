@@ -168,68 +168,68 @@ public abstract class ChatKitServer<TContext>
         switch (request)
         {
             case ThreadsGetByIdRequest getById:
-            {
-                Thread thread = await LoadFullThreadAsync(getById.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
-                return Serialize(ToThreadResponse(thread));
-            }
-            case ThreadsListRequest listRequest:
-            {
-                Page<ThreadMetadata> threads = await Store.LoadThreadsAsync(
-                    listRequest.Params.Limit ?? DefaultPageSize,
-                    listRequest.Params.After,
-                    listRequest.Params.Order,
-                    context,
-                    cancellationToken).ConfigureAwait(false);
-
-                return Serialize(new Page<Thread>
                 {
-                    Data = threads.Data.Select(ToThreadResponse).ToList(),
-                    After = threads.After,
-                    HasMore = threads.HasMore,
-                });
-            }
+                    Thread thread = await LoadFullThreadAsync(getById.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
+                    return Serialize(ToThreadResponse(thread));
+                }
+            case ThreadsListRequest listRequest:
+                {
+                    Page<ThreadMetadata> threads = await Store.LoadThreadsAsync(
+                        listRequest.Params.Limit ?? DefaultPageSize,
+                        listRequest.Params.After,
+                        listRequest.Params.Order,
+                        context,
+                        cancellationToken).ConfigureAwait(false);
+
+                    return Serialize(new Page<Thread>
+                    {
+                        Data = threads.Data.Select(ToThreadResponse).ToList(),
+                        After = threads.After,
+                        HasMore = threads.HasMore,
+                    });
+                }
             case ItemsFeedbackRequest feedbackRequest:
                 await AddFeedbackAsync(feedbackRequest.Params.ThreadId, feedbackRequest.Params.ItemIds, feedbackRequest.Params.Kind, context, cancellationToken).ConfigureAwait(false);
                 return Serialize(new JsonObject());
             case AttachmentsCreateRequest createAttachment:
-            {
-                Attachment attachment = await GetAttachmentStore().CreateAttachmentAsync(createAttachment.Params, context, cancellationToken).ConfigureAwait(false);
-                await Store.SaveAttachmentAsync(attachment, context, cancellationToken).ConfigureAwait(false);
-                return Serialize(attachment);
-            }
+                {
+                    Attachment attachment = await GetAttachmentStore().CreateAttachmentAsync(createAttachment.Params, context, cancellationToken).ConfigureAwait(false);
+                    await Store.SaveAttachmentAsync(attachment, context, cancellationToken).ConfigureAwait(false);
+                    return Serialize(attachment);
+                }
             case AttachmentsDeleteRequest deleteAttachment:
                 await GetAttachmentStore().DeleteAttachmentAsync(deleteAttachment.Params.AttachmentId, context, cancellationToken).ConfigureAwait(false);
                 await Store.DeleteAttachmentAsync(deleteAttachment.Params.AttachmentId, context, cancellationToken).ConfigureAwait(false);
                 return Serialize(new JsonObject());
             case InputTranscribeRequest transcribeRequest:
-            {
-                AudioInput audio = new()
                 {
-                    Data = Convert.FromBase64String(transcribeRequest.Params.AudioBase64),
-                    MimeType = transcribeRequest.Params.MimeType,
-                };
-                return Serialize(await TranscribeAsync(audio, context, cancellationToken).ConfigureAwait(false));
-            }
+                    AudioInput audio = new()
+                    {
+                        Data = Convert.FromBase64String(transcribeRequest.Params.AudioBase64),
+                        MimeType = transcribeRequest.Params.MimeType,
+                    };
+                    return Serialize(await TranscribeAsync(audio, context, cancellationToken).ConfigureAwait(false));
+                }
             case ItemsListRequest itemsList:
-            {
-                Page<ThreadItem> items = await Store.LoadThreadItemsAsync(
-                    itemsList.Params.ThreadId,
-                    itemsList.Params.After,
-                    itemsList.Params.Limit ?? DefaultPageSize,
-                    itemsList.Params.Order,
-                    context,
-                    cancellationToken).ConfigureAwait(false);
+                {
+                    Page<ThreadItem> items = await Store.LoadThreadItemsAsync(
+                        itemsList.Params.ThreadId,
+                        itemsList.Params.After,
+                        itemsList.Params.Limit ?? DefaultPageSize,
+                        itemsList.Params.Order,
+                        context,
+                        cancellationToken).ConfigureAwait(false);
 
-                items = items with { Data = items.Data.Where(x => x is not HiddenContextItem && x is not SdkHiddenContextItem).ToList() };
-                return Serialize(items);
-            }
+                    items = items with { Data = items.Data.Where(x => x is not HiddenContextItem && x is not SdkHiddenContextItem).ToList() };
+                    return Serialize(items);
+                }
             case ThreadsUpdateRequest updateRequest:
-            {
-                ThreadMetadata thread = await Store.LoadThreadAsync(updateRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
-                thread.Title = updateRequest.Params.Title;
-                await Store.SaveThreadAsync(thread, context, cancellationToken).ConfigureAwait(false);
-                return Serialize(ToThreadResponse(thread));
-            }
+                {
+                    ThreadMetadata thread = await Store.LoadThreadAsync(updateRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
+                    thread.Title = updateRequest.Params.Title;
+                    await Store.SaveThreadAsync(thread, context, cancellationToken).ConfigureAwait(false);
+                    return Serialize(ToThreadResponse(thread));
+                }
             case ThreadsDeleteRequest deleteRequest:
                 await Store.DeleteThreadAsync(deleteRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
                 return Serialize(new JsonObject());
@@ -254,98 +254,98 @@ public abstract class ChatKitServer<TContext>
         switch (request)
         {
             case ThreadsCreateRequest createRequest:
-            {
-                Thread thread = new()
                 {
-                    Id = Store.GenerateThreadId(context),
-                    CreatedAt = ChatKitClock.Now(),
-                    Items = new Page<ThreadItem>(),
-                };
-                await Store.SaveThreadAsync(thread, context, cancellationToken).ConfigureAwait(false);
-                yield return new ThreadCreatedEvent { Thread = ToThreadResponse(thread) };
-                UserMessageItem userMessage = await BuildUserMessageItemAsync(createRequest.Params.Input, thread, context, cancellationToken).ConfigureAwait(false);
-                await foreach (ThreadStreamEvent @event in ProcessNewThreadItemRespondAsync(thread, userMessage, context, cancellationToken).ConfigureAwait(false))
-                {
-                    yield return @event;
-                }
-                yield break;
-            }
-            case ThreadsAddUserMessageRequest addUserMessage:
-            {
-                ThreadMetadata thread = await Store.LoadThreadAsync(addUserMessage.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
-                UserMessageItem userMessage = await BuildUserMessageItemAsync(addUserMessage.Params.Input, thread, context, cancellationToken).ConfigureAwait(false);
-                await foreach (ThreadStreamEvent @event in ProcessNewThreadItemRespondAsync(thread, userMessage, context, cancellationToken).ConfigureAwait(false))
-                {
-                    yield return @event;
-                }
-                yield break;
-            }
-            case ThreadsAddClientToolOutputRequest toolOutput:
-            {
-                ThreadMetadata thread = await Store.LoadThreadAsync(toolOutput.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
-                Page<ThreadItem> items = await Store.LoadThreadItemsAsync(thread.Id, null, 1, "desc", context, cancellationToken).ConfigureAwait(false);
-                ClientToolCallItem? toolCall = items.Data.OfType<ClientToolCallItem>().FirstOrDefault(x => string.Equals(x.Status, "pending", StringComparison.Ordinal));
-                if (toolCall is null)
-                {
-                    throw new InvalidOperationException($"Last thread item in {thread.Id} was not a pending ClientToolCallItem.");
-                }
-
-                toolCall.Output = toolOutput.Params.Result;
-                toolCall.Status = "completed";
-                await Store.SaveItemAsync(thread.Id, toolCall, context, cancellationToken).ConfigureAwait(false);
-
-                await foreach (ThreadStreamEvent @event in ProcessEventsAsync(thread, context, ct => RespondAsync(thread, null, context, ct), cancellationToken).ConfigureAwait(false))
-                {
-                    yield return @event;
-                }
-                yield break;
-            }
-            case ThreadsRetryAfterItemRequest retryRequest:
-            {
-                ThreadMetadata thread = await Store.LoadThreadAsync(retryRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
-                List<ThreadItem> itemsToRemove = [];
-                UserMessageItem? userMessage = null;
-                await foreach (ThreadItem item in PaginateThreadItemsReverseAsync(retryRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false))
-                {
-                    if (string.Equals(item.Id, retryRequest.Params.ItemId, StringComparison.Ordinal))
+                    Thread thread = new()
                     {
-                        userMessage = item as UserMessageItem ?? throw new InvalidOperationException($"Item {retryRequest.Params.ItemId} is not a user message.");
-                        break;
-                    }
-
-                    itemsToRemove.Add(item);
-                }
-
-                if (userMessage is not null)
-                {
-                    foreach (ThreadItem item in itemsToRemove)
-                    {
-                        await Store.DeleteThreadItemAsync(retryRequest.Params.ThreadId, item.Id, context, cancellationToken).ConfigureAwait(false);
-                    }
-
-                    await foreach (ThreadStreamEvent @event in ProcessEventsAsync(thread, context, ct => RespondAsync(thread, userMessage, context, ct), cancellationToken).ConfigureAwait(false))
+                        Id = Store.GenerateThreadId(context),
+                        CreatedAt = ChatKitClock.Now(),
+                        Items = new Page<ThreadItem>(),
+                    };
+                    await Store.SaveThreadAsync(thread, context, cancellationToken).ConfigureAwait(false);
+                    yield return new ThreadCreatedEvent { Thread = ToThreadResponse(thread) };
+                    UserMessageItem userMessage = await BuildUserMessageItemAsync(createRequest.Params.Input, thread, context, cancellationToken).ConfigureAwait(false);
+                    await foreach (ThreadStreamEvent @event in ProcessNewThreadItemRespondAsync(thread, userMessage, context, cancellationToken).ConfigureAwait(false))
                     {
                         yield return @event;
                     }
+                    yield break;
                 }
-                yield break;
-            }
-            case ThreadsCustomActionRequest actionRequest:
-            {
-                ThreadMetadata thread = await Store.LoadThreadAsync(actionRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
-                WidgetItem? sender = null;
-                if (!string.IsNullOrWhiteSpace(actionRequest.Params.ItemId))
+            case ThreadsAddUserMessageRequest addUserMessage:
                 {
-                    sender = await Store.LoadItemAsync(actionRequest.Params.ThreadId, actionRequest.Params.ItemId, context, cancellationToken).ConfigureAwait(false) as WidgetItem
-                        ?? throw new InvalidOperationException("threads.custom_action requires a widget sender item.");
+                    ThreadMetadata thread = await Store.LoadThreadAsync(addUserMessage.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
+                    UserMessageItem userMessage = await BuildUserMessageItemAsync(addUserMessage.Params.Input, thread, context, cancellationToken).ConfigureAwait(false);
+                    await foreach (ThreadStreamEvent @event in ProcessNewThreadItemRespondAsync(thread, userMessage, context, cancellationToken).ConfigureAwait(false))
+                    {
+                        yield return @event;
+                    }
+                    yield break;
                 }
+            case ThreadsAddClientToolOutputRequest toolOutput:
+                {
+                    ThreadMetadata thread = await Store.LoadThreadAsync(toolOutput.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
+                    Page<ThreadItem> items = await Store.LoadThreadItemsAsync(thread.Id, null, 1, "desc", context, cancellationToken).ConfigureAwait(false);
+                    ClientToolCallItem? toolCall = items.Data.OfType<ClientToolCallItem>().FirstOrDefault(x => string.Equals(x.Status, "pending", StringComparison.Ordinal));
+                    if (toolCall is null)
+                    {
+                        throw new InvalidOperationException($"Last thread item in {thread.Id} was not a pending ClientToolCallItem.");
+                    }
 
-                await foreach (ThreadStreamEvent @event in ProcessEventsAsync(thread, context, ct => ActionAsync(thread, actionRequest.Params.Action, sender, context, ct), cancellationToken).ConfigureAwait(false))
-                {
-                    yield return @event;
+                    toolCall.Output = toolOutput.Params.Result;
+                    toolCall.Status = "completed";
+                    await Store.SaveItemAsync(thread.Id, toolCall, context, cancellationToken).ConfigureAwait(false);
+
+                    await foreach (ThreadStreamEvent @event in ProcessEventsAsync(thread, context, ct => RespondAsync(thread, null, context, ct), cancellationToken).ConfigureAwait(false))
+                    {
+                        yield return @event;
+                    }
+                    yield break;
                 }
-                yield break;
-            }
+            case ThreadsRetryAfterItemRequest retryRequest:
+                {
+                    ThreadMetadata thread = await Store.LoadThreadAsync(retryRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
+                    List<ThreadItem> itemsToRemove = [];
+                    UserMessageItem? userMessage = null;
+                    await foreach (ThreadItem item in PaginateThreadItemsReverseAsync(retryRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false))
+                    {
+                        if (string.Equals(item.Id, retryRequest.Params.ItemId, StringComparison.Ordinal))
+                        {
+                            userMessage = item as UserMessageItem ?? throw new InvalidOperationException($"Item {retryRequest.Params.ItemId} is not a user message.");
+                            break;
+                        }
+
+                        itemsToRemove.Add(item);
+                    }
+
+                    if (userMessage is not null)
+                    {
+                        foreach (ThreadItem item in itemsToRemove)
+                        {
+                            await Store.DeleteThreadItemAsync(retryRequest.Params.ThreadId, item.Id, context, cancellationToken).ConfigureAwait(false);
+                        }
+
+                        await foreach (ThreadStreamEvent @event in ProcessEventsAsync(thread, context, ct => RespondAsync(thread, userMessage, context, ct), cancellationToken).ConfigureAwait(false))
+                        {
+                            yield return @event;
+                        }
+                    }
+                    yield break;
+                }
+            case ThreadsCustomActionRequest actionRequest:
+                {
+                    ThreadMetadata thread = await Store.LoadThreadAsync(actionRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
+                    WidgetItem? sender = null;
+                    if (!string.IsNullOrWhiteSpace(actionRequest.Params.ItemId))
+                    {
+                        sender = await Store.LoadItemAsync(actionRequest.Params.ThreadId, actionRequest.Params.ItemId, context, cancellationToken).ConfigureAwait(false) as WidgetItem
+                            ?? throw new InvalidOperationException("threads.custom_action requires a widget sender item.");
+                    }
+
+                    await foreach (ThreadStreamEvent @event in ProcessEventsAsync(thread, context, ct => ActionAsync(thread, actionRequest.Params.Action, sender, context, ct), cancellationToken).ConfigureAwait(false))
+                    {
+                        yield return @event;
+                    }
+                    yield break;
+                }
             default:
                 throw new InvalidOperationException($"Unsupported streaming request type {request.GetType().Name}.");
         }

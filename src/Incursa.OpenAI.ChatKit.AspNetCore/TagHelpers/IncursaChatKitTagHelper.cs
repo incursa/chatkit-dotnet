@@ -4,10 +4,10 @@ using Microsoft.Extensions.Logging;
 namespace Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers;
 
 /// <summary>
-/// Renders a ChatKit host element that mounts the packaged ChatKit frontend.
+/// Requires callers to choose an explicit ChatKit host mode tag helper.
 /// </summary>
 [HtmlTargetElement("incursa-chatkit")]
-public sealed class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
+public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="IncursaChatKitTagHelper" /> class.
@@ -17,24 +17,39 @@ public sealed class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     public IncursaChatKitTagHelper(
         IServiceProvider serviceProvider,
         ILogger<IncursaChatKitTagHelper> logger)
+        : this(serviceProvider, (ILogger)logger)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IncursaChatKitTagHelper" /> class.
+    /// </summary>
+    /// <param name="serviceProvider">The application service provider.</param>
+    /// <param name="logger">The logger used for rendering failures.</param>
+    protected IncursaChatKitTagHelper(
+        IServiceProvider serviceProvider,
+        ILogger logger)
         : base(serviceProvider, logger)
     {
     }
 
     /// <summary>
     /// Gets or sets the local session endpoint used by the packaged frontend.
+    /// Use this for OpenAI-hosted integrations that issue the browser a ChatKit client secret.
     /// </summary>
     [HtmlAttributeName("session-endpoint")]
     public string? SessionEndpoint { get; set; }
 
     /// <summary>
-    /// Gets or sets the hosted ChatKit API URL used when connecting directly to a remote deployment.
+    /// Gets or sets the ChatKit API URL used when connecting directly to a custom ChatKit API endpoint.
+    /// Setting this switches the packaged frontend out of session-endpoint mode.
+    /// This may point at an endpoint mapped with <c>MapChatKit(...)</c>.
     /// </summary>
     [HtmlAttributeName("api-url")]
     public string? ApiUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the domain key used with <see cref="ApiUrl" />.
+    /// Gets or sets the domain key used with <see cref="ApiUrl" /> in direct ChatKit API mode.
     /// </summary>
     [HtmlAttributeName("domain-key")]
     public string? DomainKey { get; set; }
@@ -62,6 +77,24 @@ public sealed class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     /// </summary>
     [HtmlAttributeName("initial-thread")]
     public string? InitialThread { get; set; }
+
+    /// <summary>
+    /// Gets or sets the browser lookup path for client tool handlers.
+    /// </summary>
+    [HtmlAttributeName("client-tool-handlers")]
+    public string? ClientToolHandlers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the browser lookup path for entity handlers.
+    /// </summary>
+    [HtmlAttributeName("entity-handlers")]
+    public string? EntityHandlers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the browser lookup path for the widget action callback.
+    /// </summary>
+    [HtmlAttributeName("widget-action-handler")]
+    public string? WidgetActionHandler { get; set; }
 
     /// <summary>
     /// Gets or sets the color-scheme theme value.
@@ -130,6 +163,24 @@ public sealed class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     public string? Placeholder { get; set; }
 
     /// <summary>
+    /// Gets or sets the disclaimer text rendered below the composer.
+    /// </summary>
+    [HtmlAttributeName("disclaimer-text")]
+    public string? DisclaimerText { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the disclaimer uses high-contrast rendering.
+    /// </summary>
+    [HtmlAttributeName("disclaimer-high-contrast")]
+    public bool? DisclaimerHighContrast { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the composer should show the entity insertion menu.
+    /// </summary>
+    [HtmlAttributeName("entity-show-composer-menu")]
+    public bool? EntityShowComposerMenu { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether feedback actions are enabled.
     /// </summary>
     [HtmlAttributeName("feedback-enabled")]
@@ -149,6 +200,16 @@ public sealed class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
 
     internal override ChatKitHostClientConfig BuildClientConfig()
     {
+        throw new InvalidOperationException(
+            "Use <incursa-chatkit-api> for a custom ChatKit API endpoint or <incursa-chatkit-hosted> for OpenAI-hosted session/action endpoints.");
+    }
+
+    /// <summary>
+    /// Builds the flexible ChatKit host configuration used by the explicit mode tag helpers.
+    /// </summary>
+    /// <returns>The serialized browser host configuration.</returns>
+    internal ChatKitHostClientConfig BuildFlexibleClientConfig()
+    {
         ChatKitAspNetCoreOptions uiOptions = ResolveUiOptions();
         string? apiUrl = ResolveApiUrl(ApiUrl);
         bool forwardWidgetActions = ForwardWidgetActions ?? uiOptions.ForwardWidgetActions;
@@ -167,11 +228,16 @@ public sealed class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
             Locale = FirstNonEmpty(Locale, uiOptions.Locale),
             FrameTitle = FirstNonEmpty(FrameTitle, uiOptions.FrameTitle),
             InitialThread = FirstNonEmpty(InitialThread, uiOptions.InitialThread),
+            ClientToolHandlers = FirstNonEmpty(ClientToolHandlers, uiOptions.ClientToolHandlers),
+            EntityHandlers = FirstNonEmpty(EntityHandlers, uiOptions.EntityHandlers),
+            WidgetActionHandler = FirstNonEmpty(WidgetActionHandler, uiOptions.WidgetActionHandler),
             Theme = BuildThemeConfig(uiOptions),
             Header = BuildHeaderConfig(uiOptions),
             History = BuildHistoryConfig(uiOptions),
             StartScreen = BuildStartScreenConfig(uiOptions),
             Composer = BuildComposerConfig(uiOptions),
+            Disclaimer = BuildDisclaimerConfig(uiOptions),
+            Entities = BuildEntitiesConfig(uiOptions),
             ThreadItemActions = BuildThreadItemActionsConfig(uiOptions),
             WidgetActions = new ChatKitWidgetActionsClientConfig
             {
@@ -188,6 +254,32 @@ public sealed class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
             : new ChatKitComposerClientConfig
             {
                 Placeholder = placeholder,
+            };
+    }
+
+    private ChatKitDisclaimerClientConfig? BuildDisclaimerConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        string? text = FirstNonEmpty(DisclaimerText, uiOptions.Disclaimer.Text);
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        return new ChatKitDisclaimerClientConfig
+        {
+            Text = text,
+            HighContrast = DisclaimerHighContrast ?? uiOptions.Disclaimer.HighContrast,
+        };
+    }
+
+    private ChatKitEntitiesClientConfig? BuildEntitiesConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        bool? showComposerMenu = EntityShowComposerMenu ?? uiOptions.Entities.ShowComposerMenu;
+        return showComposerMenu is null
+            ? null
+            : new ChatKitEntitiesClientConfig
+            {
+                ShowComposerMenu = showComposerMenu,
             };
     }
 

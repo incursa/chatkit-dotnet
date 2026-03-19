@@ -1,11 +1,11 @@
 ---
 id: TASK-0002
 type: task
-status: draft
+status: completed
 priority: low
 owner: null
 created: 2026-03-18
-updated: null
+updated: 2026-03-18
 tags: [parity, aspnetcore, chatkit-js, disclaimer]
 related:
   specs: [specs/libraries/chatkit-aspnetcore.md]

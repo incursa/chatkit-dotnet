@@ -4,32 +4,64 @@
     "defaultBranch": "main"
   },
   "summary": {
-    "total": 8,
-    "compliant": 8,
+    "total": 20,
+    "compliant": 20,
     "missingRequired": 0,
     "invalidFormat": 0
   },
   "byCategory": [
     {
       "category": "Incursa.OpenAI.ChatKit",
-      "total": 8,
-      "compliant": 8
+      "total": 20,
+      "compliant": 20
     }
   ],
   "byTag": [],
   "byProject": [
     {
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests",
-      "total": 1,
-      "compliant": 1
+      "total": 12,
+      "compliant": 12
     },
     {
       "project": "Incursa.OpenAI.ChatKit.Tests",
-      "total": 7,
-      "compliant": 7
+      "total": 8,
+      "compliant": 8
     }
   ],
   "tests": [
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_SetsApiModeDefaults",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The API service registration seeds direct browser API defaults.",
+      "intent": "Protect the DI setup that configures the ASP.NET Core wrapper for direct API mode.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-001",
+      "behavior": "Calling AddOpenAIChatKitApi stores the configured API URL, domain key, and locale options.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs",
+        "line": 40,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_SetsApiModeDefaults"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitHosted_ClearsApiModeDefaults",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted service registration clears direct API defaults while preserving hosted configuration.",
+      "intent": "Protect the DI setup that switches consumers from direct API mode to hosted session mode.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-001",
+      "behavior": "Calling AddOpenAIChatKitHosted resets the API URL and domain key while keeping the hosted session endpoint.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs",
+        "line": 14,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitHosted_ClearsApiModeDefaults"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
     {
       "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitEndpointTests.MapChatKit_WritesJsonResponse",
       "category": "Incursa.OpenAI.ChatKit",
@@ -42,6 +74,150 @@
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs",
         "line": 17,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitEndpointTests.MapChatKit_WritesJsonResponse"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitAssetsTagHelperTests.Process_RendersEachAssetOnlyOncePerContext",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The assets tag helper emits each required asset only once per rendering context.",
+      "intent": "Protect the public Razor wrapper surface added to the ASP.NET Core package.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "CSS, package JS, and CDN JS are emitted on first render and suppressed on the second render in the same context.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitAssetsTagHelperTests.cs",
+        "line": 14,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitAssetsTagHelperTests.Process_RendersEachAssetOnlyOncePerContext"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperOmitsDomainKey_WhenNotConfigured",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The API host tag helper allows direct browser API mode to omit a domain key when none is configured.",
+      "intent": "Protect parity with the upstream ChatKit client setup, which allows local development without a domain key.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Direct browser API mode serializes the API URL without forcing a domain key or local fallback endpoints.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 229,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperOmitsDomainKey_WhenNotConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperUsesConfiguredDomainKey_WhenConfigured",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The API host tag helper forwards the configured domain key in direct browser API mode.",
+      "intent": "Protect the direct browser ChatKit configuration surface exposed by the ASP.NET Core wrapper.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Configured direct browser API defaults populate both the API URL and domain key in the serialized host config.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 254,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperUsesConfiguredDomainKey_WhenConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_EmitsError_WhenGenericTagHelperIsUsed",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The generic ChatKit tag helper now requires an explicit mode choice.",
+      "intent": "Prevent ambiguous Razor configuration that silently switches between local and API-backed modes.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Using the generic host tag helper emits a render error instead of inferring a mode.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 21,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_EmitsError_WhenGenericTagHelperIsUsed"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperDoesNotEmitActionEndpoint_WhenWidgetForwardingDisabled",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper omits the action endpoint when widget forwarding is disabled.",
+      "intent": "Protect the explicit hosted Razor wrapper surface added to the ASP.NET Core package.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Disabling widget forwarding removes the action endpoint from the serialized config.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 179,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperDoesNotEmitActionEndpoint_WhenWidgetForwardingDisabled"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperOmitsDisclaimer_WhenTextIsNotConfigured",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper omits disclaimer settings when no disclaimer text is configured.",
+      "intent": "Preserve the upstream disclaimer contract, which requires text when disclaimer settings are sent.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "High-contrast defaults alone do not serialize a disclaimer object into the browser config.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 153,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperOmitsDisclaimer_WhenTextIsNotConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesClientOnlyWidgetActionHandler",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper supports client-only widget callbacks without requiring a forwarding endpoint.",
+      "intent": "Protect the upstream widgets.onAction parity surface in hosted mode.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Registering a widget action callback while disabling forwarding preserves the client handler and omits the action endpoint.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 203,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesClientOnlyWidgetActionHandler"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesConfiguredUiOptions",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper serializes configured UI options and explicit attributes into the browser config payload.",
+      "intent": "Protect the public Razor wrapper surface added to the ASP.NET Core package.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Configured options and explicit hosted tag helper attributes appear in the serialized host config.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 74,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesConfiguredUiOptions"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesExplicitHostedEndpoints",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted ChatKit tag helper serializes explicit hosted session and action endpoints into the browser config payload.",
+      "intent": "Protect the explicit OpenAI-hosted wrapper surface.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "The hosted host tag helper emits the provided session and action endpoints and omits custom API settings.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 43,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesExplicitHostedEndpoints"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
@@ -106,6 +282,22 @@
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
         "line": 41,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_AllowsDirtyTreeOnTaggedHead_WhenTagCreationIsSkipped",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The release versioning script can advance from a tagged commit when the working tree is dirty.",
+      "intent": "Protect release versioning for local release preparation on top of an already-tagged HEAD commit.",
+      "scenario": "REPO-RELEASE-001",
+      "behavior": "When HEAD already has a release tag and tracked changes exist, the script continues instead of failing on the existing HEAD tag guard.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ReleaseVersioningScriptTests.cs",
+        "line": 12,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_AllowsDirtyTreeOnTaggedHead_WhenTagCreationIsSkipped"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.Tests"

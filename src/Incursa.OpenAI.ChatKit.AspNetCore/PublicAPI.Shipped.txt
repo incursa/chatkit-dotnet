@@ -23,8 +23,8 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore
 
     public static class ChatKitAspNetCoreServiceCollectionExtensions
     {
-        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddIncursaOpenAIChatKitAspNetCore(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions>? configure = null) { }
-        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddIncursaOpenAIChatKitAspNetCore(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration) { }
+        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddOpenAIChatKit(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions>? configure = null) { }
+        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddOpenAIChatKit(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration) { }
     }
 
     public sealed class ChatKitComposerOptions

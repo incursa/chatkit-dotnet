@@ -18,6 +18,12 @@ internal sealed class ChatKitHostClientConfig
 
     public string? InitialThread { get; init; }
 
+    public string? ClientToolHandlers { get; init; }
+
+    public string? EntityHandlers { get; init; }
+
+    public string? WidgetActionHandler { get; init; }
+
     public ChatKitThemeClientConfig? Theme { get; init; }
 
     public ChatKitHeaderClientConfig? Header { get; init; }
@@ -27,6 +33,10 @@ internal sealed class ChatKitHostClientConfig
     public ChatKitStartScreenClientConfig? StartScreen { get; init; }
 
     public ChatKitComposerClientConfig? Composer { get; init; }
+
+    public ChatKitDisclaimerClientConfig? Disclaimer { get; init; }
+
+    public ChatKitEntitiesClientConfig? Entities { get; init; }
 
     public ChatKitThreadItemActionsClientConfig? ThreadItemActions { get; init; }
 
@@ -82,6 +92,18 @@ internal sealed class ChatKitStartPromptClientConfig
 internal sealed class ChatKitComposerClientConfig
 {
     public string? Placeholder { get; init; }
+}
+
+internal sealed class ChatKitDisclaimerClientConfig
+{
+    public string? Text { get; init; }
+
+    public bool? HighContrast { get; init; }
+}
+
+internal sealed class ChatKitEntitiesClientConfig
+{
+    public bool? ShowComposerMenu { get; init; }
 }
 
 internal sealed class ChatKitThreadItemActionsClientConfig

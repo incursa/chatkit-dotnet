@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "test": "node --test src/clientToolHandlers.test.mjs src/entityHandlers.test.mjs src/widgetActionHandlers.test.mjs"
   },
   "dependencies": {
     "@openai/chatkit-react": "^1.5.0",

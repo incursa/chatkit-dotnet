@@ -1,21 +1,25 @@
 ---
 id: TASK-0003
 type: task
-status: draft
+status: completed
 priority: high
 owner: null
 created: 2026-03-18
-updated: null
+updated: 2026-03-18
 tags: [parity, aspnetcore, chatkit-js, entities]
 related:
   specs: [specs/libraries/chatkit-aspnetcore.md, specs/libraries/chatkit-core.md]
   adrs: []
   files:
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreOptions.cs
     - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/ChatKitHostClientConfig.cs
     - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitTagHelper.cs
     - src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entry.tsx
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entityHandlers.js
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entityHandlers.test.mjs
     - src/Incursa.OpenAI.ChatKit/ChatKitPrimitives.cs
     - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/README.md
   prs: []
   issues: []
   branches: []

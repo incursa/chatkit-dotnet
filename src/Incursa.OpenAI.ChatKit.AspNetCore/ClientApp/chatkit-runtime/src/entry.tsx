@@ -1,6 +1,12 @@
 import { ChatKit, type UseChatKitOptions, useChatKit } from "@openai/chatkit-react";
 import { createRoot } from "react-dom/client";
 
+import { createOnClientTool } from "./clientToolHandlers.js";
+import { buildEntitiesOption } from "./entityHandlers.js";
+import {
+  composeWidgetActionHandlers,
+  createOnWidgetAction
+} from "./widgetActionHandlers.js";
 import "./runtime.css";
 
 type ChatKitThemeConfig = {
@@ -37,6 +43,15 @@ type ChatKitComposerConfig = {
   placeholder?: string;
 };
 
+type ChatKitDisclaimerConfig = {
+  text?: string;
+  highContrast?: boolean;
+};
+
+type ChatKitEntitiesConfig = {
+  showComposerMenu?: boolean;
+};
+
 type ChatKitThreadItemActionsConfig = {
   feedback?: boolean;
   retry?: boolean;
@@ -55,11 +70,16 @@ type ChatKitHostConfig = {
   locale?: string;
   frameTitle?: string;
   initialThread?: string;
+  clientToolHandlers?: string;
+  entityHandlers?: string;
+  widgetActionHandler?: string;
   theme?: ChatKitThemeConfig;
   header?: ChatKitHeaderConfig;
   history?: ChatKitHistoryConfig;
   startScreen?: ChatKitStartScreenConfig;
   composer?: ChatKitComposerConfig;
+  disclaimer?: ChatKitDisclaimerConfig;
+  entities?: ChatKitEntitiesConfig;
   threadItemActions?: ChatKitThreadItemActionsConfig;
   widgetActions?: ChatKitWidgetActionsConfig;
 };
@@ -197,6 +217,10 @@ function buildOptions(config: ChatKitHostConfig): UseChatKitOptions {
     options.initialThread = config.initialThread;
   }
 
+  if (config.clientToolHandlers) {
+    options.onClientTool = createOnClientTool(window, config.clientToolHandlers);
+  }
+
   if (config.theme) {
     options.theme = config.theme;
   }
@@ -217,6 +241,15 @@ function buildOptions(config: ChatKitHostConfig): UseChatKitOptions {
     options.composer = config.composer;
   }
 
+  if (config.disclaimer) {
+    options.disclaimer = config.disclaimer;
+  }
+
+  const entities = buildEntitiesOption(window, config.entityHandlers, config.entities);
+  if (entities) {
+    options.entities = entities;
+  }
+
   if (config.threadItemActions) {
     options.threadItemActions = config.threadItemActions;
   }
@@ -226,10 +259,24 @@ function buildOptions(config: ChatKitHostConfig): UseChatKitOptions {
     (config.widgetActions?.forwardToEndpoint ?? true) &&
     !!config.actionEndpoint;
 
-  if (shouldForwardActions && config.actionEndpoint) {
+  const clientWidgetActionHandler = config.widgetActionHandler
+    ? createOnWidgetAction(window, config.widgetActionHandler)
+    : undefined;
+  const forwardedWidgetActionHandler =
+    shouldForwardActions && config.actionEndpoint
+      ? async (
+          action: { type: string; payload?: Record<string, unknown> },
+          widgetItem: { id: string }
+        ) => forwardAction(config.actionEndpoint!, action, widgetItem.id)
+      : undefined;
+  const onWidgetAction = composeWidgetActionHandlers(
+    clientWidgetActionHandler,
+    forwardedWidgetActionHandler
+  );
+
+  if (onWidgetAction) {
     options.widgets = {
-      onAction: async (action, widgetItem) =>
-        forwardAction(config.actionEndpoint!, action, widgetItem.id)
+      onAction: onWidgetAction
     };
   }
 

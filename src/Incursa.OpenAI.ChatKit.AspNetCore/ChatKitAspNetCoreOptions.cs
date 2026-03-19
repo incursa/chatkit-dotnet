@@ -6,17 +6,20 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore;
 public sealed class ChatKitAspNetCoreOptions
 {
     /// <summary>
-    /// Gets or sets the hosted ChatKit API URL used when the frontend should connect directly to a remote deployment.
+    /// Gets or sets the ChatKit API URL used when the frontend should connect directly to a custom ChatKit API endpoint.
+    /// This may point at a local ASP.NET Core endpoint mapped with <c>MapChatKit(...)</c> or at another custom ChatKit deployment.
+    /// Leave this unset when the browser should use OpenAI-hosted session and action endpoints instead.
     /// </summary>
     public string? ApiUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the domain key sent when <see cref="ApiUrl" /> is used.
+    /// Gets or sets the domain key sent when <see cref="ApiUrl" /> is used for direct ChatKit API mode.
     /// </summary>
     public string? DomainKey { get; set; }
 
     /// <summary>
     /// Gets or sets the local session endpoint used by the packaged frontend when <see cref="ApiUrl" /> is not configured.
+    /// Use this for OpenAI-hosted integrations that issue the browser a ChatKit client secret.
     /// </summary>
     public string? SessionEndpoint { get; set; }
 
@@ -44,6 +47,21 @@ public sealed class ChatKitAspNetCoreOptions
     /// Gets or sets the initial thread identifier that the frontend should open.
     /// </summary>
     public string? InitialThread { get; set; }
+
+    /// <summary>
+    /// Gets or sets the browser lookup path for client tool handler registrations.
+    /// </summary>
+    public string? ClientToolHandlers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the browser lookup path for entity handler registrations.
+    /// </summary>
+    public string? EntityHandlers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the browser lookup path for the widget action callback registration.
+    /// </summary>
+    public string? WidgetActionHandler { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether widget actions should be forwarded to <see cref="ActionEndpoint" />.
@@ -74,6 +92,16 @@ public sealed class ChatKitAspNetCoreOptions
     /// Gets composer defaults for rendered ChatKit hosts.
     /// </summary>
     public ChatKitComposerOptions Composer { get; } = new();
+
+    /// <summary>
+    /// Gets disclaimer defaults for rendered ChatKit hosts.
+    /// </summary>
+    public ChatKitDisclaimerOptions Disclaimer { get; } = new();
+
+    /// <summary>
+    /// Gets entity defaults for rendered ChatKit hosts.
+    /// </summary>
+    public ChatKitEntitiesOptions Entities { get; } = new();
 
     /// <summary>
     /// Gets thread item action defaults for rendered ChatKit hosts.
@@ -164,6 +192,33 @@ public sealed class ChatKitComposerOptions
     /// Gets or sets the placeholder text displayed in the composer.
     /// </summary>
     public string? Placeholder { get; set; }
+}
+
+/// <summary>
+/// Configures ChatKit disclaimer defaults.
+/// </summary>
+public sealed class ChatKitDisclaimerOptions
+{
+    /// <summary>
+    /// Gets or sets the markdown text displayed below the composer.
+    /// </summary>
+    public string? Text { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the disclaimer should use high-contrast rendering.
+    /// </summary>
+    public bool? HighContrast { get; set; }
+}
+
+/// <summary>
+/// Configures ChatKit entity defaults.
+/// </summary>
+public sealed class ChatKitEntitiesOptions
+{
+    /// <summary>
+    /// Gets or sets a value indicating whether the composer should show the entity insertion menu.
+    /// </summary>
+    public bool? ShowComposerMenu { get; set; }
 }
 
 /// <summary>
