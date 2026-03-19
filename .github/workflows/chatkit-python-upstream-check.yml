@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   check-chatkit-python:
@@ -39,6 +40,11 @@ jobs:
           }
 
           $state = $jsonLine | ConvertFrom-Json
+          $statePath = Join-Path $env:GITHUB_WORKSPACE 'chatkit-python-upstream-state.json'
+          $jsonLine | Out-File -FilePath $statePath -Encoding utf8
+          "status=$($state.status)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "state_path=$statePath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
           $summary = New-Object System.Text.StringBuilder
           [void]$summary.AppendLine('# ChatKit Python Upstream Check')
           [void]$summary.AppendLine()
@@ -78,3 +84,50 @@ jobs:
           }
 
           $summary.ToString() | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
+
+      - name: Create upstream issue
+        if: steps.check.outputs.status == 'updates-found'
+        uses: actions/github-script@v7
+        env:
+          STATE_PATH: ${{ steps.check.outputs.state_path }}
+        with:
+          script: |
+            const fs = require('node:fs');
+
+            const state = JSON.parse(fs.readFileSync(process.env.STATE_PATH, 'utf8'));
+            const shortSha = state.latestSha.slice(0, 7);
+            const title = `ChatKit Python upstream update available: ${shortSha}`;
+            const searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open in:title "${title}"`;
+            const search = await github.rest.search.issuesAndPullRequests({ q: searchQuery, per_page: 10 });
+
+            if (search.data.total_count > 0) {
+              core.info(`Issue already exists for ${state.latestSha}; skipping creation.`);
+              return;
+            }
+
+            const commitLines = Array.isArray(state.commitLines) ? state.commitLines : [];
+            const changedFiles = Array.isArray(state.changedFiles) ? state.changedFiles : [];
+            const body = [
+              'A new upstream `chatkit-python` update is available for translation.',
+              '',
+              `- Base SHA: \`${state.baseSha ?? '(bootstrap)'}\``,
+              `- Latest SHA: \`${state.latestSha}\``,
+              '- Manual translation command: `pwsh tools/upstream-sync/Invoke-UpstreamSync.ps1`',
+              '',
+              '## Commits',
+              ...(commitLines.length > 0 ? commitLines.map((line) => `- ${line}`) : ['- (no commit lines were reported)']),
+              '',
+              '## Changed files',
+              ...(changedFiles.length > 0 ? changedFiles.map((file) => `- ${file}`) : ['- (no changed files were reported)']),
+              '',
+              'This issue was created automatically by the daily upstream check workflow.'
+            ].join('\n');
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body
+            });
+
+            core.info(`Created issue #${issue.data.number} for ${state.latestSha}.`);

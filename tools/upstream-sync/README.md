@@ -40,6 +40,8 @@ The first invocation bootstraps the state by recording the current upstream `mai
   pwsh tools/upstream-sync/Invoke-UpstreamSync.ps1 -CheckOnly
   ```
 
+  In GitHub Actions, the daily Python check uses this mode to open an issue when new upstream commits are detected.
+
 - Update the packaged ChatKit runtime from the latest `@openai/chatkit-react` release:
   ```
   pwsh tools/upstream-sync/Invoke-UpstreamChatKitRuntimeSync.ps1

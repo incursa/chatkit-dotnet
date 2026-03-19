@@ -83,7 +83,7 @@ pwsh -File scripts/quality/validate-library-traceability.ps1
 
 `tools/upstream-sync/Invoke-UpstreamChatKitRuntimeSync.ps1` watches the packaged ChatKit runtime dependencies, checks for a newer `@openai/chatkit-react` release, and regenerates the wrapper assets under `src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime` and `src/Incursa.OpenAI.ChatKit.AspNetCore/wwwroot/chatkit`.
 
-GitHub Actions runs a daily Python upstream check from `.github/workflows/chatkit-python-upstream-check.yml` and the runtime sync daily from `.github/workflows/chatkit-runtime-upstream-sync.yml`. The Python check reports new upstream commits so the translation can be run manually afterward.
+GitHub Actions runs a daily Python upstream check from `.github/workflows/chatkit-python-upstream-check.yml` and the runtime sync daily from `.github/workflows/chatkit-runtime-upstream-sync.yml`. The Python check creates a GitHub issue when it detects new upstream commits so the translation can be run manually afterward.
 
 Default upstream clone path:
 
