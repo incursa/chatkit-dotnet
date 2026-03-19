@@ -66,6 +66,7 @@ public sealed class IncursaChatKitApiTagHelper : IncursaChatKitTagHelper
             History = config.History,
             StartScreen = config.StartScreen,
             Composer = config.Composer,
+            UploadStrategy = config.UploadStrategy,
             Disclaimer = config.Disclaimer,
             Entities = config.Entities,
             ThreadItemActions = config.ThreadItemActions,

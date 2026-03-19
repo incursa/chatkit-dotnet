@@ -34,6 +34,8 @@ internal sealed class ChatKitHostClientConfig
 
     public ChatKitComposerClientConfig? Composer { get; init; }
 
+    public ChatKitFileUploadStrategyClientConfig? UploadStrategy { get; init; }
+
     public ChatKitDisclaimerClientConfig? Disclaimer { get; init; }
 
     public ChatKitEntitiesClientConfig? Entities { get; init; }
@@ -47,20 +49,95 @@ internal sealed class ChatKitThemeClientConfig
 {
     public string? ColorScheme { get; init; }
 
+    public ChatKitThemeTypographyClientConfig? Typography { get; init; }
+
+    public ChatKitThemeColorClientConfig? Color { get; init; }
+
     public string? Radius { get; init; }
 
     public string? Density { get; init; }
+}
+
+internal sealed class ChatKitThemeTypographyClientConfig
+{
+    public int? BaseSize { get; init; }
+
+    public IReadOnlyList<ChatKitFontSourceClientConfig>? FontSources { get; init; }
+
+    public string? FontFamily { get; init; }
+
+    public string? FontFamilyMono { get; init; }
+}
+
+internal sealed class ChatKitFontSourceClientConfig
+{
+    public string? Family { get; init; }
+
+    public string? Src { get; init; }
+
+    public object? Weight { get; init; }
+
+    public string? Style { get; init; }
+
+    public string? Display { get; init; }
+
+    public string? UnicodeRange { get; init; }
+}
+
+internal sealed class ChatKitThemeColorClientConfig
+{
+    public ChatKitThemeGrayscaleClientConfig? Grayscale { get; init; }
+
+    public ChatKitThemeAccentColorClientConfig? Accent { get; init; }
+
+    public ChatKitThemeSurfaceColorsClientConfig? Surface { get; init; }
+}
+
+internal sealed class ChatKitThemeGrayscaleClientConfig
+{
+    public int? Hue { get; init; }
+
+    public int? Tint { get; init; }
+
+    public int? Shade { get; init; }
+}
+
+internal sealed class ChatKitThemeAccentColorClientConfig
+{
+    public string? Primary { get; init; }
+
+    public int? Level { get; init; }
+}
+
+internal sealed class ChatKitThemeSurfaceColorsClientConfig
+{
+    public string? Background { get; init; }
+
+    public string? Foreground { get; init; }
 }
 
 internal sealed class ChatKitHeaderClientConfig
 {
     public bool? Enabled { get; init; }
 
+    public ChatKitHeaderActionClientConfig? LeftAction { get; init; }
+
+    public ChatKitHeaderActionClientConfig? RightAction { get; init; }
+
     public ChatKitHeaderTitleClientConfig? Title { get; init; }
+}
+
+internal sealed class ChatKitHeaderActionClientConfig
+{
+    public string? Icon { get; init; }
+
+    public string? OnClickHandler { get; init; }
 }
 
 internal sealed class ChatKitHeaderTitleClientConfig
 {
+    public bool? Enabled { get; init; }
+
     public string? Text { get; init; }
 }
 
@@ -84,7 +161,7 @@ internal sealed class ChatKitStartPromptClientConfig
 {
     public required string Label { get; init; }
 
-    public required string Prompt { get; init; }
+    public required object Prompt { get; init; }
 
     public string? Icon { get; init; }
 }
@@ -92,6 +169,67 @@ internal sealed class ChatKitStartPromptClientConfig
 internal sealed class ChatKitComposerClientConfig
 {
     public string? Placeholder { get; init; }
+
+    public ChatKitComposerAttachmentsClientConfig? Attachments { get; init; }
+
+    public IReadOnlyList<ChatKitComposerToolClientConfig>? Tools { get; init; }
+
+    public IReadOnlyList<ChatKitComposerModelClientConfig>? Models { get; init; }
+
+    public ChatKitComposerDictationClientConfig? Dictation { get; init; }
+}
+
+internal sealed class ChatKitComposerAttachmentsClientConfig
+{
+    public bool Enabled { get; init; }
+
+    public long? MaxSize { get; init; }
+
+    public int? MaxCount { get; init; }
+
+    public IReadOnlyDictionary<string, string[]>? Accept { get; init; }
+}
+
+internal sealed class ChatKitComposerToolClientConfig
+{
+    public string? Id { get; init; }
+
+    public string? Label { get; init; }
+
+    public string? Icon { get; init; }
+
+    public string? ShortLabel { get; init; }
+
+    public string? PlaceholderOverride { get; init; }
+
+    public bool? Pinned { get; init; }
+
+    public bool? Persistent { get; init; }
+}
+
+internal sealed class ChatKitComposerModelClientConfig
+{
+    public string? Id { get; init; }
+
+    public string? Label { get; init; }
+
+    public string? Description { get; init; }
+
+    public bool? Disabled { get; init; }
+
+    public bool? Default { get; init; }
+}
+
+internal sealed class ChatKitComposerDictationClientConfig
+{
+    public bool Enabled { get; init; }
+}
+
+internal sealed class ChatKitFileUploadStrategyClientConfig
+{
+    public string? Type { get; init; }
+
+    public string? UploadUrl { get; init; }
 }
 
 internal sealed class ChatKitDisclaimerClientConfig

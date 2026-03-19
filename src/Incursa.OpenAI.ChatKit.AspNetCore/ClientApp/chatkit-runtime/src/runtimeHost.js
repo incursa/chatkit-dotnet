@@ -16,6 +16,34 @@ import {
 /**
  * @typedef {{
  *   colorScheme?: "light" | "dark";
+ *   typography?: {
+ *     baseSize?: number;
+ *     fontSources?: {
+ *       family: string;
+ *       src: string;
+ *       weight?: string | number;
+ *       style?: "normal" | "italic" | "oblique";
+ *       display?: "auto" | "block" | "swap" | "fallback" | "optional";
+ *       unicodeRange?: string;
+ *     }[];
+ *     fontFamily?: string;
+ *     fontFamilyMono?: string;
+ *   };
+ *   color?: {
+ *     grayscale?: {
+ *       hue?: number;
+ *       tint?: number;
+ *       shade?: number;
+ *     };
+ *     accent?: {
+ *       primary?: string;
+ *       level?: number;
+ *     };
+ *     surface?: {
+ *       background?: string;
+ *       foreground?: string;
+ *     };
+ *   };
  *   radius?: "pill" | "round" | "soft" | "sharp";
  *   density?: "compact" | "normal" | "spacious";
  * }} ChatKitThemeConfig
@@ -24,6 +52,14 @@ import {
 /**
  * @typedef {{
  *   enabled?: boolean;
+ *   leftAction?: {
+ *     icon: string;
+ *     onClickHandler: string;
+ *   };
+ *   rightAction?: {
+ *     icon: string;
+ *     onClickHandler: string;
+ *   };
  *   title?: {
  *     enabled?: boolean;
  *     text?: string;
@@ -42,7 +78,17 @@ import {
 /**
  * @typedef {{
  *   label: string;
- *   prompt: string;
+ *   prompt: string | {
+ *     type: "input_text";
+ *     text: string;
+ *   }[] | {
+ *     type: "input_tag";
+ *     text: string;
+ *     id: string;
+ *     group?: string;
+ *     data?: Record<string, unknown>;
+ *     interactive?: boolean;
+ *   }[];
  *   icon?: string;
  * }} ChatKitStartPromptConfig
  */
@@ -57,6 +103,31 @@ import {
 /**
  * @typedef {{
  *   placeholder?: string;
+ *   attachments?: {
+ *     enabled: boolean;
+ *     maxSize?: number;
+ *     maxCount?: number;
+ *     accept?: Record<string, string[]>;
+ *   };
+ *   tools?: {
+ *     id: string;
+ *     label: string;
+ *     icon: string;
+ *     shortLabel?: string;
+ *     placeholderOverride?: string;
+ *     pinned?: boolean;
+ *     persistent?: boolean;
+ *   }[];
+ *   models?: {
+ *     id: string;
+ *     label: string;
+ *     description?: string;
+ *     disabled?: boolean;
+ *     default?: boolean;
+ *   }[];
+ *   dictation?: {
+ *     enabled: boolean;
+ *   };
  * }} ChatKitComposerConfig
  */
 
@@ -88,6 +159,13 @@ import {
 
 /**
  * @typedef {{
+ *   type?: 'two_phase' | 'direct';
+ *   uploadUrl?: string;
+ * }} ChatKitUploadStrategyConfig
+ */
+
+/**
+ * @typedef {{
  *   apiUrl?: string;
  *   domainKey?: string;
  *   sessionEndpoint?: string;
@@ -104,6 +182,7 @@ import {
  *   history?: ChatKitHistoryConfig;
  *   startScreen?: ChatKitStartScreenConfig;
  *   composer?: ChatKitComposerConfig;
+ *   uploadStrategy?: ChatKitUploadStrategyConfig;
  *   disclaimer?: ChatKitDisclaimerConfig;
  *   entities?: ChatKitEntitiesConfig;
  *   threadItemActions?: ChatKitThreadItemActionsConfig;
@@ -225,6 +304,97 @@ function buildCustomApiOptions(config) {
   };
 }
 
+function normalizeLookupPath(lookupPath, errorMessage) {
+  if (typeof lookupPath !== "string" || lookupPath.trim().length === 0) {
+    throw new Error(errorMessage);
+  }
+
+  const segments = lookupPath
+    .trim()
+    .split(".")
+    .map((segment) => segment.trim())
+    .filter((segment) => segment.length > 0);
+
+  if (segments.length === 0) {
+    throw new Error(errorMessage);
+  }
+
+  if (segments[0] === "window" || segments[0] === "globalThis" || segments[0] === "self") {
+    return segments.slice(1);
+  }
+
+  return segments;
+}
+
+function resolveLookupFunction(globalScope, lookupPath, errorPrefix) {
+  const segments = normalizeLookupPath(lookupPath, `${errorPrefix} lookup path is required.`);
+  let current = globalScope;
+
+  for (const segment of segments) {
+    if (current == null || typeof current !== "object" || !(segment in current)) {
+      throw new Error(`${errorPrefix} '${lookupPath}' was not found on the page.`);
+    }
+
+    current = current[segment];
+  }
+
+  if (typeof current !== "function") {
+    throw new Error(`${errorPrefix} '${lookupPath}' must resolve to a function.`);
+  }
+
+  return current;
+}
+
+function buildHeaderAction(globalScope, action, side) {
+  if (!action) {
+    return undefined;
+  }
+
+  const icon = action.icon?.trim();
+  const handler = action.onClickHandler?.trim();
+  if (!icon && !handler) {
+    return undefined;
+  }
+
+  if (!icon || !handler) {
+    throw new Error(`ChatKit header ${side} action requires both an icon and a browser callback lookup path.`);
+  }
+
+  return {
+    icon,
+    onClick: () => resolveLookupFunction(globalScope, handler, "ChatKit header action")()
+  };
+}
+
+function buildHeaderOption(globalScope, config) {
+  if (!config) {
+    return undefined;
+  }
+
+  const leftAction = buildHeaderAction(globalScope, config.leftAction, "left");
+  const rightAction = buildHeaderAction(globalScope, config.rightAction, "right");
+  const hasTitle = !!config.title || config.enabled != null || leftAction || rightAction;
+  if (!hasTitle) {
+    return undefined;
+  }
+
+  const header = {};
+  if (config.enabled != null) {
+    header.enabled = config.enabled;
+  }
+  if (leftAction) {
+    header.leftAction = leftAction;
+  }
+  if (rightAction) {
+    header.rightAction = rightAction;
+  }
+  if (config.title) {
+    header.title = config.title;
+  }
+
+  return header;
+}
+
 /**
  * @param {ChatKitHostConfig} config
  * @param {typeof window} [globalScope]
@@ -265,12 +435,17 @@ export function buildOptions(config, globalScope = window) {
     options.onClientTool = createOnClientTool(globalScope, config.clientToolHandlers);
   }
 
+  if (config.apiUrl && config.uploadStrategy) {
+    options.api.uploadStrategy = config.uploadStrategy;
+  }
+
   if (config.theme) {
     options.theme = config.theme;
   }
 
-  if (config.header) {
-    options.header = config.header;
+  const header = buildHeaderOption(globalScope, config.header);
+  if (header) {
+    options.header = header;
   }
 
   if (config.history) {

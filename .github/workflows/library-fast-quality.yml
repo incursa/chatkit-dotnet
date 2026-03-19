@@ -16,10 +16,10 @@ jobs:
       coverage_status: ${{ steps.coverage.outcome }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5.2.0
         with:
           global-json-file: global.json
 
@@ -45,7 +45,7 @@ jobs:
         run: pwsh -File scripts/quality/run-library-coverage.ps1 -LineThreshold 20 -NoRestore -NoBuild
 
       - name: Upload quality artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6.0.0
         if: always()
         with:
           name: library-fast-quality-artifacts

@@ -61,6 +61,13 @@ builder.Services.AddOpenAIChatKitApi("/api/chatkit", "contoso-domain-key", confi
     options.DefaultHeight = "760px";
     options.StartScreen.Greeting = "How can I help today?";
     options.Theme.ColorScheme = "dark";
+    options.Theme.Typography.BaseSize = 16;
+    options.Theme.Color.Accent.Primary = "#8B5CF6";
+    options.Header.LeftAction = new ChatKitHeaderActionOptions
+    {
+        Icon = "sidebar-left",
+        OnClickHandler = "window.chatkit.onHeaderAction",
+    };
     options.Disclaimer.Text = "AI may make mistakes. Verify important details.";
     options.Disclaimer.HighContrast = true;
     options.EntityHandlers = "window.chatkitEntities";
@@ -80,6 +87,10 @@ Then use the tag helpers from a layout or view:
     class="chatkit-page"
     api-url="/api/chatkit"
     domain-key="contoso-domain-key"
+    theme-base-size="16"
+    theme-color-accent-primary="#8B5CF6"
+    header-left-action-icon="sidebar-left"
+    header-left-action-handler="window.chatkit.onHeaderAction"
     disclaimer-text="AI may make mistakes. Verify important details."
     disclaimer-high-contrast="true">
 </incursa-chatkit-api>
@@ -105,6 +116,14 @@ Then point the Razor host at that API endpoint:
 ```
 
 Direct API mode requires a domain key. Configure it either in `AddOpenAIChatKitApi(...)` or on the `<incursa-chatkit-api>` tag helper.
+
+The wrapper also mirrors the richer upstream theme and header options:
+
+- `theme-base-size`, `theme-font-family`, and `theme-font-family-mono`
+- `theme-color-grayscale-*`, `theme-color-accent-*`, and `theme-color-surface-*`
+- `header-left-action-*` and `header-right-action-*` for callback-backed header buttons
+
+For start-screen prompts, the wrapper accepts either plain text or rich `UserMessageContent[]` values through the .NET options model.
 
 ## Client tool handlers
 
@@ -133,6 +152,49 @@ To expose ChatKit `onClientTool` through the Razor wrapper, register a browser-s
 ```
 
 `client-tool-handlers` accepts a dotted browser lookup path such as `window.chatkitClientTools` or `app.chatkit.clientTools`. Each resolved handler receives the upstream ChatKit tool-call object `{ name, params }` and must return JSON-compatible data. If the lookup path or named tool handler is missing, the packaged runtime throws a clear browser error instead of silently ignoring the tool call.
+
+## Composer configuration
+
+The wrapper can also project ChatKit composer attachments, tool pickers, model pickers, dictation, and custom upload strategies from `AddOpenAIChatKitApi(...)` or `AddOpenAIChatKitHosted(...)`:
+
+```csharp
+builder.Services.AddOpenAIChatKitApi("/api/chatkit", "contoso-domain-key", options =>
+{
+    options.Composer.Attachments.Enabled = true;
+    options.Composer.Attachments.MaxCount = 10;
+    options.Composer.Attachments.MaxSize = 100 * 1024 * 1024;
+    options.Composer.Tools.Add(new ChatKitComposerTool
+    {
+        Id = "summarize",
+        Label = "Summarize",
+        Icon = "book-open",
+    });
+    options.Composer.Models.Add(new ChatKitComposerModel
+    {
+        Id = "gpt-4.1",
+        Label = "Quality",
+        Description = "Higher-quality responses",
+        Default = true,
+    });
+    options.Composer.Dictation.Enabled = true;
+    options.UploadStrategy.Type = "direct";
+    options.UploadStrategy.UploadUrl = "/files";
+});
+```
+
+```cshtml
+<incursa-chatkit-api
+    api-url="/api/chatkit"
+    domain-key="contoso-domain-key"
+    composer-attachments-enabled="true"
+    composer-attachments-max-count="10"
+    composer-dictation-enabled="true"
+    upload-strategy-type="direct"
+    upload-strategy-upload-url="/files">
+</incursa-chatkit-api>
+```
+
+`composer.attachments` is omitted unless attachments are configured. When enabled, the runtime forwards the attachment limits and accepted file type map into `useChatKit(...)`. `composer.tools`, `composer.models`, and `composer.dictation` are serialized from the .NET options model without any browser-side patching.
 
 ## Entity handlers
 
@@ -196,6 +258,30 @@ foreach (UserMessageTagContent tag in tags)
     // Map the submitted entity tag into your own search, retrieval, or routing flow.
 }
 ```
+
+## Header title
+
+The header title area can be disabled independently from the header itself:
+
+```csharp
+builder.Services.AddOpenAIChatKitHosted(options =>
+{
+    options.Header.Enabled = true;
+    options.Header.TitleEnabled = false;
+    options.Header.TitleText = "Assistant";
+});
+```
+
+```cshtml
+<incursa-chatkit-hosted
+    session-endpoint="/api/chatkit/session"
+    action-endpoint="/api/chatkit/action"
+    header-title-enabled="false"
+    header-title="Assistant">
+</incursa-chatkit-hosted>
+```
+
+Use `header-title-enabled="false"` when you want the header shell to remain visible but the title slot to be hidden.
 
 ## OpenAI-hosted mode
 

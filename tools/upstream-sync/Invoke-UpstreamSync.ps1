@@ -1,7 +1,3 @@
-Set-StrictMode -Version Latest
-$ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
-. (Join-Path $ScriptRoot 'UpstreamSync.Common.ps1')
-
 param(
     [switch]$Loop,
     [int]$IntervalMinutes = 5,
@@ -16,6 +12,10 @@ param(
     [string]$ForceFromSha,
     [switch]$AllowDirty
 )
+
+Set-StrictMode -Version Latest
+$ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
+. (Join-Path $ScriptRoot 'UpstreamSync.Common.ps1')
 
 if ($Loop -and $Once) {
     throw 'Cannot specify both -Loop and -Once.'

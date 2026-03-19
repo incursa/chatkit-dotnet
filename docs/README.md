@@ -16,6 +16,7 @@ workbench:
 - [Architecture](20-architecture/README.md)
 - [Contracts](30-contracts/README.md)
 - [Quickstart](quickstart.md)
+- [ChatKit tag helpers](30-contracts/chatkit-tag-helper.md)
 - [ASP.NET Core hosting](extensions.md)
 
 ## Maintenance references

@@ -18,6 +18,7 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore
         public string? SessionEndpoint { get; set; }
         public ChatKitStartScreenOptions StartScreen { get; }
         public ChatKitThemeOptions Theme { get; }
+        public ChatKitFileUploadStrategyOptions UploadStrategy { get; }
         public ChatKitThreadItemActionsOptions ThreadItemActions { get; }
     }
 
@@ -30,7 +31,55 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore
     public sealed class ChatKitComposerOptions
     {
         public ChatKitComposerOptions() { }
+        public ChatKitComposerAttachmentsOptions Attachments { get; }
+        public System.Collections.Generic.List<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitComposerModel> Models { get; }
         public string? Placeholder { get; set; }
+        public System.Collections.Generic.List<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitComposerTool> Tools { get; }
+        public ChatKitComposerDictationOptions Dictation { get; }
+    }
+
+    public sealed class ChatKitComposerAttachmentsOptions
+    {
+        public ChatKitComposerAttachmentsOptions() { }
+        public System.Collections.Generic.Dictionary<string, string[]>? Accept { get; set; }
+        public bool? Enabled { get; set; }
+        public int? MaxCount { get; set; }
+        public long? MaxSize { get; set; }
+    }
+
+    public sealed class ChatKitComposerDictationOptions
+    {
+        public ChatKitComposerDictationOptions() { }
+        public bool? Enabled { get; set; }
+    }
+
+    public sealed class ChatKitComposerModel
+    {
+        public ChatKitComposerModel() { }
+        public bool? Default { get; set; }
+        public bool? Disabled { get; set; }
+        public string? Description { get; set; }
+        public string? Id { get; set; }
+        public string? Label { get; set; }
+    }
+
+    public sealed class ChatKitComposerTool
+    {
+        public ChatKitComposerTool() { }
+        public string? Icon { get; set; }
+        public string? Id { get; set; }
+        public string? Label { get; set; }
+        public bool? Persistent { get; set; }
+        public string? PlaceholderOverride { get; set; }
+        public bool? Pinned { get; set; }
+        public string? ShortLabel { get; set; }
+    }
+
+    public sealed class ChatKitFileUploadStrategyOptions
+    {
+        public ChatKitFileUploadStrategyOptions() { }
+        public string? Type { get; set; }
+        public string? UploadUrl { get; set; }
     }
 
     public static class ChatKitEndpointRouteBuilderExtensions
@@ -43,6 +92,7 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore
     {
         public ChatKitHeaderOptions() { }
         public bool? Enabled { get; set; }
+        public bool? TitleEnabled { get; set; }
         public string? TitleText { get; set; }
     }
 
@@ -59,7 +109,7 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore
         public ChatKitStartPrompt() { }
         public string? Icon { get; set; }
         public string? Label { get; set; }
-        public string? Prompt { get; set; }
+        public object? Prompt { get; set; }
     }
 
     public sealed class ChatKitStartScreenOptions
@@ -117,12 +167,17 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers
         public string? ActionEndpoint { get; set; }
         public string? ApiUrl { get; set; }
         public string? Class { get; set; }
+        public bool? ComposerAttachmentsEnabled { get; set; }
+        public int? ComposerAttachmentsMaxCount { get; set; }
+        public long? ComposerAttachmentsMaxSize { get; set; }
+        public bool? ComposerDictationEnabled { get; set; }
         public string? DomainKey { get; set; }
         public bool? FeedbackEnabled { get; set; }
         public string? FrameTitle { get; set; }
         public bool? ForwardWidgetActions { get; set; }
         public string? Greeting { get; set; }
         public bool? HeaderEnabled { get; set; }
+        public bool? HeaderTitleEnabled { get; set; }
         public string? HeaderTitle { get; set; }
         public string? Height { get; set; }
         public bool? HistoryEnabled { get; set; }
@@ -135,6 +190,8 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers
         public bool? RetryEnabled { get; set; }
         public string? SessionEndpoint { get; set; }
         public System.Collections.Generic.IEnumerable<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitStartPrompt>? StarterPrompts { get; set; }
+        public string? UploadStrategyType { get; set; }
+        public string? UploadStrategyUploadUrl { get; set; }
         public string? Theme { get; set; }
         public string? ThemeDensity { get; set; }
         public string? ThemeRadius { get; set; }

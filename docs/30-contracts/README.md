@@ -10,3 +10,7 @@ workbench:
 # Contracts
 
 APIs, CLI interfaces, schemas, and external contracts.
+
+## ChatKit wrapper
+
+- [ChatKit tag helpers](chatkit-tag-helper.md)

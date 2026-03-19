@@ -19,12 +19,12 @@ jobs:
       cancel-in-progress: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 1
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5.2.0
         with:
           global-json-file: global.json
 
@@ -33,6 +33,8 @@ jobs:
 
       - name: Run Workbench issue sync (dry-run validation)
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           $outDir = "artifacts/workbench/nightly-sync"
           New-Item -ItemType Directory -Path $outDir -Force | Out-Null
@@ -45,7 +47,7 @@ jobs:
 
       - name: Upload nightly sync evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: workbench-nightly-sync-log
           path: artifacts/workbench/nightly-sync/

@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Incursa.OpenAI.ChatKit;
 using Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -86,14 +87,73 @@ public sealed class IncursaChatKitTagHelperTests
                 options.Theme.ColorScheme = "dark";
                 options.Theme.Radius = "round";
                 options.Theme.Density = "compact";
+                options.Theme.Typography.BaseSize = 16;
+                options.Theme.Typography.FontFamily = "Inter";
+                options.Theme.Typography.FontFamilyMono = "IBM Plex Mono";
+                options.Theme.Typography.FontSources.Add(new ChatKitFontSource
+                {
+                    Family = "Inter",
+                    Src = "/fonts/inter.woff2",
+                    Display = "swap",
+                });
+                options.Theme.Color.Grayscale.Hue = 210;
+                options.Theme.Color.Grayscale.Tint = 4;
+                options.Theme.Color.Grayscale.Shade = -2;
+                options.Theme.Color.Accent.Primary = "#8B5CF6";
+                options.Theme.Color.Accent.Level = 2;
+                options.Theme.Color.Surface.Background = "#111111";
+                options.Theme.Color.Surface.Foreground = "#F5F5F5";
+                options.Header.LeftAction = new ChatKitHeaderActionOptions
+                {
+                    Icon = "sidebar-left",
+                    OnClickHandler = "window.chatkit.onHeaderAction",
+                };
+                options.Header.TitleEnabled = true;
                 options.Header.TitleText = "Assistant";
                 options.StartScreen.Greeting = "How can I help?";
                 options.StartScreen.Prompts.Add(new ChatKitStartPrompt
                 {
                     Label = "Summarize",
-                    Prompt = "Summarize the latest contract changes.",
+                    Prompt = new UserMessageContent[]
+                    {
+                        new UserMessageTextContent
+                        {
+                            Text = "Summarize the latest contract changes.",
+                        },
+                        new UserMessageTagContent
+                        {
+                            Id = "doc-1",
+                            Text = "Q2 Planning Doc",
+                            Data = new Dictionary<string, JsonNode?>
+                            {
+                                ["source"] = JsonValue.Create("document"),
+                            },
+                        },
+                    },
                     Icon = "document",
                 });
+                options.Composer.Attachments.Enabled = true;
+                options.Composer.Attachments.MaxSize = 4096;
+                options.Composer.Attachments.MaxCount = 10;
+                options.Composer.Attachments.Accept = new Dictionary<string, string[]>
+                {
+                    ["application/pdf"] = [".pdf"],
+                };
+                options.Composer.Tools.Add(new ChatKitComposerTool
+                {
+                    Id = "summarize",
+                    Label = "Summarize",
+                    Icon = "book-open",
+                    PlaceholderOverride = "Summarize the latest contract changes.",
+                });
+                options.Composer.Models.Add(new ChatKitComposerModel
+                {
+                    Id = "gpt-4.1",
+                    Label = "Quality",
+                    Description = "All rounder",
+                    Default = true,
+                });
+                options.Composer.Dictation.Enabled = true;
                 options.Disclaimer.Text = "AI may make mistakes. Verify important details.";
                 options.Disclaimer.HighContrast = false;
                 options.Entities.ShowComposerMenu = false;
@@ -108,10 +168,19 @@ public sealed class IncursaChatKitTagHelperTests
         tagHelper.ClientToolHandlers = "app.chatkit.clientTools";
         tagHelper.EntityHandlers = "app.chatkit.entityHandlers";
         tagHelper.WidgetActionHandler = "app.chatkit.onWidgetAction";
+        tagHelper.ThemeBaseSize = 18;
+        tagHelper.ThemeFontFamily = "Georgia";
+        tagHelper.ThemeColorAccentPrimary = "#F97316";
+        tagHelper.HeaderLeftActionIcon = "sidebar-right";
+        tagHelper.HeaderLeftActionHandler = "app.chatkit.onHeaderAction";
+        tagHelper.HeaderTitleEnabled = false;
         tagHelper.Placeholder = "Ask the assistant";
         tagHelper.DisclaimerText = "Review important details before taking action.";
         tagHelper.DisclaimerHighContrast = true;
         tagHelper.EntityShowComposerMenu = true;
+        tagHelper.ComposerAttachmentsMaxSize = 2048;
+        tagHelper.ComposerAttachmentsMaxCount = 3;
+        tagHelper.ComposerDictationEnabled = false;
         tagHelper.FeedbackEnabled = true;
         tagHelper.RetryEnabled = true;
 
@@ -131,18 +200,99 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.Equal("app.chatkit.entityHandlers", config["entityHandlers"]?.GetValue<string>());
         Assert.Equal("app.chatkit.onWidgetAction", config["widgetActionHandler"]?.GetValue<string>());
         Assert.Equal("dark", config["theme"]?["colorScheme"]?.GetValue<string>());
+        Assert.Equal(18, config["theme"]?["typography"]?["baseSize"]?.GetValue<int>());
+        Assert.Equal("Georgia", config["theme"]?["typography"]?["fontFamily"]?.GetValue<string>());
+        Assert.Equal("IBM Plex Mono", config["theme"]?["typography"]?["fontFamilyMono"]?.GetValue<string>());
+        Assert.Equal("Inter", config["theme"]?["typography"]?["fontSources"]?[0]?["family"]?.GetValue<string>());
+        Assert.Equal(210, config["theme"]?["color"]?["grayscale"]?["hue"]?.GetValue<int>());
+        Assert.Equal("#F97316", config["theme"]?["color"]?["accent"]?["primary"]?.GetValue<string>());
+        Assert.Equal("#111111", config["theme"]?["color"]?["surface"]?["background"]?.GetValue<string>());
+        Assert.Equal("sidebar-right", config["header"]?["leftAction"]?["icon"]?.GetValue<string>());
+        Assert.Equal("app.chatkit.onHeaderAction", config["header"]?["leftAction"]?["onClickHandler"]?.GetValue<string>());
         Assert.Equal("round", config["theme"]?["radius"]?.GetValue<string>());
         Assert.Equal("compact", config["theme"]?["density"]?.GetValue<string>());
+        Assert.False(config["header"]?["title"]?["enabled"]?.GetValue<bool>());
         Assert.Equal("Assistant", config["header"]?["title"]?["text"]?.GetValue<string>());
         Assert.Equal("How can I help?", config["startScreen"]?["greeting"]?.GetValue<string>());
         Assert.Equal("Summarize", config["startScreen"]?["prompts"]?[0]?["label"]?.GetValue<string>());
+        Assert.Equal("input_text", config["startScreen"]?["prompts"]?[0]?["prompt"]?[0]?["type"]?.GetValue<string>());
+        Assert.Equal("input_tag", config["startScreen"]?["prompts"]?[0]?["prompt"]?[1]?["type"]?.GetValue<string>());
+        Assert.Equal("doc-1", config["startScreen"]?["prompts"]?[0]?["prompt"]?[1]?["id"]?.GetValue<string>());
         Assert.Equal("Ask the assistant", config["composer"]?["placeholder"]?.GetValue<string>());
+        Assert.True(config["composer"]?["attachments"]?["enabled"]?.GetValue<bool>());
+        Assert.Equal(2048, config["composer"]?["attachments"]?["maxSize"]?.GetValue<long>());
+        Assert.Equal(3, config["composer"]?["attachments"]?["maxCount"]?.GetValue<int>());
+        Assert.Equal(".pdf", config["composer"]?["attachments"]?["accept"]?["application/pdf"]?[0]?.GetValue<string>());
+        Assert.Equal("summarize", config["composer"]?["tools"]?[0]?["id"]?.GetValue<string>());
+        Assert.Equal("Quality", config["composer"]?["models"]?[0]?["label"]?.GetValue<string>());
+        Assert.False(config["composer"]?["dictation"]?["enabled"]?.GetValue<bool>());
         Assert.Equal("Review important details before taking action.", config["disclaimer"]?["text"]?.GetValue<string>());
         Assert.True(config["disclaimer"]?["highContrast"]?.GetValue<bool>());
         Assert.True(config["entities"]?["showComposerMenu"]?.GetValue<bool>());
         Assert.True(config["threadItemActions"]?["feedback"]?.GetValue<bool>());
         Assert.True(config["threadItemActions"]?["retry"]?.GetValue<bool>());
         Assert.True(config["widgetActions"]?["forwardToEndpoint"]?.GetValue<bool>());
+    }
+
+    /// <summary>The API host tag helper serializes composer options and upload strategy metadata into the browser config payload.</summary>
+    /// <intent>Protect the packaged API-mode projection for attachments, composer pickers, dictation, and upload strategy.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Configured API-mode composer defaults and explicit upload strategy settings appear in the serialized host config.</behavior>
+    [Fact]
+    public async Task ProcessAsync_ApiTagHelperSerializesComposerConfigAndUploadStrategy()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitApi(
+                "https://example.contoso.com/chatkit",
+                "contoso-domain-key",
+                options =>
+                {
+                    options.Composer.Attachments.Enabled = true;
+                    options.Composer.Attachments.MaxCount = 5;
+                    options.Composer.Attachments.MaxSize = 2048;
+                    options.Composer.Attachments.Accept = new Dictionary<string, string[]>
+                    {
+                        ["image/*"] = [".png", ".jpg"],
+                    };
+                    options.Composer.Tools.Add(new ChatKitComposerTool
+                    {
+                        Id = "translate",
+                        Label = "Translate",
+                        Icon = "globe",
+                    });
+                    options.Composer.Models.Add(new ChatKitComposerModel
+                    {
+                        Id = "gpt-4.1-mini",
+                        Label = "Fast",
+                        Description = "Answers right away",
+                    });
+                    options.Composer.Dictation.Enabled = true;
+                    options.UploadStrategy.Type = "direct";
+                    options.UploadStrategy.UploadUrl = "/files";
+                })
+            .BuildServiceProvider();
+
+        IncursaChatKitApiTagHelper tagHelper = CreateApiTagHelper(services);
+        tagHelper.ApiUrl = "https://example.contoso.com/chatkit";
+        tagHelper.UploadStrategyType = "two_phase";
+        tagHelper.ComposerAttachmentsEnabled = true;
+        tagHelper.ComposerAttachmentsMaxCount = 4;
+        tagHelper.ComposerDictationEnabled = true;
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.Equal("two_phase", config["uploadStrategy"]?["type"]?.GetValue<string>());
+        Assert.Null(config["uploadStrategy"]?["uploadUrl"]);
+        Assert.True(config["composer"]?["attachments"]?["enabled"]?.GetValue<bool>());
+        Assert.Equal(2048, config["composer"]?["attachments"]?["maxSize"]?.GetValue<long>());
+        Assert.Equal(4, config["composer"]?["attachments"]?["maxCount"]?.GetValue<int>());
+        Assert.Equal(".png", config["composer"]?["attachments"]?["accept"]?["image/*"]?[0]?.GetValue<string>());
+        Assert.Equal("translate", config["composer"]?["tools"]?[0]?["id"]?.GetValue<string>());
+        Assert.Equal("gpt-4.1-mini", config["composer"]?["models"]?[0]?["id"]?.GetValue<string>());
+        Assert.True(config["composer"]?["dictation"]?["enabled"]?.GetValue<bool>());
     }
 
     /// <summary>The hosted host tag helper omits disclaimer settings when no disclaimer text is configured.</summary>

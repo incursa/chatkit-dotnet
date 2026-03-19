@@ -9,7 +9,7 @@ Set-StrictMode -Version Latest
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 . (Join-Path $ScriptRoot 'UpstreamSync.Common.ps1')
 
-$RepoRoot = Split-Path -Parent $ScriptRoot
+$RepoRoot = Split-Path -Parent (Split-Path -Parent $ScriptRoot)
 Set-Location $RepoRoot
 
 if (-not $RuntimePath) {

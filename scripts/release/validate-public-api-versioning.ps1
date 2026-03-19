@@ -1,5 +1,7 @@
 param(
     [string]$Tag,
+    [ValidateSet("Major", "Minor", "Patch")]
+    [string]$Bump,
     [string]$ProjectsRoot = "src",
     [string]$FirstReleaseVersion = "1.0.12",
     [string]$SummaryPath = "artifacts/release/api-versioning-summary.md"
@@ -145,7 +147,8 @@ if (-not $projects) {
     exit 1
 }
 
-$requiredBump = "None"
+$manualBump = -not [string]::IsNullOrWhiteSpace($Bump)
+$requiredBump = if ($manualBump) { $Bump } else { "None" }
 $projectSummaries = New-Object System.Collections.Generic.List[string]
 $unshippedWarnings = New-Object System.Collections.Generic.List[string]
 
@@ -157,11 +160,13 @@ foreach ($project in $projects) {
 
     $projectSummaries.Add("$projectName => $delta")
 
-    switch ($delta) {
-        "Breaking" { $requiredBump = "Major" }
-        "Additive" {
-            if ($requiredBump -ne "Major") {
-                $requiredBump = "Minor"
+    if (-not $manualBump) {
+        switch ($delta) {
+            "Breaking" { $requiredBump = "Major" }
+            "Additive" {
+                if ($requiredBump -ne "Major") {
+                    $requiredBump = "Minor"
+                }
             }
         }
     }
@@ -207,14 +212,14 @@ if ($priorTag) {
     }
 }
 
-if ($requiredBump -eq "Major" -and $priorTag) {
+if (-not $manualBump -and $requiredBump -eq "Major" -and $priorTag) {
     if ($releaseVersion.Major -le $latestPriorVersion.Major) {
         Write-Error "Public API shipped changes are breaking. Version must include a major increment."
         exit 1
     }
 }
 
-if ($requiredBump -eq "Minor" -and $priorTag) {
+if (-not $manualBump -and $requiredBump -eq "Minor" -and $priorTag) {
     if ($releaseVersion.Major -ne $latestPriorVersion.Major -or $releaseVersion.Minor -le $latestPriorVersion.Minor) {
         Write-Error "Public API shipped additions are detected. Version must include a minor increment."
         exit 1
@@ -233,6 +238,13 @@ if ($unshippedWarnings.Count -gt 0) {
 }
 else {
     Write-Host "Unshipped API baselines: no changes since prior release."
+}
+
+if ($manualBump) {
+    Write-Host "Release policy check passed using explicit bump override: $Bump."
+}
+elseif ($requiredBump -ne "None") {
+    Write-Host "Release policy check passed for shipped API changes: $requiredBump increment required."
 }
 
 $summary = @()

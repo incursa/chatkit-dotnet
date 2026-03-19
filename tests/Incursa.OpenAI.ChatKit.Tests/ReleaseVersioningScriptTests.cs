@@ -2,6 +2,7 @@ using System.Diagnostics;
 
 namespace Incursa.OpenAI.ChatKit.Tests;
 
+/// <summary>Regression tests for the release versioning script.</summary>
 public sealed class ReleaseVersioningScriptTests
 {
     /// <summary>The release versioning script can advance from a tagged commit when the working tree is dirty.</summary>
@@ -24,6 +25,75 @@ public sealed class ReleaseVersioningScriptTests
         Assert.Contains("Dirty working tree detected; release versioning will continue from a new release commit.", output, StringComparison.Ordinal);
         Assert.Contains("Skipping commit because -NoCommit was specified.", output, StringComparison.Ordinal);
         Assert.Contains("Skipping tag because -NoTag was specified.", output, StringComparison.Ordinal);
+    }
+
+    /// <summary>The release versioning script can honor a manual minor bump override when the public API diff looks breaking.</summary>
+    /// <intent>Protect the explicit bump override path for semver exceptions that are intentionally non-breaking.</intent>
+    /// <scenario>REPO-RELEASE-002</scenario>
+    /// <behavior>When the shipped API diff would normally require a major bump, the script respects -Bump Minor and the validator accepts it.</behavior>
+    [Fact]
+    public async Task InvokeReleaseVersioning_HonorsExplicitMinorBump_WhenApiDiffLooksBreaking()
+    {
+        using TemporaryDirectory temp = new();
+        await InitializeReleaseRepoAsync(temp.Path);
+
+        await File.WriteAllTextAsync(
+            Path.Combine(temp.Path, "src", "Test.Library", "PublicAPI.Shipped.txt"),
+            """
+            #nullable enable
+            namespace Test.Library
+            {
+                public sealed class Example
+                {
+                    public void DoWork() { }
+                }
+            }
+            """);
+
+        string output = await InvokePowerShellAsync(
+            temp.Path,
+            """
+            & ./scripts/release/Invoke-ReleaseVersioning.ps1 -Bump Minor -NoCommit -NoTag -NoPush
+            """);
+
+        Assert.Contains("Required bump: Minor", output, StringComparison.Ordinal);
+        Assert.Contains("Target release version: 1.1.0", output, StringComparison.Ordinal);
+        Assert.Contains("Release policy check passed using explicit bump override: Minor.", output, StringComparison.Ordinal);
+    }
+
+    /// <summary>The release versioning script can preview the computed version without changing the repository.</summary>
+    /// <intent>Support a safe check for what the next release would be before committing to any release action.</intent>
+    /// <scenario>REPO-RELEASE-003</scenario>
+    /// <behavior>When calculate-only mode is used, the script reports the computed bump and exits before validation or repo mutation.</behavior>
+    [Fact]
+    public async Task InvokeReleaseVersioning_CalculateOnlyReportsTargetVersion_WithoutMutatingFiles()
+    {
+        using TemporaryDirectory temp = new();
+        await InitializeReleaseRepoAsync(temp.Path);
+
+        await File.WriteAllTextAsync(
+            Path.Combine(temp.Path, "src", "Test.Library", "PublicAPI.Shipped.txt"),
+            """
+            #nullable enable
+            namespace Test.Library
+            {
+                public sealed class Example
+                {
+                    public void DoWork() { }
+                }
+            }
+            """);
+
+        string output = await InvokePowerShellAsync(
+            temp.Path,
+            """
+            & ./scripts/release/Invoke-ReleaseVersioning.ps1 -CalculateOnly
+            """);
+
+        Assert.Contains("Required bump: Major", output, StringComparison.Ordinal);
+        Assert.Contains("Target release version: 2.0.0", output, StringComparison.Ordinal);
+        Assert.Contains("Calculation only; no files will be modified or release actions performed.", output, StringComparison.Ordinal);
+        Assert.Contains("<Version>1.0.14</Version>", await File.ReadAllTextAsync(Path.Combine(temp.Path, "Directory.Build.props")), StringComparison.Ordinal);
     }
 
     private static async Task InitializeReleaseRepoAsync(string path)
@@ -75,11 +145,7 @@ public sealed class ReleaseVersioningScriptTests
 
         await File.WriteAllTextAsync(
             Path.Combine(path, "scripts", "release", "validate-public-api-versioning.ps1"),
-            """
-            [CmdletBinding()]
-            param([string]$Tag)
-            Write-Host "validated $Tag"
-            """);
+            await File.ReadAllTextAsync(Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "scripts", "release", "validate-public-api-versioning.ps1"))));
 
         await RunProcessAsync(path, "git", "init");
         await RunProcessAsync(path, "git", "config user.email \"chatkit-tests@example.com\"");

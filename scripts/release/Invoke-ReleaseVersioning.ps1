@@ -1,6 +1,10 @@
 [CmdletBinding()]
 param(
     [string]$Version,
+    [ValidateSet("Major", "Minor", "Patch")]
+    [string]$Bump,
+    [Alias("DryRun")]
+    [switch]$CalculateOnly,
     [string]$ProjectsRoot = "src",
     [string]$PropsPath = "Directory.Build.props",
     [string]$FirstReleaseVersion = "1.0.12",
@@ -213,7 +217,8 @@ function Get-NextVersion {
     $candidate = switch ($RequiredBump) {
         "Major" { [version]::new($BaseVersion.Major + 1, 0, 0) }
         "Minor" { [version]::new($BaseVersion.Major, $BaseVersion.Minor + 1, 0) }
-        default { [version]::new($BaseVersion.Major, $BaseVersion.Minor, $BaseVersion.Build + 1) }
+        "Patch" { [version]::new($BaseVersion.Major, $BaseVersion.Minor, $BaseVersion.Build + 1) }
+        default { throw "Unexpected version bump '$RequiredBump'." }
     }
 
     if ($candidate -lt $MinimumVersion) {
@@ -245,6 +250,17 @@ if ($null -ne $latestReleaseTag) {
 if ($Version) {
     $targetVersion = [version]$Version
     $requiredBump = "Explicit"
+}
+elseif ($Bump) {
+    if ($priorTagVersion) {
+        $baseVersion = if ($currentVersion -gt $priorTagVersion) { $currentVersion } else { $priorTagVersion }
+    }
+    else {
+        $baseVersion = $currentVersion
+    }
+
+    $requiredBump = $Bump
+    $targetVersion = Get-NextVersion -BaseVersion $baseVersion -RequiredBump $requiredBump -MinimumVersion $minimumVersion
 }
 else {
     if ($priorTagVersion) {
@@ -287,6 +303,11 @@ Write-Host "Prior release tag: $(if ($priorTagName) { $priorTagName } else { 'no
 Write-Host "Required bump: $requiredBump"
 Write-Host "Target release version: $targetVersion"
 
+if ($CalculateOnly) {
+    Write-Host "Calculation only; no files will be modified or release actions performed."
+    return
+}
+
 if ($hadWorkingTreeChanges -and $currentVersion -ne $targetVersion) {
     Set-VersionInProps -Path $propsFullPath -TargetVersion $targetVersion
     Write-Host "Updated $PropsPath to $targetVersion"
@@ -298,7 +319,17 @@ else {
     Write-Host "$PropsPath already matches $targetVersion"
 }
 
-& pwsh -NoProfile -File (Join-Path $PSScriptRoot "validate-public-api-versioning.ps1") -Tag $targetTag
+$validateArguments = @(
+    "-NoProfile"
+    "-File"
+    (Join-Path $PSScriptRoot "validate-public-api-versioning.ps1")
+    "-Tag"
+    $targetTag
+)
+if ($Bump) {
+    $validateArguments += @("-Bump", $Bump)
+}
+& pwsh @validateArguments
 if ($LASTEXITCODE -ne 0) {
     throw "validate-public-api-versioning.ps1 failed for $targetTag"
 }

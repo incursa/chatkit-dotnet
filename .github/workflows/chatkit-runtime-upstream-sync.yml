@@ -17,12 +17,12 @@ jobs:
       cancel-in-progress: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.3.0
         with:
           node-version: 20
           cache: npm
@@ -33,7 +33,7 @@ jobs:
         run: ./tools/upstream-sync/Invoke-UpstreamChatKitRuntimeSync.ps1
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8.1.0
         with:
           branch: bot/chatkit-runtime-upstream-sync
           delete-branch: true

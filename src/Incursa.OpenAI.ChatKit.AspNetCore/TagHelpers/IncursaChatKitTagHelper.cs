@@ -98,10 +98,106 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     public string? WidgetActionHandler { get; set; }
 
     /// <summary>
+    /// Gets or sets the composer attachment enabled flag.
+    /// </summary>
+    [HtmlAttributeName("composer-attachments-enabled")]
+    public bool? ComposerAttachmentsEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum attachment size in bytes.
+    /// </summary>
+    [HtmlAttributeName("composer-attachments-max-size")]
+    public long? ComposerAttachmentsMaxSize { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of composer attachments per message.
+    /// </summary>
+    [HtmlAttributeName("composer-attachments-max-count")]
+    public int? ComposerAttachmentsMaxCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the composer dictation enabled flag.
+    /// </summary>
+    [HtmlAttributeName("composer-dictation-enabled")]
+    public bool? ComposerDictationEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the upload strategy type used by direct API mode.
+    /// </summary>
+    [HtmlAttributeName("upload-strategy-type")]
+    public string? UploadStrategyType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the upload URL used by direct API mode.
+    /// </summary>
+    [HtmlAttributeName("upload-strategy-upload-url")]
+    public string? UploadStrategyUploadUrl { get; set; }
+
+    /// <summary>
     /// Gets or sets the color-scheme theme value.
     /// </summary>
     [HtmlAttributeName("theme")]
     public string? Theme { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme base font size in pixels.
+    /// </summary>
+    [HtmlAttributeName("theme-base-size")]
+    public int? ThemeBaseSize { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme font family.
+    /// </summary>
+    [HtmlAttributeName("theme-font-family")]
+    public string? ThemeFontFamily { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme monospace font family.
+    /// </summary>
+    [HtmlAttributeName("theme-font-family-mono")]
+    public string? ThemeFontFamilyMono { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme grayscale hue.
+    /// </summary>
+    [HtmlAttributeName("theme-color-grayscale-hue")]
+    public int? ThemeColorGrayscaleHue { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme grayscale tint.
+    /// </summary>
+    [HtmlAttributeName("theme-color-grayscale-tint")]
+    public int? ThemeColorGrayscaleTint { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme grayscale shade.
+    /// </summary>
+    [HtmlAttributeName("theme-color-grayscale-shade")]
+    public int? ThemeColorGrayscaleShade { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme accent primary color.
+    /// </summary>
+    [HtmlAttributeName("theme-color-accent-primary")]
+    public string? ThemeColorAccentPrimary { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme accent level.
+    /// </summary>
+    [HtmlAttributeName("theme-color-accent-level")]
+    public int? ThemeColorAccentLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme surface background color.
+    /// </summary>
+    [HtmlAttributeName("theme-color-surface-background")]
+    public string? ThemeColorSurfaceBackground { get; set; }
+
+    /// <summary>
+    /// Gets or sets the theme surface foreground color.
+    /// </summary>
+    [HtmlAttributeName("theme-color-surface-foreground")]
+    public string? ThemeColorSurfaceForeground { get; set; }
 
     /// <summary>
     /// Gets or sets the theme radius value.
@@ -126,6 +222,36 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     /// </summary>
     [HtmlAttributeName("header-title")]
     public string? HeaderTitle { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the header title area is enabled.
+    /// </summary>
+    [HtmlAttributeName("header-title-enabled")]
+    public bool? HeaderTitleEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the header left action icon.
+    /// </summary>
+    [HtmlAttributeName("header-left-action-icon")]
+    public string? HeaderLeftActionIcon { get; set; }
+
+    /// <summary>
+    /// Gets or sets the browser lookup path for the header left action callback.
+    /// </summary>
+    [HtmlAttributeName("header-left-action-handler")]
+    public string? HeaderLeftActionHandler { get; set; }
+
+    /// <summary>
+    /// Gets or sets the header right action icon.
+    /// </summary>
+    [HtmlAttributeName("header-right-action-icon")]
+    public string? HeaderRightActionIcon { get; set; }
+
+    /// <summary>
+    /// Gets or sets the browser lookup path for the header right action callback.
+    /// </summary>
+    [HtmlAttributeName("header-right-action-handler")]
+    public string? HeaderRightActionHandler { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether thread history is enabled.
@@ -237,6 +363,9 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
             History = BuildHistoryConfig(uiOptions),
             StartScreen = BuildStartScreenConfig(uiOptions),
             Composer = BuildComposerConfig(uiOptions),
+            UploadStrategy = string.IsNullOrWhiteSpace(apiUrl)
+                ? null
+                : BuildUploadStrategyConfig(uiOptions),
             Disclaimer = BuildDisclaimerConfig(uiOptions),
             Entities = BuildEntitiesConfig(uiOptions),
             ThreadItemActions = BuildThreadItemActionsConfig(uiOptions),
@@ -250,12 +379,131 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     private ChatKitComposerClientConfig? BuildComposerConfig(ChatKitAspNetCoreOptions uiOptions)
     {
         string? placeholder = FirstNonEmpty(Placeholder, uiOptions.Composer.Placeholder);
+        ChatKitComposerAttachmentsClientConfig? attachments = BuildComposerAttachmentsConfig(uiOptions);
+        IReadOnlyList<ChatKitComposerToolClientConfig>? tools = BuildComposerToolsConfig(uiOptions);
+        IReadOnlyList<ChatKitComposerModelClientConfig>? models = BuildComposerModelsConfig(uiOptions);
+        ChatKitComposerDictationClientConfig? dictation = BuildComposerDictationConfig(uiOptions);
+
         return string.IsNullOrWhiteSpace(placeholder)
+            && attachments is null
+            && (tools is null || tools.Count == 0)
+            && (models is null || models.Count == 0)
+            && dictation is null
             ? null
             : new ChatKitComposerClientConfig
             {
                 Placeholder = placeholder,
+                Attachments = attachments,
+                Tools = tools,
+                Models = models,
+                Dictation = dictation,
             };
+    }
+
+    private ChatKitComposerAttachmentsClientConfig? BuildComposerAttachmentsConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        ChatKitComposerAttachmentsOptions attachments = uiOptions.Composer.Attachments;
+        bool? enabled = ComposerAttachmentsEnabled ?? attachments.Enabled;
+        long? maxSize = ComposerAttachmentsMaxSize ?? attachments.MaxSize;
+        int? maxCount = ComposerAttachmentsMaxCount ?? attachments.MaxCount;
+        IReadOnlyDictionary<string, string[]>? accept = attachments.Accept;
+
+        if (enabled is null && maxSize is null && maxCount is null && accept is null)
+        {
+            return null;
+        }
+
+        if (enabled is null && (maxSize is not null || maxCount is not null || accept is not null))
+        {
+            enabled = true;
+        }
+
+        return new ChatKitComposerAttachmentsClientConfig
+        {
+            Enabled = enabled ?? true,
+            MaxSize = maxSize,
+            MaxCount = maxCount,
+            Accept = accept,
+        };
+    }
+
+    private IReadOnlyList<ChatKitComposerToolClientConfig>? BuildComposerToolsConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        ChatKitComposerToolClientConfig[]? mapped = uiOptions.Composer.Tools
+            .Where(static tool =>
+                !string.IsNullOrWhiteSpace(tool.Id) &&
+                !string.IsNullOrWhiteSpace(tool.Label) &&
+                !string.IsNullOrWhiteSpace(tool.Icon))
+            .Select(static tool => new ChatKitComposerToolClientConfig
+            {
+                Id = tool.Id,
+                Label = tool.Label,
+                Icon = tool.Icon,
+                ShortLabel = tool.ShortLabel,
+                PlaceholderOverride = tool.PlaceholderOverride,
+                Pinned = tool.Pinned,
+                Persistent = tool.Persistent,
+            })
+            .ToArray();
+
+        return mapped is { Length: > 0 } ? mapped : null;
+    }
+
+    private IReadOnlyList<ChatKitComposerModelClientConfig>? BuildComposerModelsConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        ChatKitComposerModelClientConfig[]? mapped = uiOptions.Composer.Models
+            .Where(static model =>
+                !string.IsNullOrWhiteSpace(model.Id) &&
+                !string.IsNullOrWhiteSpace(model.Label))
+            .Select(static model => new ChatKitComposerModelClientConfig
+            {
+                Id = model.Id,
+                Label = model.Label,
+                Description = model.Description,
+                Disabled = model.Disabled,
+                Default = model.Default,
+            })
+            .ToArray();
+
+        return mapped is { Length: > 0 } ? mapped : null;
+    }
+
+    private ChatKitComposerDictationClientConfig? BuildComposerDictationConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        bool? enabled = ComposerDictationEnabled ?? uiOptions.Composer.Dictation.Enabled;
+        return enabled is null
+            ? null
+            : new ChatKitComposerDictationClientConfig
+            {
+                Enabled = enabled.Value,
+            };
+    }
+
+    private ChatKitFileUploadStrategyClientConfig? BuildUploadStrategyConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        string? type = FirstNonEmpty(UploadStrategyType, uiOptions.UploadStrategy.Type);
+        string? uploadUrl = FirstNonEmpty(UploadStrategyUploadUrl, uiOptions.UploadStrategy.UploadUrl);
+
+        if (string.IsNullOrWhiteSpace(type))
+        {
+            if (string.IsNullOrWhiteSpace(uploadUrl))
+            {
+                return null;
+            }
+
+            type = "direct";
+        }
+
+        if (!string.Equals(type, "direct", StringComparison.OrdinalIgnoreCase))
+        {
+            uploadUrl = null;
+        }
+
+        return new ChatKitFileUploadStrategyClientConfig
+        {
+            Type = type,
+            UploadUrl = uploadUrl,
+        };
     }
 
     private ChatKitDisclaimerClientConfig? BuildDisclaimerConfig(ChatKitAspNetCoreOptions uiOptions)
@@ -288,7 +536,18 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     {
         bool? enabled = HeaderEnabled ?? uiOptions.Header.Enabled;
         string? title = FirstNonEmpty(HeaderTitle, uiOptions.Header.TitleText);
-        if (enabled is null && string.IsNullOrWhiteSpace(title))
+        bool? titleEnabled = HeaderTitleEnabled ?? uiOptions.Header.TitleEnabled;
+        ChatKitHeaderActionClientConfig? leftAction = BuildHeaderAction(
+            HeaderLeftActionIcon,
+            HeaderLeftActionHandler,
+            uiOptions.Header.LeftAction,
+            "left");
+        ChatKitHeaderActionClientConfig? rightAction = BuildHeaderAction(
+            HeaderRightActionIcon,
+            HeaderRightActionHandler,
+            uiOptions.Header.RightAction,
+            "right");
+        if (enabled is null && titleEnabled is null && string.IsNullOrWhiteSpace(title) && leftAction is null && rightAction is null)
         {
             return null;
         }
@@ -296,12 +555,46 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
         return new ChatKitHeaderClientConfig
         {
             Enabled = enabled,
+            LeftAction = leftAction,
+            RightAction = rightAction,
             Title = string.IsNullOrWhiteSpace(title)
-                ? null
+                ? titleEnabled is null
+                    ? null
+                    : new ChatKitHeaderTitleClientConfig
+                    {
+                        Enabled = titleEnabled,
+                    }
                 : new ChatKitHeaderTitleClientConfig
                 {
+                    Enabled = titleEnabled,
                     Text = title,
                 },
+        };
+    }
+
+    private static ChatKitHeaderActionClientConfig? BuildHeaderAction(
+        string? icon,
+        string? handler,
+        ChatKitHeaderActionOptions? fallback,
+        string side)
+    {
+        string? resolvedIcon = FirstNonEmpty(icon, fallback?.Icon);
+        string? resolvedHandler = FirstNonEmpty(handler, fallback?.OnClickHandler);
+        if (string.IsNullOrWhiteSpace(resolvedIcon) && string.IsNullOrWhiteSpace(resolvedHandler))
+        {
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(resolvedIcon) || string.IsNullOrWhiteSpace(resolvedHandler))
+        {
+            throw new InvalidOperationException(
+                $"The ChatKit header {side} action requires both an icon and a browser callback lookup path.");
+        }
+
+        return new ChatKitHeaderActionClientConfig
+        {
+            Icon = resolvedIcon,
+            OnClickHandler = resolvedHandler,
         };
     }
 
@@ -343,11 +636,11 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     {
         IEnumerable<ChatKitStartPrompt>? prompts = StarterPrompts ?? uiOptions.StartScreen.Prompts;
         ChatKitStartPromptClientConfig[]? mapped = prompts?
-            .Where(static prompt => !string.IsNullOrWhiteSpace(prompt.Label) && !string.IsNullOrWhiteSpace(prompt.Prompt))
+            .Where(static prompt => !string.IsNullOrWhiteSpace(prompt.Label) && HasStartPromptContent(prompt.Prompt))
             .Select(static prompt => new ChatKitStartPromptClientConfig
             {
                 Label = prompt.Label!,
-                Prompt = prompt.Prompt!,
+                Prompt = NormalizeStartPromptContent(prompt.Prompt),
                 Icon = prompt.Icon,
             })
             .ToArray();
@@ -355,12 +648,45 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
         return mapped is { Length: > 0 } ? mapped : null;
     }
 
+    private static object NormalizeStartPromptContent(object? prompt)
+    {
+        if (prompt is null)
+        {
+            throw new InvalidOperationException("ChatKit start screen prompt content is required.");
+        }
+
+        if (prompt is string text)
+        {
+            return text;
+        }
+
+        if (prompt is IEnumerable<global::Incursa.OpenAI.ChatKit.UserMessageContent> content)
+        {
+            return content.ToArray();
+        }
+
+        throw new InvalidOperationException(
+            "ChatKit start screen prompt content must be a string or a sequence of UserMessageContent values.");
+    }
+
+    private static bool HasStartPromptContent(object? prompt)
+    {
+        return prompt is string
+            || prompt is IEnumerable<global::Incursa.OpenAI.ChatKit.UserMessageContent>;
+    }
+
     private ChatKitThemeClientConfig? BuildThemeConfig(ChatKitAspNetCoreOptions uiOptions)
     {
         string? colorScheme = FirstNonEmpty(Theme, uiOptions.Theme.ColorScheme);
         string? radius = FirstNonEmpty(ThemeRadius, uiOptions.Theme.Radius);
         string? density = FirstNonEmpty(ThemeDensity, uiOptions.Theme.Density);
-        if (string.IsNullOrWhiteSpace(colorScheme) && string.IsNullOrWhiteSpace(radius) && string.IsNullOrWhiteSpace(density))
+        ChatKitThemeTypographyClientConfig? typography = BuildThemeTypographyConfig(uiOptions);
+        ChatKitThemeColorClientConfig? color = BuildThemeColorConfig(uiOptions);
+        if (string.IsNullOrWhiteSpace(colorScheme)
+            && string.IsNullOrWhiteSpace(radius)
+            && string.IsNullOrWhiteSpace(density)
+            && typography is null
+            && color is null)
         {
             return null;
         }
@@ -368,9 +694,100 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
         return new ChatKitThemeClientConfig
         {
             ColorScheme = colorScheme,
+            Typography = typography,
+            Color = color,
             Radius = radius,
             Density = density,
         };
+    }
+
+    private ChatKitThemeTypographyClientConfig? BuildThemeTypographyConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        int? baseSize = ThemeBaseSize ?? uiOptions.Theme.Typography.BaseSize;
+        string? fontFamily = FirstNonEmpty(ThemeFontFamily, uiOptions.Theme.Typography.FontFamily);
+        string? fontFamilyMono = FirstNonEmpty(ThemeFontFamilyMono, uiOptions.Theme.Typography.FontFamilyMono);
+        IReadOnlyList<ChatKitFontSourceClientConfig>? fontSources = BuildThemeFontSources(uiOptions);
+
+        if (baseSize is null
+            && string.IsNullOrWhiteSpace(fontFamily)
+            && string.IsNullOrWhiteSpace(fontFamilyMono)
+            && (fontSources is null || fontSources.Count == 0))
+        {
+            return null;
+        }
+
+        return new ChatKitThemeTypographyClientConfig
+        {
+            BaseSize = baseSize,
+            FontFamily = fontFamily,
+            FontFamilyMono = fontFamilyMono,
+            FontSources = fontSources,
+        };
+    }
+
+    private IReadOnlyList<ChatKitFontSourceClientConfig>? BuildThemeFontSources(ChatKitAspNetCoreOptions uiOptions)
+    {
+        ChatKitFontSourceClientConfig[]? mapped = uiOptions.Theme.Typography.FontSources
+            .Where(static fontSource =>
+                !string.IsNullOrWhiteSpace(fontSource.Family) &&
+                !string.IsNullOrWhiteSpace(fontSource.Src))
+            .Select(static fontSource => new ChatKitFontSourceClientConfig
+            {
+                Family = fontSource.Family,
+                Src = fontSource.Src,
+                Weight = fontSource.Weight,
+                Style = fontSource.Style,
+                Display = fontSource.Display,
+                UnicodeRange = fontSource.UnicodeRange,
+            })
+            .ToArray();
+
+        return mapped is { Length: > 0 } ? mapped : null;
+    }
+
+    private ChatKitThemeColorClientConfig? BuildThemeColorConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        int? grayscaleHue = ThemeColorGrayscaleHue ?? uiOptions.Theme.Color.Grayscale.Hue;
+        int? grayscaleTint = ThemeColorGrayscaleTint ?? uiOptions.Theme.Color.Grayscale.Tint;
+        int? grayscaleShade = ThemeColorGrayscaleShade ?? uiOptions.Theme.Color.Grayscale.Shade;
+        string? accentPrimary = FirstNonEmpty(ThemeColorAccentPrimary, uiOptions.Theme.Color.Accent.Primary);
+        int? accentLevel = ThemeColorAccentLevel ?? uiOptions.Theme.Color.Accent.Level;
+        string? surfaceBackground = FirstNonEmpty(ThemeColorSurfaceBackground, uiOptions.Theme.Color.Surface.Background);
+        string? surfaceForeground = FirstNonEmpty(ThemeColorSurfaceForeground, uiOptions.Theme.Color.Surface.Foreground);
+
+        ChatKitThemeGrayscaleClientConfig? grayscale = grayscaleHue is null && grayscaleTint is null && grayscaleShade is null
+            ? null
+            : new ChatKitThemeGrayscaleClientConfig
+            {
+                Hue = grayscaleHue,
+                Tint = grayscaleTint,
+                Shade = grayscaleShade,
+            };
+
+        ChatKitThemeAccentColorClientConfig? accent = string.IsNullOrWhiteSpace(accentPrimary) && accentLevel is null
+            ? null
+            : new ChatKitThemeAccentColorClientConfig
+            {
+                Primary = accentPrimary,
+                Level = accentLevel,
+            };
+
+        ChatKitThemeSurfaceColorsClientConfig? surface = string.IsNullOrWhiteSpace(surfaceBackground) && string.IsNullOrWhiteSpace(surfaceForeground)
+            ? null
+            : new ChatKitThemeSurfaceColorsClientConfig
+            {
+                Background = surfaceBackground,
+                Foreground = surfaceForeground,
+            };
+
+        return grayscale is null && accent is null && surface is null
+            ? null
+            : new ChatKitThemeColorClientConfig
+            {
+                Grayscale = grayscale,
+                Accent = accent,
+                Surface = surface,
+            };
     }
 
     private ChatKitThreadItemActionsClientConfig? BuildThreadItemActionsConfig(ChatKitAspNetCoreOptions uiOptions)

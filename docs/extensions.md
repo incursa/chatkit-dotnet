@@ -38,6 +38,7 @@ The Razor wrapper:
 - serializes host configuration into `data-incursa-chatkit-config`
 - mounts the upstream `<openai-chatkit>` web component without per-page bootstrapping code
 - supports both conventional local endpoints and direct browser ChatKit API connections
+- is documented in detail in [ChatKit tag helpers](30-contracts/chatkit-tag-helper.md)
 
 ## Minimal host sample
 
@@ -61,84 +62,7 @@ app.MapChatKit<DemoChatKitServer, Dictionary<string, object?>>(
 
 ## Razor usage
 
-```cshtml
-@addTagHelper *, Incursa.OpenAI.ChatKit.AspNetCore
-
-<incursa-chatkit-assets />
-<incursa-chatkit-api
-    api-url="/api/chatkit"
-    domain-key="contoso-domain-key" />
-```
-
-Use `<incursa-chatkit-api>` when your application hosts its own ChatKit server through `MapChatKit(...)`. Use `<incursa-chatkit-hosted>` when the browser should use OpenAI-hosted ChatKit through session and action endpoints. The generic `<incursa-chatkit>` tag helper now throws and requires callers to choose one of these explicit modes.
-
-Direct API mode requires a domain key. Set it either through `AddOpenAIChatKitApi(...)` defaults or with the `domain-key` tag-helper attribute.
-
-Client tool handlers use a browser-side registry lookup instead of serialized delegates. Register an object on the page, then reference it from the host tag helper:
-
-```html
-<script>
-  window.chatkitClientTools = {
-    async get_selected_canvas_nodes({ name, params }) {
-      return {
-        nodes: myCanvas.getSelectedNodes(params.project).map((node) => ({
-          id: node.id,
-          kind: node.type,
-        })),
-      };
-    },
-  };
-</script>
-```
-
-```cshtml
-<incursa-chatkit-assets />
-<incursa-chatkit-api
-    api-url="/api/chatkit"
-    domain-key="contoso-domain-key"
-    client-tool-handlers="window.chatkitClientTools" />
-```
-
-Each handler receives the upstream ChatKit tool-call payload `{ name, params }`. The object keys must match the server-side `ClientToolCall.name` values, and each handler must return JSON-compatible data.
-
-Entity handlers follow the same browser-registry pattern:
-
-```html
-<script>
-  window.chatkitEntities = {
-    async onTagSearch(query) {
-      return searchDocuments(query).map((document) => ({
-        id: document.id,
-        title: document.title,
-        group: "Documents",
-        interactive: true,
-        data: {
-          source: "document",
-        },
-      }));
-    },
-    onClick(entity) {
-      openDocument(entity.id);
-    },
-    async onRequestPreview(entity) {
-      return {
-        preview: buildEntityPreview(entity),
-      };
-    },
-  };
-</script>
-```
-
-```cshtml
-<incursa-chatkit-assets />
-<incursa-chatkit-api
-    api-url="/api/chatkit"
-    domain-key="contoso-domain-key"
-    entity-handlers="window.chatkitEntities"
-    entity-show-composer-menu="true" />
-```
-
-The runtime validates the returned entity array and preview payload shape before forwarding them into `setOptions(...)`. Submitted tags arrive on the server as `UserMessageTagContent` entries so application code can map them back to domain objects.
+For full tag-helper examples, supported attributes, and feature-specific patterns, see [ChatKit tag helpers](30-contracts/chatkit-tag-helper.md).
 
 When you need to refresh the packaged browser runtime after updating the frontend npm dependencies:
 

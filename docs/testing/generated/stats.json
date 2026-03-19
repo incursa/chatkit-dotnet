@@ -4,29 +4,29 @@
     "defaultBranch": "main"
   },
   "summary": {
-    "total": 21,
-    "compliant": 21,
+    "total": 24,
+    "compliant": 24,
     "missingRequired": 0,
     "invalidFormat": 0
   },
   "byCategory": [
     {
       "category": "Incursa.OpenAI.ChatKit",
-      "total": 21,
-      "compliant": 21
+      "total": 24,
+      "compliant": 24
     }
   ],
   "byTag": [],
   "byProject": [
     {
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests",
-      "total": 13,
-      "compliant": 13
+      "total": 14,
+      "compliant": 14
     },
     {
       "project": "Incursa.OpenAI.ChatKit.Tests",
-      "total": 8,
-      "compliant": 8
+      "total": 10,
+      "compliant": 10
     }
   ],
   "tests": [
@@ -120,8 +120,24 @@
       "behavior": "Direct browser API mode emits a render error instead of serializing a config payload when the domain key is missing.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 229,
+        "line": 379,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperSerializesComposerConfigAndUploadStrategy",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The API host tag helper serializes composer options and upload strategy metadata into the browser config payload.",
+      "intent": "Protect the packaged API-mode projection for attachments, composer pickers, dictation, and upload strategy.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Configured API-mode composer defaults and explicit upload strategy settings appear in the serialized host config.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 242,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperSerializesComposerConfigAndUploadStrategy"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
@@ -136,7 +152,7 @@
       "behavior": "Configured direct browser API defaults populate both the API URL and domain key in the serialized host config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 251,
+        "line": 401,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperUsesConfiguredDomainKey_WhenConfigured"
       },
       "status": "compliant",
@@ -152,7 +168,7 @@
       "behavior": "Using the generic host tag helper emits a render error instead of inferring a mode.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 21,
+        "line": 22,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_EmitsError_WhenGenericTagHelperIsUsed"
       },
       "status": "compliant",
@@ -168,7 +184,7 @@
       "behavior": "Disabling widget forwarding removes the action endpoint from the serialized config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 179,
+        "line": 329,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperDoesNotEmitActionEndpoint_WhenWidgetForwardingDisabled"
       },
       "status": "compliant",
@@ -184,7 +200,7 @@
       "behavior": "High-contrast defaults alone do not serialize a disclaimer object into the browser config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 153,
+        "line": 303,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperOmitsDisclaimer_WhenTextIsNotConfigured"
       },
       "status": "compliant",
@@ -200,7 +216,7 @@
       "behavior": "Registering a widget action callback while disabling forwarding preserves the client handler and omits the action endpoint.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 203,
+        "line": 353,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesClientOnlyWidgetActionHandler"
       },
       "status": "compliant",
@@ -216,7 +232,7 @@
       "behavior": "Configured options and explicit hosted tag helper attributes appear in the serialized host config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 74,
+        "line": 75,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesConfiguredUiOptions"
       },
       "status": "compliant",
@@ -232,7 +248,7 @@
       "behavior": "The hosted host tag helper emits the provided session and action endpoints and omits custom API settings.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 43,
+        "line": 44,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesExplicitHostedEndpoints"
       },
       "status": "compliant",
@@ -312,8 +328,40 @@
       "behavior": "When HEAD already has a release tag and tracked changes exist, the script continues instead of failing on the existing HEAD tag guard.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ReleaseVersioningScriptTests.cs",
-        "line": 12,
+        "line": 13,
         "member": "Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_AllowsDirtyTreeOnTaggedHead_WhenTagCreationIsSkipped"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_CalculateOnlyReportsTargetVersion_WithoutMutatingFiles",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The release versioning script can preview the computed version without changing the repository.",
+      "intent": "Support a safe check for what the next release would be before committing to any release action.",
+      "scenario": "REPO-RELEASE-003",
+      "behavior": "When calculate-only mode is used, the script reports the computed bump and exits before validation or repo mutation.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ReleaseVersioningScriptTests.cs",
+        "line": 69,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_CalculateOnlyReportsTargetVersion_WithoutMutatingFiles"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_HonorsExplicitMinorBump_WhenApiDiffLooksBreaking",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The release versioning script can honor a manual minor bump override when the public API diff looks breaking.",
+      "intent": "Protect the explicit bump override path for semver exceptions that are intentionally non-breaking.",
+      "scenario": "REPO-RELEASE-002",
+      "behavior": "When the shipped API diff would normally require a major bump, the script respects -Bump Minor and the validator accepts it.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ReleaseVersioningScriptTests.cs",
+        "line": 35,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_HonorsExplicitMinorBump_WhenApiDiffLooksBreaking"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.Tests"

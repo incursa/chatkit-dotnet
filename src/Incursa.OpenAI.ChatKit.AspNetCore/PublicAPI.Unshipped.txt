@@ -1,37 +1,95 @@
 #nullable enable
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreServiceCollectionExtensions.AddOpenAIChatKitApi(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, string apiUrl, string? domainKey = null, System.Action<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions>? configure = null) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreServiceCollectionExtensions.AddOpenAIChatKitHosted(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions>? configure = null) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.ClientToolHandlers.get -> string?
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.ClientToolHandlers.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.Disclaimer.get -> Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.Entities.get -> Incursa.OpenAI.ChatKit.AspNetCore.ChatKitEntitiesOptions
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.EntityHandlers.get -> string?
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.EntityHandlers.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.WidgetActionHandler.get -> string?
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitAspNetCoreOptions.WidgetActionHandler.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions.HighContrast.get -> bool?
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions.HighContrast.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions.Text.get -> string?
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitDisclaimerOptions.Text.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitEntitiesOptions
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitEntitiesOptions.ShowComposerMenu.get -> bool?
-Incursa.OpenAI.ChatKit.AspNetCore.ChatKitEntitiesOptions.ShowComposerMenu.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitApiTagHelper
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitApiTagHelper.IncursaChatKitApiTagHelper(System.IServiceProvider serviceProvider, Microsoft.Extensions.Logging.ILogger<Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitApiTagHelper> logger) -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitHostedTagHelper
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitHostedTagHelper.IncursaChatKitHostedTagHelper(System.IServiceProvider serviceProvider, Microsoft.Extensions.Logging.ILogger<Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitHostedTagHelper> logger) -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.IncursaChatKitTagHelper(System.IServiceProvider serviceProvider, Microsoft.Extensions.Logging.ILogger logger) -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.ClientToolHandlers.get -> string?
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.ClientToolHandlers.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.DisclaimerHighContrast.get -> bool?
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.DisclaimerHighContrast.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.DisclaimerText.get -> string?
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.DisclaimerText.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.EntityHandlers.get -> string?
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.EntityHandlers.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.EntityShowComposerMenu.get -> bool?
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.EntityShowComposerMenu.set -> void
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.WidgetActionHandler.get -> string?
-Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers.IncursaChatKitTagHelper.WidgetActionHandler.set -> void
+namespace Incursa.OpenAI.ChatKit.AspNetCore
+{
+    public sealed class ChatKitFontSource
+    {
+        public ChatKitFontSource() { }
+        public string? Display { get; set; }
+        public string? Family { get; set; }
+        public string? Src { get; set; }
+        public string? Style { get; set; }
+        public string? UnicodeRange { get; set; }
+        public object? Weight { get; set; }
+    }
+
+    public sealed class ChatKitHeaderActionOptions
+    {
+        public ChatKitHeaderActionOptions() { }
+        public string? Icon { get; set; }
+        public string? OnClickHandler { get; set; }
+    }
+
+    public sealed class ChatKitThemeAccentColorOptions
+    {
+        public ChatKitThemeAccentColorOptions() { }
+        public int? Level { get; set; }
+        public string? Primary { get; set; }
+    }
+
+    public sealed class ChatKitThemeColorOptions
+    {
+        public ChatKitThemeColorOptions() { }
+        public ChatKitThemeAccentColorOptions Accent { get; }
+        public ChatKitThemeGrayscaleOptions Grayscale { get; }
+        public ChatKitThemeSurfaceColorsOptions Surface { get; }
+    }
+
+    public sealed class ChatKitThemeGrayscaleOptions
+    {
+        public ChatKitThemeGrayscaleOptions() { }
+        public int? Hue { get; set; }
+        public int? Shade { get; set; }
+        public int? Tint { get; set; }
+    }
+
+    public sealed class ChatKitThemeOptions
+    {
+        public ChatKitThemeOptions() { }
+        public ChatKitThemeColorOptions Color { get; }
+        public ChatKitThemeTypographyOptions Typography { get; }
+    }
+
+    public sealed class ChatKitThemeSurfaceColorsOptions
+    {
+        public ChatKitThemeSurfaceColorsOptions() { }
+        public string? Background { get; set; }
+        public string? Foreground { get; set; }
+    }
+
+    public sealed class ChatKitThemeTypographyOptions
+    {
+        public ChatKitThemeTypographyOptions() { }
+        public int? BaseSize { get; set; }
+        public string? FontFamily { get; set; }
+        public string? FontFamilyMono { get; set; }
+        public System.Collections.Generic.List<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitFontSource> FontSources { get; }
+    }
+
+    public sealed class ChatKitHeaderOptions
+    {
+        public ChatKitHeaderOptions() { }
+        public ChatKitHeaderActionOptions? LeftAction { get; set; }
+        public ChatKitHeaderActionOptions? RightAction { get; set; }
+    }
+}
+
+namespace Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers
+{
+    public sealed class IncursaChatKitTagHelper
+    {
+        public int? ThemeBaseSize { get; set; }
+        public string? ThemeColorAccentPrimary { get; set; }
+        public int? ThemeColorAccentLevel { get; set; }
+        public int? ThemeColorGrayscaleHue { get; set; }
+        public int? ThemeColorGrayscaleShade { get; set; }
+        public int? ThemeColorGrayscaleTint { get; set; }
+        public string? ThemeColorSurfaceBackground { get; set; }
+        public string? ThemeColorSurfaceForeground { get; set; }
+        public string? ThemeFontFamily { get; set; }
+        public string? ThemeFontFamilyMono { get; set; }
+        public string? HeaderLeftActionHandler { get; set; }
+        public string? HeaderLeftActionIcon { get; set; }
+        public string? HeaderRightActionHandler { get; set; }
+        public string? HeaderRightActionIcon { get; set; }
+    }
+}
