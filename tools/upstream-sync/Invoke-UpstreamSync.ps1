@@ -6,6 +6,7 @@ param(
     [switch]$Loop,
     [int]$IntervalMinutes = 5,
     [switch]$Once,
+    [switch]$CheckOnly,
     [string]$UpstreamPath = 'C:\src\openai\chatkit-python',
     [string]$UpstreamBranch = 'main',
     [switch]$SkipPush,
@@ -18,6 +19,10 @@ param(
 
 if ($Loop -and $Once) {
     throw 'Cannot specify both -Loop and -Once.'
+}
+
+if ($CheckOnly -and ($Loop -or $Once)) {
+    throw 'Cannot specify -CheckOnly together with -Loop or -Once.'
 }
 
 if ($IntervalMinutes -lt 1) {
@@ -34,9 +39,11 @@ $CodexNotesPath = Join-Path $ScriptRoot 'CODEX_TRANSLATION_NOTES.md'
 $GuidancePath = Join-Path $RepoRoot 'AGENTS.md'
 
 Ensure-Tool 'git'
-Ensure-Tool 'gh'
-Ensure-Tool 'codex'
-Ensure-Tool 'dotnet'
+if (-not $CheckOnly) {
+    Ensure-Tool 'gh'
+    Ensure-Tool 'codex'
+    Ensure-Tool 'dotnet'
+}
 
 function Persist-TrackedState {
     param($State)
@@ -87,8 +94,7 @@ function Reset-WorkingMain {
     try {
         Write-SyncLog 'INFO' 'Refreshing local main branch against origin.'
         & git fetch origin main
-        & git checkout main
-        & git pull --ff-only origin main
+        & git checkout -B main origin/main
     } finally {
         Pop-Location
     }
@@ -197,7 +203,7 @@ function Create-SyncBranch {
 
     Push-Location $RepoRoot
     try {
-        & git checkout main
+        & git checkout -B main origin/main
         & git rev-parse --verify --quiet "refs/heads/$branchName" > $null
         if ($LASTEXITCODE -ne 0) {
             & git checkout -b $branchName
@@ -283,6 +289,17 @@ function Run-SyncCycle {
 
     $baseSha = $ForceFromSha ?? $TrackedState.tracked.lastTranslatedSha ?? $TrackedState.local.bootstrapLastTranslatedSha
     if (-not $baseSha) {
+        if ($CheckOnly) {
+            [ordered]@{
+                status = 'bootstrap'
+                baseSha = $null
+                latestSha = $latestSha
+                commitLines = @()
+                changedFiles = @()
+            } | ConvertTo-Json -Depth 6 -Compress
+            return
+        }
+
         $TrackedState.local.bootstrapLastTranslatedSha = $latestSha
         Persist-LocalState -State $TrackedState.local
         Write-SyncLog 'INFO' "Bootstrapped last translated SHA to $latestSha. Run again to translate future commits."
@@ -292,13 +309,36 @@ function Run-SyncCycle {
 
     if ($baseSha -eq $latestSha) {
         Write-SyncLog 'INFO' 'No new upstream commits detected.'
+        if ($CheckOnly) {
+            [ordered]@{
+                status = 'current'
+                baseSha = $baseSha
+                latestSha = $latestSha
+                commitLines = @()
+                changedFiles = @()
+            } | ConvertTo-Json -Depth 6 -Compress
+            return
+        }
+
         Update-LocalMetadata -Sha $latestSha
         return
     }
 
     $commitLines = Get-CommitLines -FromSha $baseSha -ToSha $latestSha
-    $diffLines = Get-UpstreamDiff -FromSha $baseSha -ToSha $latestSha
     $changedFiles = Get-ChangedFiles -FromSha $baseSha -ToSha $latestSha
+
+    if ($CheckOnly) {
+        [ordered]@{
+            status = 'updates-found'
+            baseSha = $baseSha
+            latestSha = $latestSha
+            commitLines = @($commitLines)
+            changedFiles = @($changedFiles)
+        } | ConvertTo-Json -Depth 6 -Compress
+        return
+    }
+
+    $diffLines = Get-UpstreamDiff -FromSha $baseSha -ToSha $latestSha
 
     try {
         $prompt = New-TranslationPrompt `
@@ -363,6 +403,17 @@ $TrackedState = Initialize-UpstreamSyncState `
     -LocalStatePath $LocalStatePath `
     -UpstreamPath $UpstreamPath `
     -UpstreamBranch $UpstreamBranch
+
+if ($CheckOnly) {
+    try {
+        Run-SyncCycle
+    } catch {
+        Write-SyncLog 'ERROR' $_.Exception.Message
+        exit 1
+    }
+
+    return
+}
 
 if ($Loop) {
     do {

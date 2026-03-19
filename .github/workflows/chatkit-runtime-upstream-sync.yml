@@ -1,0 +1,47 @@
+name: ChatKit Runtime Upstream Sync
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-chatkit-runtime:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: chatkit-runtime-upstream-sync
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/package-lock.json
+
+      - name: Sync ChatKit runtime npm dependency
+        shell: pwsh
+        run: ./tools/upstream-sync/Invoke-UpstreamChatKitRuntimeSync.ps1
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: bot/chatkit-runtime-upstream-sync
+          delete-branch: true
+          title: Sync ChatKit runtime from @openai/chatkit-react
+          commit-message: "chore: sync ChatKit runtime npm dependency"
+          body: |
+            Automated update for the packaged ChatKit runtime assets.
+
+            This workflow checks `@openai/chatkit-react` once per day and
+            regenerates the ASP.NET Core package assets when a newer release
+            is available.

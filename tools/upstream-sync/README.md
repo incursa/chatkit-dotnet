@@ -2,6 +2,8 @@
 
 This folder hosts a PowerShell watcher that polls the local `chatkit-python` clone, generates Codex-driven translations of new upstream commits, validates them locally, and pushes or creates PRs for the translated changes.
 
+The same folder also hosts a separate npm sync script for the packaged ChatKit runtime assets. The Python translation flow and the npm dependency flow are intentionally split so each upstream source can be updated independently.
+
 ## Requirements
 
 - PowerShell 7 or Windows PowerShell
@@ -33,6 +35,16 @@ The first invocation bootstraps the state by recording the current upstream `mai
   pwsh tools/upstream-sync/Invoke-UpstreamSync.ps1 -Once -ForceFromSha <sha>
   ```
 
+- Check whether the Python upstream has moved without translating it:
+  ```
+  pwsh tools/upstream-sync/Invoke-UpstreamSync.ps1 -CheckOnly
+  ```
+
+- Update the packaged ChatKit runtime from the latest `@openai/chatkit-react` release:
+  ```
+  pwsh tools/upstream-sync/Invoke-UpstreamChatKitRuntimeSync.ps1
+  ```
+
 - Skip steps when desired:
   - `-SkipBuild`, `-SkipTests` disable the respective `dotnet` commands.
   - `-SkipPush` avoids pushing the sync branch (also prevents PR creation).
@@ -53,3 +65,5 @@ Codex is run via `codex exec --dangerously-bypass-approvals-and-sandbox` from th
 ## Post-sync state
 
 Successful syncs commit the translated files plus the updated `state.json`, push a `sync/chatkit-upstream-<shortsha>` branch, and call `gh pr create` with a title/body that references the upstream range and commits. Failed runs leave the branch and working tree intact for inspection; `state.json` is only updated when both translation and validation succeed.
+
+The npm runtime sync updates `src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/package.json`, `package-lock.json`, and the generated `wwwroot/chatkit` bundle when a newer `@openai/chatkit-react` release is available.
