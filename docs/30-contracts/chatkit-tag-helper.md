@@ -304,6 +304,54 @@ Use `entity-handlers` to supply tag search, click, and preview callbacks:
 
 The runtime validates entity search results and preview envelopes before forwarding them to the web component.
 
+## Disclaimer
+
+Use the disclaimer to surface a short message below the composer.
+
+Available attributes:
+
+- `disclaimer-text`
+- `disclaimer-high-contrast`
+
+Example:
+
+```cshtml
+<incursa-chatkit-hosted
+    session-endpoint="/api/chatkit/session"
+    action-endpoint="/api/chatkit/action"
+    disclaimer-text="AI may make mistakes. Verify important details." />
+```
+
+Enable high-contrast rendering to improve legibility on light or dark backgrounds:
+
+```cshtml
+<incursa-chatkit-hosted
+    session-endpoint="/api/chatkit/session"
+    action-endpoint="/api/chatkit/action"
+    disclaimer-text="AI may make mistakes. Verify important details."
+    disclaimer-high-contrast="true" />
+```
+
+You can also configure disclaimer defaults globally and override them per instance:
+
+```csharp
+builder.Services.AddOpenAIChatKitHosted(options =>
+{
+    options.Disclaimer.Text = "AI may make mistakes. Verify important details.";
+    options.Disclaimer.HighContrast = false;
+});
+```
+
+```cshtml
+<incursa-chatkit-hosted
+    session-endpoint="/api/chatkit/session"
+    action-endpoint="/api/chatkit/action"
+    disclaimer-text="Review this output before acting."
+    disclaimer-high-contrast="true" />
+```
+
+The disclaimer block is omitted from the serialized config entirely when no text is configured. Setting `disclaimer-high-contrast` alone without a text value has no effect.
+
 ## Widget actions
 
 Use `widget-action-handler` for client-side handling of widget actions and `forward-widget-actions` to control server forwarding.

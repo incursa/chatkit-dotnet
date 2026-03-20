@@ -121,6 +121,10 @@ test("buildOptions preserves serializable config and wires callbacks without Rea
         dictation: {
           enabled: true
         }
+      },
+      disclaimer: {
+        text: "AI may make mistakes. Verify important details.",
+        highContrast: true
       }
     },
     globalScope
@@ -154,6 +158,8 @@ test("buildOptions preserves serializable config and wires callbacks without Rea
   assert.equal(options.composer.tools[0].id, "summarize");
   assert.equal(options.composer.models[0].default, true);
   assert.equal(options.composer.dictation.enabled, true);
+  assert.equal(options.disclaimer.text, "AI may make mistakes. Verify important details.");
+  assert.equal(options.disclaimer.highContrast, true);
   assert.equal(typeof options.onClientTool, "function");
 });
 
