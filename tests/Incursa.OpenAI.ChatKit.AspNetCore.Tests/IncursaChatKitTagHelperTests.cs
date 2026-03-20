@@ -427,6 +427,82 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.Equal("en", config["locale"]?.GetValue<string>());
     }
 
+    /// <summary>The hosted host tag helper serializes a client tool handler lookup path set directly on the tag helper.</summary>
+    /// <intent>Protect the client tool callback parity surface exposed by the ASP.NET Core Razor wrapper.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Setting the client-tool-handlers attribute serializes the lookup path into the browser host config so the runtime can wire onClientTool.</behavior>
+    [Fact]
+    public async Task ProcessAsync_HostedTagHelperSerializesClientToolHandlers_WhenSetByAttribute()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitHosted()
+            .BuildServiceProvider();
+
+        IncursaChatKitHostedTagHelper tagHelper = CreateHostedTagHelper(services);
+        tagHelper.SessionEndpoint = "/api/chatkit/session";
+        tagHelper.ActionEndpoint = "/api/chatkit/action";
+        tagHelper.ClientToolHandlers = "window.chatkitClientTools";
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.Equal("window.chatkitClientTools", config["clientToolHandlers"]?.GetValue<string>());
+    }
+
+    /// <summary>The hosted host tag helper propagates a default client tool handler lookup path from service options.</summary>
+    /// <intent>Protect the server-side options path that wires onClientTool without requiring per-page tag helper attributes.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Configuring ClientToolHandlers in AddOpenAIChatKitHosted populates the browser host config with the lookup path.</behavior>
+    [Fact]
+    public async Task ProcessAsync_HostedTagHelperUsesDefaultClientToolHandlers_WhenConfigured()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitHosted(options =>
+            {
+                options.ClientToolHandlers = "window.defaultClientTools";
+            })
+            .BuildServiceProvider();
+
+        IncursaChatKitHostedTagHelper tagHelper = CreateHostedTagHelper(services);
+        tagHelper.SessionEndpoint = "/api/chatkit/session";
+        tagHelper.ActionEndpoint = "/api/chatkit/action";
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.Equal("window.defaultClientTools", config["clientToolHandlers"]?.GetValue<string>());
+    }
+
+    /// <summary>The API host tag helper serializes a client tool handler lookup path in direct API mode.</summary>
+    /// <intent>Protect the client tool callback parity surface for the direct browser API mode wrapper.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Setting client-tool-handlers on the API tag helper serializes the lookup path into the browser host config so the runtime can wire onClientTool.</behavior>
+    [Fact]
+    public async Task ProcessAsync_ApiTagHelperSerializesClientToolHandlers_WhenSet()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitApi(
+                "https://example.contoso.com/chatkit",
+                "contoso-domain-key")
+            .BuildServiceProvider();
+
+        IncursaChatKitApiTagHelper tagHelper = CreateApiTagHelper(services);
+        tagHelper.ApiUrl = "https://example.contoso.com/chatkit";
+        tagHelper.ClientToolHandlers = "window.chatkitClientTools";
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.Equal("window.chatkitClientTools", config["clientToolHandlers"]?.GetValue<string>());
+        Assert.Null(config["sessionEndpoint"]);
+    }
+
     private static TagHelperContext CreateContext()
     {
         return new TagHelperContext(
