@@ -157,6 +157,55 @@ test("buildOptions preserves serializable config and wires callbacks without Rea
   assert.equal(typeof options.onClientTool, "function");
 });
 
+test("buildOptions forwards entities config and wires entity handler callbacks", async () => {
+  const calls = [];
+  const globalScope = {
+    chatkit: {
+      entities: {
+        async onTagSearch(query) {
+          calls.push(["search", query]);
+          return [{ id: "doc-1", title: "Document" }];
+        },
+        onClick(entity) {
+          calls.push(["click", entity.id]);
+        },
+        async onRequestPreview(entity) {
+          calls.push(["preview", entity.id]);
+          return { preview: { type: "root", children: [] } };
+        }
+      }
+    }
+  };
+
+  const options = buildOptions(
+    {
+      sessionEndpoint: "/api/chatkit/session",
+      entityHandlers: "chatkit.entities",
+      entities: {
+        showComposerMenu: true
+      }
+    },
+    globalScope
+  );
+
+  assert.equal(options.entities.showComposerMenu, true);
+  assert.ok(typeof options.entities.onTagSearch === "function");
+  assert.ok(typeof options.entities.onClick === "function");
+  assert.ok(typeof options.entities.onRequestPreview === "function");
+
+  const searchResults = await options.entities.onTagSearch("doc");
+  options.entities.onClick({ id: "doc-1", title: "Document" });
+  const previewResult = await options.entities.onRequestPreview({ id: "doc-1", title: "Document" });
+
+  assert.deepEqual(searchResults, [{ id: "doc-1", title: "Document" }]);
+  assert.deepEqual(previewResult, { preview: { type: "root", children: [] } });
+  assert.deepEqual(calls, [
+    ["search", "doc"],
+    ["click", "doc-1"],
+    ["preview", "doc-1"]
+  ]);
+});
+
 test("buildOptions rejects direct API mode without a domain key", () => {
   assert.throws(
     () =>
