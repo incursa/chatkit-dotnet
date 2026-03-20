@@ -24,4 +24,5 @@ workbench:
 - [Parity manifest](parity/manifest.md)
 - [Maintenance checklist](parity/maintenance-checklist.md)
 - [Repository scope boundary](quality/repo-scope-boundary.md)
+- [Tracking](60-tracking/README.md)
 - [Testing docs](testing/README.md)

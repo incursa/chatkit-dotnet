@@ -1,0 +1,69 @@
+name: Workbench Main Task Sync
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  sync-tasks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: workbench-main-sync
+      cancel-in-progress: true
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Setup .NET from global.json
+        if: ${{ hashFiles('global.json') != '' }}
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Setup .NET default
+        if: ${{ hashFiles('global.json') == '' }}
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Resolve Workbench tool
+        shell: bash
+        run: |
+          cat > ./.workbench.nuget.config <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+            </packageSources>
+          </configuration>
+          EOF
+
+          if [ -f .config/dotnet-tools.json ] && grep -qi '"incursa.workbench"' .config/dotnet-tools.json; then
+            dotnet tool restore --configfile ./.workbench.nuget.config
+          else
+            mkdir -p ./.tools
+            dotnet tool install --tool-path ./.tools incursa.workbench --configfile ./.workbench.nuget.config
+          fi
+
+      - name: Sync local work items to GitHub
+        shell: bash
+        run: |
+          if [ -x ./.tools/workbench ]; then
+            ./.tools/workbench item sync --
+          else
+            dotnet tool run workbench -- item sync --
+          fi

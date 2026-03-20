@@ -1,0 +1,54 @@
+name: NOTICE Daily Check
+
+on:
+  schedule:
+    - cron: "30 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  notice-check:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: notice-daily-check
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Regenerate NOTICE
+        shell: pwsh
+        run: pwsh -File scripts/compliance/update-notice.ps1
+
+      - name: Detect NOTICE changes
+        id: notice_diff
+        shell: bash
+        run: |
+          if [[ -n "$(git status --porcelain -- NOTICE.md)" ]]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create NOTICE refresh pull request
+        if: steps.notice_diff.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: codex/notice-refresh
+          delete-branch: true
+          commit-message: "chore: refresh NOTICE.md"
+          title: "chore: refresh NOTICE.md"
+          body: |
+            Automated NOTICE refresh generated from the current resolved NuGet dependency graph.
+
+            This updates `NOTICE.md` when package inventory or nested notice references change.
+          add-paths: |
+            NOTICE.md

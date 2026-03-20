@@ -108,17 +108,33 @@ jobs:
             const commitLines = Array.isArray(state.commitLines) ? state.commitLines : [];
             const changedFiles = Array.isArray(state.changedFiles) ? state.changedFiles : [];
             const body = [
-              'A new upstream `chatkit-python` update is available for translation.',
+              '## Summary',
+              '',
+              'A new upstream `chatkit-python` change is available for review and translation.',
+              '',
+              '## Upstream Range',
               '',
               `- Base SHA: \`${state.baseSha ?? '(bootstrap)'}\``,
               `- Latest SHA: \`${state.latestSha}\``,
-              '- Manual translation command: `pwsh tools/upstream-sync/Invoke-UpstreamSync.ps1`',
               '',
               '## Commits',
+              '',
               ...(commitLines.length > 0 ? commitLines.map((line) => `- ${line}`) : ['- (no commit lines were reported)']),
               '',
-              '## Changed files',
+              '## Changed Files',
+              '',
               ...(changedFiles.length > 0 ? changedFiles.map((file) => `- ${file}`) : ['- (no changed files were reported)']),
+              '',
+              '## Review Request',
+              '',
+              '- Review the upstream diff against the included .NET surface in `docs/parity/manifest.md`.',
+              '- If the change is in scope, create or update a focused work item in `docs/70-work/items/`.',
+              '- If Copilot coding agent is available for this repository, assign this issue to Copilot so it can start the review/workflow automatically.',
+              '',
+              '## Notes',
+              '',
+              '- The daily upstream check workflow creates this issue automatically when new upstream commits are detected.',
+              '- The issue body stays standardized so the review handoff is consistent.',
               '',
               'This issue was created automatically by the daily upstream check workflow.'
             ].join('\n');
@@ -131,3 +147,16 @@ jobs:
             });
 
             core.info(`Created issue #${issue.data.number} for ${state.latestSha}.`);
+
+            try {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.data.number,
+                assignees: ['copilot-swe-agent']
+              });
+              core.info(`Assigned issue #${issue.data.number} to Copilot.`);
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              core.warning(`Could not assign Copilot to issue #${issue.data.number}: ${message}`);
+            }
