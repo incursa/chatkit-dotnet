@@ -61,11 +61,19 @@ public sealed class ChatKitAspNetCoreOptions
 
     /// <summary>
     /// Gets or sets the browser lookup path for the widget action callback registration.
+    /// When set, the resolved function receives <c>(action, widgetItem)</c> on every widget action.
+    /// This handler runs before server-side forwarding (see <see cref="ForwardWidgetActions" />),
+    /// so throwing inside the callback prevents the action from being forwarded to the endpoint.
+    /// Both a client handler and endpoint forwarding can be active simultaneously.
     /// </summary>
     public string? WidgetActionHandler { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether widget actions should be forwarded to <see cref="ActionEndpoint" />.
+    /// When both this and <see cref="WidgetActionHandler" /> are active, the client handler runs first.
+    /// Throwing inside the client handler vetoes forwarding; if the handler succeeds the action is also
+    /// sent to the server endpoint. Set this to <see langword="false" /> to use a client-only handler
+    /// without any server-side forwarding.
     /// </summary>
     public bool ForwardWidgetActions { get; set; } = true;
 

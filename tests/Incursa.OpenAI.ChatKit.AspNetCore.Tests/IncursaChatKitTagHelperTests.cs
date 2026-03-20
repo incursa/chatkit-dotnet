@@ -371,7 +371,33 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.False(config["widgetActions"]?["forwardToEndpoint"]?.GetValue<bool>());
     }
 
-    /// <summary>The API host tag helper rejects direct browser API mode when no domain key is configured.</summary>
+    /// <summary>The hosted host tag helper serializes both a client handler and endpoint forwarding when both are configured.</summary>
+    /// <intent>Protect the coexistence contract where client handling and server forwarding are both active.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>When a widget action handler and forward-widget-actions are both configured, both are emitted so the runtime can run client handling first, then forward to the endpoint.</behavior>
+    [Fact]
+    public async Task ProcessAsync_HostedTagHelperSerializesCoexistenceOfHandlerAndForwarding()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitHosted()
+            .BuildServiceProvider();
+
+        IncursaChatKitHostedTagHelper tagHelper = CreateHostedTagHelper(services);
+        tagHelper.SessionEndpoint = "/api/chatkit/session";
+        tagHelper.ActionEndpoint = "/api/chatkit/action";
+        tagHelper.WidgetActionHandler = "window.chatkit.onWidgetAction";
+        tagHelper.ForwardWidgetActions = true;
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.Equal("window.chatkit.onWidgetAction", config["widgetActionHandler"]?.GetValue<string>());
+        Assert.Equal("/api/chatkit/action", config["actionEndpoint"]?.GetValue<string>());
+        Assert.True(config["widgetActions"]?["forwardToEndpoint"]?.GetValue<bool>());
+    }
+
     /// <intent>Protect the direct browser wrapper from serializing an invalid ChatKit API configuration.</intent>
     /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
     /// <behavior>Direct browser API mode emits a render error instead of serializing a config payload when the domain key is missing.</behavior>
