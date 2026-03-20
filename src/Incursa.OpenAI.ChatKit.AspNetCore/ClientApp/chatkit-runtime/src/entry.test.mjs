@@ -157,6 +157,55 @@ test("buildOptions preserves serializable config and wires callbacks without Rea
   assert.equal(typeof options.onClientTool, "function");
 });
 
+test("buildOptions forwards entities config and wires entity handler callbacks", async () => {
+  const calls = [];
+  const globalScope = {
+    chatkit: {
+      entities: {
+        async onTagSearch(query) {
+          calls.push(["search", query]);
+          return [{ id: "doc-1", title: "Document" }];
+        },
+        onClick(entity) {
+          calls.push(["click", entity.id]);
+        },
+        async onRequestPreview(entity) {
+          calls.push(["preview", entity.id]);
+          return { preview: { type: "root", children: [] } };
+        }
+      }
+    }
+  };
+
+  const options = buildOptions(
+    {
+      sessionEndpoint: "/api/chatkit/session",
+      entityHandlers: "chatkit.entities",
+      entities: {
+        showComposerMenu: true
+      }
+    },
+    globalScope
+  );
+
+  assert.equal(options.entities.showComposerMenu, true);
+  assert.ok(typeof options.entities.onTagSearch === "function");
+  assert.ok(typeof options.entities.onClick === "function");
+  assert.ok(typeof options.entities.onRequestPreview === "function");
+
+  const searchResults = await options.entities.onTagSearch("doc");
+  options.entities.onClick({ id: "doc-1", title: "Document" });
+  const previewResult = await options.entities.onRequestPreview({ id: "doc-1", title: "Document" });
+
+  assert.deepEqual(searchResults, [{ id: "doc-1", title: "Document" }]);
+  assert.deepEqual(previewResult, { preview: { type: "root", children: [] } });
+  assert.deepEqual(calls, [
+    ["search", "doc"],
+    ["click", "doc-1"],
+    ["preview", "doc-1"]
+  ]);
+});
+
 test("buildOptions rejects direct API mode without a domain key", () => {
   assert.throws(
     () =>
@@ -165,6 +214,92 @@ test("buildOptions rejects direct API mode without a domain key", () => {
       }, {}),
     /ChatKit direct API mode requires a domainKey\./
   );
+});
+
+test("buildOptions wires widgets.onAction for client handler in API mode", async () => {
+  const calls = [];
+  const globalScope = {
+    chatkit: {
+      async onWidgetAction(action, widgetItem) {
+        calls.push([action.type, widgetItem.id]);
+      }
+    }
+  };
+
+  const options = buildOptions(
+    {
+      apiUrl: "/api/chatkit",
+      domainKey: "domain-key",
+      widgetActionHandler: "chatkit.onWidgetAction"
+    },
+    globalScope
+  );
+
+  assert.equal(typeof options.widgets?.onAction, "function");
+  await options.widgets.onAction({ type: "save_profile" }, { id: "widget-1", widget: { type: "card" } });
+  assert.deepEqual(calls, [["save_profile", "widget-1"]]);
+});
+
+test("buildOptions wires widgets.onAction for client-only handler in hosted mode", async () => {
+  const calls = [];
+  const globalScope = {
+    chatkit: {
+      async onWidgetAction(action, widgetItem) {
+        calls.push([action.type, widgetItem.id]);
+      }
+    }
+  };
+
+  const options = buildOptions(
+    {
+      sessionEndpoint: "/api/chatkit/session",
+      widgetActionHandler: "chatkit.onWidgetAction",
+      widgetActions: { forwardToEndpoint: false }
+    },
+    globalScope
+  );
+
+  assert.equal(typeof options.widgets?.onAction, "function");
+  await options.widgets.onAction({ type: "save_profile" }, { id: "widget-1", widget: { type: "card" } });
+  assert.deepEqual(calls, [["save_profile", "widget-1"]]);
+});
+
+test("buildOptions composes widgets.onAction with client handler running before endpoint forwarding", async () => {
+  const calls = [];
+  const globalScope = {
+    chatkit: {
+      async onWidgetAction(action, widgetItem) {
+        calls.push(["client", action.type, widgetItem.id]);
+      }
+    }
+  };
+
+  const originalFetch = globalThis.fetch;
+  const forwardCalls = [];
+  globalThis.fetch = async (url, init) => {
+    forwardCalls.push(url);
+    return { ok: true };
+  };
+
+  try {
+    const options = buildOptions(
+      {
+        sessionEndpoint: "/api/chatkit/session",
+        actionEndpoint: "/api/chatkit/action",
+        widgetActionHandler: "chatkit.onWidgetAction",
+        widgetActions: { forwardToEndpoint: true }
+      },
+      globalScope
+    );
+
+    assert.equal(typeof options.widgets?.onAction, "function");
+    await options.widgets.onAction({ type: "save_profile" }, { id: "widget-1", widget: { type: "card" } });
+    assert.deepEqual(calls, [["client", "save_profile", "widget-1"]]);
+    assert.equal(forwardCalls.length, 1);
+    assert.equal(forwardCalls[0], "/api/chatkit/action");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("renderHost creates a direct openai-chatkit element and applies options immediately", () => {
