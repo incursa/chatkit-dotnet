@@ -4,16 +4,16 @@
     "defaultBranch": "main"
   },
   "summary": {
-    "total": 24,
-    "compliant": 24,
+    "total": 25,
+    "compliant": 25,
     "missingRequired": 0,
     "invalidFormat": 0
   },
   "byCategory": [
     {
       "category": "Incursa.OpenAI.ChatKit",
-      "total": 24,
-      "compliant": 24
+      "total": 25,
+      "compliant": 25
     }
   ],
   "byTag": [],
@@ -25,8 +25,8 @@
     },
     {
       "project": "Incursa.OpenAI.ChatKit.Tests",
-      "total": 10,
-      "compliant": 10
+      "total": 11,
+      "compliant": 11
     }
   ],
   "tests": [
@@ -264,7 +264,7 @@
       "behavior": "Processing a threads.create payload produces stream events for thread creation and the completed assistant item.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 91,
+        "line": 162,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn"
       },
       "status": "compliant",
@@ -280,7 +280,7 @@
       "behavior": "Serializing a threads.create request emits the expected type discriminator and content payload shape.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 14,
+        "line": 15,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.Serialize_ThreadsCreateRequest_UsesExactDiscriminator"
       },
       "status": "compliant",
@@ -296,8 +296,24 @@
       "behavior": "Simple user and assistant items are translated into the corresponding agent conversation item types and text values.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 127,
+        "line": 198,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.SimpleToAgentInput_MapsUserAndAssistantMessages"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_ParsesExportAndDecodedPayload",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget exports load from disk and expose the authoring metadata and decoded widget payload.",
+      "intent": "Protect the new file-backed widget definition API used by downstream ChatKit integrations.",
+      "scenario": "LIB-CHATKIT-CORE-004",
+      "behavior": "Loading a widget export parses the preview widget, keeps the template and schema intact, and decodes the embedded base64url widget payload.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
+        "line": 92,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_ParsesExportAndDecodedPayload"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.Tests"
@@ -312,7 +328,7 @@
       "behavior": "Diffing compatible before and after widgets returns only the appended text delta and completion state.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 41,
+        "line": 42,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly"
       },
       "status": "compliant",

@@ -1,13 +1,13 @@
 # Test Documentation
 
-- Total tests: 24
-- Compliant: 24 (100.0%)
+- Total tests: 25
+- Compliant: 25 (100.0%)
 - Missing required: 0
 - Invalid format: 0
 
 ## Top categories
 
-- Incursa.OpenAI.ChatKit (24)
+- Incursa.OpenAI.ChatKit (25)
 
 ## Browse
 

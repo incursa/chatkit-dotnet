@@ -1,6 +1,6 @@
 # Incursa.OpenAI.ChatKit
 
-Total tests: 24
+Total tests: 25
 
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_SetsApiModeDefaults**
   - Summary: The API service registration seeds direct browser API defaults.
@@ -76,22 +76,27 @@ Total tests: 24
   - Summary: Threads create requests stream the created thread and assistant response events through the ChatKit pipeline.
   - Intent: Protect the core thread routing path used by hosted ChatKit servers.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L91](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L91)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L162](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L162)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.Serialize_ThreadsCreateRequest_UsesExactDiscriminator**
   - Summary: Threads create requests serialize with the upstream ChatKit discriminator and payload field names.
   - Intent: Protect exact wire compatibility for the core request envelope.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L14](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L14)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L15](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L15)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.SimpleToAgentInput_MapsUserAndAssistantMessages**
   - Summary: ChatKit conversation items map into the agent input shape expected by the agents dependency.
   - Intent: Protect interop between ChatKit message history and the shared agents runtime.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L127](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L127)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L198](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L198)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_ParsesExportAndDecodedPayload**
+  - Summary: Widget exports load from disk and expose the authoring metadata and decoded widget payload.
+  - Intent: Protect the new file-backed widget definition API used by downstream ChatKit integrations.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L92](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L92)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly**
   - Summary: Streaming text widgets emit deltas instead of forcing a root replacement when text is appended.
   - Intent: Protect incremental widget updates for ChatKit streaming UI flows.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L41](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L41)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L42](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L42)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_AllowsDirtyTreeOnTaggedHead_WhenTagCreationIsSkipped**
   - Summary: The release versioning script can advance from a tagged commit when the working tree is dirty.
   - Intent: Protect release versioning for local release preparation on top of an already-tagged HEAD commit.

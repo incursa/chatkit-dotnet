@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using Incursa.OpenAI.Agents;
 
 namespace Incursa.OpenAI.ChatKit.Tests;
@@ -81,6 +82,76 @@ public sealed class ChatKitCoreTests
         WidgetStreamingTextValueDelta delta = Assert.IsType<WidgetStreamingTextValueDelta>(Assert.Single(deltas));
         Assert.Equal("lo", delta.Delta);
         Assert.True(delta.Done);
+    }
+
+    /// <summary>Widget exports load from disk and expose the authoring metadata and decoded widget payload.</summary>
+    /// <intent>Protect the new file-backed widget definition API used by downstream ChatKit integrations.</intent>
+    /// <scenario>LIB-CHATKIT-CORE-004</scenario>
+    /// <behavior>Loading a widget export parses the preview widget, keeps the template and schema intact, and decodes the embedded base64url widget payload.</behavior>
+    [Fact]
+    public void WidgetDefinition_LoadFromFile_ParsesExportAndDecodedPayload()
+    {
+        string encodedPayloadJson = """
+{"id":"widget-123","name":"EmailList","view":"<Card />","defaultState":{"emails":[{"id":"msg_1"}]},"states":[{"name":"draft"}],"schema":{"type":"object","properties":{"emails":{"type":"array"}}},"schemaMode":"zod","schemaValidity":"valid","viewValidity":"valid","defaultStateValidity":"valid"}
+""";
+        string encodedWidget = EncodeBase64Url(encodedPayloadJson);
+        string widgetJson = """
+        {
+          "version": "1.0",
+          "name": "EmailList",
+          "template": "{\"type\":\"ListView\",\"children\":[{\"type\":\"Text\",\"value\":{{ title | tojson }}}]}",
+          "jsonSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" }
+            },
+            "required": ["title"]
+          },
+          "outputJsonPreview": {
+            "type": "Card",
+            "children": [
+              {
+                "type": "Text",
+                "value": "Preview"
+              }
+            ]
+          },
+          "encodedWidget": "__ENCODED_WIDGET__"
+        }
+        """
+        .Replace("__ENCODED_WIDGET__", encodedWidget, StringComparison.Ordinal);
+
+        string path = Path.Combine(Path.GetTempPath(), $"widget-{Guid.NewGuid():N}.widget");
+        File.WriteAllText(path, widgetJson);
+
+        try
+        {
+            WidgetDefinition definition = WidgetDefinition.Load(path);
+
+            Assert.Equal("1.0", definition.Version);
+            Assert.Equal("EmailList", definition.Name);
+            Assert.Contains("\"type\":\"ListView\"", definition.Template);
+            Assert.Contains("\"type\":\"object\"", definition.JsonSchema.ToJsonString());
+
+            WidgetRoot preview = Assert.IsType<WidgetRoot>(definition.OutputJsonPreview);
+            Assert.Equal("Card", preview.Type);
+            WidgetComponent previewText = Assert.Single(preview.Children!);
+            Assert.Equal("Preview", previewText.TryGetString("value"));
+
+            WidgetEncodedDefinition encoded = definition.DecodeEncodedWidget();
+            Assert.Equal("widget-123", encoded.Id);
+            Assert.Equal("EmailList", encoded.Name);
+            Assert.Equal("<Card />", encoded.View);
+            Assert.Equal("zod", encoded.SchemaMode);
+            Assert.Equal("valid", encoded.ViewValidity);
+            Assert.Equal("valid", encoded.DefaultStateValidity);
+            Assert.Contains("\"emails\"", encoded.Schema!.ToJsonString());
+        }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     /// <summary>Threads create requests stream the created thread and assistant response events through the ChatKit pipeline.</summary>
@@ -186,5 +257,11 @@ public sealed class ChatKitCoreTests
 
             await Task.CompletedTask;
         }
+    }
+
+    private static string EncodeBase64Url(string json)
+    {
+        string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+        return base64.TrimEnd('=').Replace('+', '-').Replace('/', '_');
     }
 }
