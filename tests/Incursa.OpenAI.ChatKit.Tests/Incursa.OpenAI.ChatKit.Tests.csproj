@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Incursa.OpenAI.ChatKit\Incursa.OpenAI.ChatKit.csproj" />
-    <ProjectReference Include="..\..\..\jinja-dotnet\src\Incursa.Jinja\Incursa.Jinja.csproj" />
   </ItemGroup>
 
   <ItemGroup>

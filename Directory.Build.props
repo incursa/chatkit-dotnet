@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Version>1.0.16</Version>
+    <IncursaJinjaPackageVersion>1.0.18</IncursaJinjaPackageVersion>
     <Authors>Samuel McAravey</Authors>
     <Company>Incursa</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

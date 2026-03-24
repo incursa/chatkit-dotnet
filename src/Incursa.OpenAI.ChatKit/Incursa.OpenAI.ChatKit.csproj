@@ -19,8 +19,12 @@
     <LocalIncursaAgentsProjectPath>$(LocalIncursaAgentsRepoRoot)\src\Incursa.OpenAI.Agents\Incursa.OpenAI.Agents.csproj</LocalIncursaAgentsProjectPath>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="Exists('$(LocalIncursaJinjaProjectPath)')">
     <ProjectReference Include="$(LocalIncursaJinjaProjectPath)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('$(LocalIncursaJinjaProjectPath)')">
+    <PackageReference Include="Incursa.Jinja" Version="$(IncursaJinjaPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseLocalIncursaAgentsProject)' == 'true' and Exists('$(LocalIncursaAgentsProjectPath)')">
