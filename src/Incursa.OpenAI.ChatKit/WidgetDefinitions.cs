@@ -95,11 +95,24 @@ public sealed class WidgetDefinition
     public WidgetEncodedDefinition DecodeEncodedWidget()
         => WidgetEncodedDefinition.Parse(EncodedWidget);
 
+    /// <summary>
+    /// Renders the widget template with the supplied input state and returns the hydrated widget root.
+    /// </summary>
+    /// <param name="state">The input state made available to the Jinja template.</param>
+    /// <returns>The rendered widget root.</returns>
+    public WidgetRoot Build(object? state = null)
+        => WidgetDefinitionRenderer.Build(this, state);
+
     private static WidgetDefinition Validate(WidgetDefinition definition)
     {
         if (string.IsNullOrWhiteSpace(definition.Version))
         {
             throw new InvalidOperationException("Widget definition is missing a version.");
+        }
+
+        if (!string.Equals(definition.Version, "1.0", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException($"Unsupported widget definition version '{definition.Version}'.");
         }
 
         if (string.IsNullOrWhiteSpace(definition.Name))

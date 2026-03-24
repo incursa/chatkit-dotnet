@@ -1,328 +1,138 @@
 ---
 workbench:
-  type: doc
+  type: reference
   workItems: []
   codeRefs:
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitTagHelperBase.cs
     - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitTagHelper.cs
     - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitApiTagHelper.cs
     - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitHostedTagHelper.cs
-    - src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/runtimeHost.js
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitAssetsTagHelper.cs
   pathHistory: []
   path: /docs/30-contracts/chatkit-tag-helper.md
 ---
 
 # ChatKit Tag Helpers
 
-`Incursa.OpenAI.ChatKit.AspNetCore` ships Razor tag helpers that mount the upstream `<openai-chatkit>` web component and feed it a serialized `ChatKitOptions` object.
+The Razor integration exposes three different host tag helpers and one asset tag helper.
 
-This guide documents the wrapper surface exposed by the .NET package, not the upstream JavaScript package directly. The goal is parity where the wrapper can serialize the same option shape, while keeping the API idiomatic for Razor.
+## Asset helper
 
-## What you can do
+### `<incursa-chatkit-assets>`
 
-- mount ChatKit from a Razor layout, page, or view without writing page bootstrap code
-- choose between custom API mode and OpenAI-hosted mode explicitly
-- configure layout, theme, header, history, start screen, composer, disclaimer, entities, and thread-item actions
-- wire browser-side client tool handlers, entity handlers, and widget action handlers through dotted lookup paths
-- use the packaged CSS and JS assets to mount the upstream web component consistently
+This helper emits:
 
-## Tags
+- `/_content/Incursa.OpenAI.ChatKit.AspNetCore/chatkit/chatkit.css`
+- `https://cdn.platform.openai.com/deployments/chatkit/chatkit.js`
+- `/_content/Incursa.OpenAI.ChatKit.AspNetCore/chatkit/chatkit.js`
 
-- `<incursa-chatkit-assets />`
-- `<incursa-chatkit-api />`
-- `<incursa-chatkit-hosted />`
-- `<incursa-chatkit />` throws by design and exists only to force callers onto one of the explicit mode helpers
+Behavior notes:
 
-## Typical setup
+- each asset is emitted at most once per Razor rendering context
+- CSS, CDN script, and local module emission can be toggled independently
+- if nothing remains to emit, the helper suppresses output
 
-```cshtml
-@addTagHelper *, Incursa.OpenAI.ChatKit.AspNetCore
+## Host helpers
 
-<incursa-chatkit-assets />
-<incursa-chatkit-api
-    api-url="/api/chatkit"
-    domain-key="contoso-domain-key" />
-```
+### `<incursa-chatkit>`
 
-The asset tag helper renders the packaged browser runtime. The host tag helper writes a `data-incursa-chatkit-config` payload that the runtime reads, converts into `ChatKitOptions`, and passes to `<openai-chatkit>.setOptions(...)`.
+This is intentionally not a real mode.
 
-## Choose a mode
+It exists to fail fast and tell callers to pick one of the explicit modes:
 
-### Custom API mode
+- `<incursa-chatkit-api>`
+- `<incursa-chatkit-hosted>`
 
-Use `<incursa-chatkit-api>` when your ASP.NET Core app hosts the ChatKit endpoint itself.
+### `<incursa-chatkit-api>`
 
-```cshtml
-<incursa-chatkit-api
-    api-url="/api/chatkit"
-    domain-key="contoso-domain-key" />
-```
+Use this when the browser should talk directly to a ChatKit-compatible API endpoint.
 
-This mode:
+Current enforced rules:
 
-- requires `api-url`
-- requires `domain-key`
-- does not allow `session-endpoint`
-- does not allow `action-endpoint`
-- can still render client-side widget handlers
+- `api-url` is required
+- `domain-key` is required after option resolution
+- `session-endpoint` is not allowed
+- `action-endpoint` is not allowed
 
-### OpenAI-hosted mode
+### `<incursa-chatkit-hosted>`
 
-Use `<incursa-chatkit-hosted>` when the browser should fetch a client secret from your local session endpoint and optionally forward widget actions to your local action endpoint.
+Use this when the browser should obtain hosted ChatKit credentials from a local session endpoint.
 
-```cshtml
-<incursa-chatkit-hosted
-    session-endpoint="/api/chatkit/session"
-    action-endpoint="/api/chatkit/action" />
-```
+Current enforced rules:
 
-This mode:
+- `api-url` is not allowed
+- `domain-key` is not allowed
+- `session-endpoint` is required
+- `action-endpoint` is required when widget forwarding is enabled
 
-- requires `session-endpoint`
-- forbids `api-url`
-- forbids `domain-key`
-- requires `action-endpoint` only when widget forwarding is enabled
+## Shared host output
 
-## Theme
+Both explicit host helpers render a `<div>` with:
 
-The wrapper supports the same top-level theme entry point as the JS package:
+- `data-incursa-chatkit-host="true"`
+- `data-incursa-chatkit-config="{...json...}"`
+- `class="incursa-chatkit-host ..."`
+- optional `id`
+- inline height styles when configured
 
-- `theme`
-- `theme-radius`
-- `theme-density`
-- `theme-base-size`
-- `theme-font-family`
-- `theme-font-family-mono`
-- `theme-color-grayscale-hue`
-- `theme-color-grayscale-tint`
-- `theme-color-grayscale-shade`
-- `theme-color-accent-primary`
-- `theme-color-accent-level`
-- `theme-color-surface-background`
-- `theme-color-surface-foreground`
+If config building fails, the helper renders:
 
-Example:
+- `data-incursa-chatkit-error="true"`
+- content text `ChatKit failed to initialize.`
 
-```cshtml
-<incursa-chatkit-api
-    api-url="/api/chatkit"
-    domain-key="contoso-domain-key"
-    theme="dark"
-    theme-base-size="16"
-    theme-font-family="Inter"
-    theme-font-family-mono="IBM Plex Mono"
-    theme-color-accent-primary="#8B5CF6"
-    theme-color-accent-level="2"
-    theme-color-surface-background="#111111"
-    theme-color-surface-foreground="#F5F5F5" />
-```
+## Config precedence
 
-For richer typography, use `ChatKitAspNetCoreOptions.Theme.Typography`:
+The current precedence model is:
 
-```csharp
-builder.Services.AddOpenAIChatKitApi("/api/chatkit", "contoso-domain-key", options =>
-{
-    options.Theme.Typography.BaseSize = 16;
-    options.Theme.Typography.FontFamily = "Inter";
-    options.Theme.Typography.FontSources.Add(new ChatKitFontSource
-    {
-        Family = "Inter",
-        Src = "/fonts/inter.woff2",
-        Display = "swap"
-    });
-});
-```
-
-## Header
-
-The wrapper exposes the upstream header toggles plus callback-backed action buttons.
-
-Available attributes:
-
-- `header-enabled`
-- `header-title`
-- `header-title-enabled`
-- `header-left-action-icon`
-- `header-left-action-handler`
-- `header-right-action-icon`
-- `header-right-action-handler`
-
-Example:
-
-```cshtml
-<incursa-chatkit-hosted
-    session-endpoint="/api/chatkit/session"
-    header-enabled="true"
-    header-title="Workspace assistant"
-    header-left-action-icon="sidebar-left"
-    header-left-action-handler="window.chatkit.onHeaderAction" />
-```
-
-Header action handlers are resolved from the browser at runtime using dotted lookup paths such as `window.chatkit.onHeaderAction` or `app.chatkit.onHeaderAction`.
-
-## Start screen
-
-Use the start screen for greetings and starter prompts.
-
-Available attributes:
-
-- `greeting`
-- `starter-prompts`
+1. explicit tag helper attributes
+2. `ChatKitAspNetCoreOptions`
+3. hard-coded helper defaults where present
 
 Examples:
 
-```csharp
-builder.Services.AddOpenAIChatKitHosted(options =>
-{
-    options.StartScreen.Greeting = "How can I help today?";
-    options.StartScreen.Prompts.Add(new ChatKitStartPrompt
-    {
-        Label = "Summarize",
-        Prompt = "Summarize the latest contract changes.",
-        Icon = "document"
-    });
-});
-```
+- height falls back to `DefaultHeight`, which defaults to `720px`
+- hosted session endpoint falls back to `/api/chatkit/session`
+- hosted action endpoint falls back to `/api/chatkit/action` when forwarding is enabled
 
-```csharp
-builder.Services.AddOpenAIChatKitHosted(options =>
-{
-    options.StartScreen.Prompts.Add(new ChatKitStartPrompt
-    {
-        Label = "Rich prompt",
-        Prompt = new UserMessageContent[]
-        {
-            new UserMessageTextContent { Text = "Review " },
-            new UserMessageTagContent
-            {
-                Id = "doc-1",
-                Text = "Q2 Planning Doc"
-            }
-        },
-        Icon = "book-open"
-    });
-});
-```
+## Callback-related options
 
-## Composer
+The serialized browser config may include lookup paths for:
 
-The wrapper surfaces the same composer groups the JS package exposes:
+- `clientToolHandlers`
+- `entityHandlers`
+- `widgetActionHandler`
+- header left/right action callbacks
 
-- `placeholder`
-- `composer-attachments-enabled`
-- `composer-attachments-max-size`
-- `composer-attachments-max-count`
-- `composer-dictation-enabled`
-- `client-tool-handlers`
-- `entity-handlers`
-- `entity-show-composer-menu`
+These are string paths that the browser runtime resolves against `window`.
 
-The .NET options model also exposes composer attachments, tools, models, and dictation defaults:
+## Validation rules worth knowing
 
-```csharp
-builder.Services.AddOpenAIChatKitApi("/api/chatkit", "contoso-domain-key", options =>
-{
-    options.Composer.Placeholder = "Ask the assistant";
-    options.Composer.Attachments.Enabled = true;
-    options.Composer.Attachments.MaxSize = 4 * 1024 * 1024;
-    options.Composer.Attachments.Accept = new Dictionary<string, string[]>
-    {
-        ["application/pdf"] = [".pdf"]
-    };
-    options.Composer.Tools.Add(new ChatKitComposerTool
-    {
-        Id = "summarize",
-        Label = "Summarize",
-        Icon = "book-open"
-    });
-    options.Composer.Models.Add(new ChatKitComposerModel
-    {
-        Id = "gpt-4.1",
-        Label = "Quality",
-        Default = true
-    });
-    options.Composer.Dictation.Enabled = true;
-});
-```
+The helpers enforce several paired-value rules:
 
-## Client tools
+- header actions require both an icon and a callback path
+- start prompts must have a label and prompt content
+- start prompt content must be either:
+  - a string
+  - a sequence of `UserMessageContent`
+- composer tools require `id`, `label`, and `icon`
+- composer models require `id` and `label`
+- disclaimer config is omitted if text is missing, even if `highContrast` is set
 
-Use `client-tool-handlers` to point at a browser object map:
+## Widget action forwarding model
 
-```html
-<script>
-  window.chatkitClientTools = {
-    async get_selected_canvas_nodes({ name, params }) {
-      return {
-        nodes: myCanvas.getSelectedNodes(params.project).map((node) => ({
-          id: node.id,
-          kind: node.type
-        }))
-      };
-    }
-  };
-</script>
-```
+`WidgetActionHandler` and `ForwardWidgetActions` are meant to coexist.
 
-```cshtml
-<incursa-chatkit-api
-    api-url="/api/chatkit"
-    domain-key="contoso-domain-key"
-    client-tool-handlers="window.chatkitClientTools" />
-```
+Current behavior:
 
-The runtime resolves the path at call time and dispatches by `toolCall.name`.
+- if `forward-widget-actions="false"`, no action endpoint is emitted
+- if both a client handler and forwarding are enabled, the browser gets both pieces of config
+- the intended runtime contract is client handling first, endpoint forwarding second
 
-## Entities
+## Practical guidance
 
-Use `entity-handlers` to supply tag search, click, and preview callbacks:
+Use service-level defaults for repeated visual settings, but still assume explicit mode attributes are required by the current implementation for the mode selector itself:
 
-```html
-<script>
-  window.chatkitEntities = {
-    async onTagSearch(query) {
-      return searchDocuments(query).map((document) => ({
-        id: document.id,
-        title: document.title,
-        group: "Documents",
-        interactive: true,
-        data: {
-          source: "document"
-        }
-      }));
-    }
-  };
-</script>
-```
+- API mode: set `api-url`
+- hosted mode: set `session-endpoint`
 
-```cshtml
-<incursa-chatkit-api
-    api-url="/api/chatkit"
-    domain-key="contoso-domain-key"
-    entity-handlers="window.chatkitEntities"
-    entity-show-composer-menu="true" />
-```
-
-The runtime validates entity search results and preview envelopes before forwarding them to the web component.
-
-## Widget actions
-
-Use `widget-action-handler` for client-side handling of widget actions and `forward-widget-actions` to control server forwarding.
-
-```cshtml
-<incursa-chatkit-hosted
-    session-endpoint="/api/chatkit/session"
-    action-endpoint="/api/chatkit/action"
-    widget-action-handler="window.chatkitOnWidgetAction"
-    forward-widget-actions="false" />
-```
-
-Supported patterns:
-
-- client only: set `widget-action-handler` and disable forwarding
-- server only: omit `widget-action-handler` and leave forwarding enabled
-- client then server: set both `widget-action-handler` and `action-endpoint`
-
-## Related docs
-
-- [ASP.NET Core hosting](../extensions.md)
-- [Quickstart](../quickstart.md)
+That distinction matters because the service options are broader than the render-time validation rules.

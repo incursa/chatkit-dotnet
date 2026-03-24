@@ -9,6 +9,8 @@ workbench:
 
 # Documentation
 
+This set is meant to document the actual translated behavior in the repo, not an aspirational API surface.
+
 ## Core references
 
 - [Overview](00-overview/README.md)
@@ -26,3 +28,11 @@ workbench:
 - [Repository scope boundary](quality/repo-scope-boundary.md)
 - [Tracking](60-tracking/README.md)
 - [Testing docs](testing/README.md)
+
+## Recommended reading order
+
+1. [Overview](00-overview/README.md)
+2. [Quickstart](quickstart.md)
+3. [Architecture](20-architecture/README.md)
+4. [Contracts](30-contracts/README.md)
+5. [ASP.NET Core hosting](extensions.md)

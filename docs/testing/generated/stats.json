@@ -4,29 +4,29 @@
     "defaultBranch": "main"
   },
   "summary": {
-    "total": 25,
-    "compliant": 25,
+    "total": 31,
+    "compliant": 31,
     "missingRequired": 0,
     "invalidFormat": 0
   },
   "byCategory": [
     {
       "category": "Incursa.OpenAI.ChatKit",
-      "total": 25,
-      "compliant": 25
+      "total": 31,
+      "compliant": 31
     }
   ],
   "byTag": [],
   "byProject": [
     {
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests",
-      "total": 14,
-      "compliant": 14
+      "total": 18,
+      "compliant": 18
     },
     {
       "project": "Incursa.OpenAI.ChatKit.Tests",
-      "total": 11,
-      "compliant": 11
+      "total": 13,
+      "compliant": 13
     }
   ],
   "tests": [
@@ -114,14 +114,30 @@
       "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured",
       "category": "Incursa.OpenAI.ChatKit",
       "tags": [],
-      "summary": "The API host tag helper rejects direct browser API mode when no domain key is configured.",
+      "summary": "The API host tag helper emits an error when the direct browser domain key is missing.",
       "intent": "Protect the direct browser wrapper from serializing an invalid ChatKit API configuration.",
       "scenario": "LIB-CHATKIT-ASPNETCORE-003",
       "behavior": "Direct browser API mode emits a render error instead of serializing a config payload when the domain key is missing.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 379,
+        "line": 406,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperSerializesClientToolHandlers_WhenSet",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The API host tag helper serializes a client tool handler lookup path in direct API mode.",
+      "intent": "Protect the client tool callback parity surface for the direct browser API mode wrapper.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Setting client-tool-handlers on the API tag helper serializes the lookup path into the browser host config so the runtime can wire onClientTool.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 512,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperSerializesClientToolHandlers_WhenSet"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
@@ -152,7 +168,7 @@
       "behavior": "Configured direct browser API defaults populate both the API URL and domain key in the serialized host config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 401,
+        "line": 428,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperUsesConfiguredDomainKey_WhenConfigured"
       },
       "status": "compliant",
@@ -223,6 +239,38 @@
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
     },
     {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesClientToolHandlers_WhenSetByAttribute",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper serializes a client tool handler lookup path set directly on the tag helper.",
+      "intent": "Protect the client tool callback parity surface exposed by the ASP.NET Core Razor wrapper.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Setting the client-tool-handlers attribute serializes the lookup path into the browser host config so the runtime can wire onClientTool.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 462,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesClientToolHandlers_WhenSetByAttribute"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesCoexistenceOfHandlerAndForwarding",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper serializes both a client handler and endpoint forwarding when both are configured.",
+      "intent": "Protect the coexistence contract where client handling and server forwarding are both active.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "When a widget action handler and forward-widget-actions are both configured, both are emitted so the runtime can run client handling first, then forward to the endpoint.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 379,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesCoexistenceOfHandlerAndForwarding"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
       "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesConfiguredUiOptions",
       "category": "Incursa.OpenAI.ChatKit",
       "tags": [],
@@ -255,6 +303,22 @@
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
     },
     {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperUsesDefaultClientToolHandlers_WhenConfigured",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper propagates a default client tool handler lookup path from service options.",
+      "intent": "Protect the server-side options path that wires onClientTool without requiring per-page tag helper attributes.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Configuring ClientToolHandlers in AddOpenAIChatKitHosted populates the browser host config with the lookup path.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 486,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperUsesDefaultClientToolHandlers_WhenConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
       "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn",
       "category": "Incursa.OpenAI.ChatKit",
       "tags": [],
@@ -264,7 +328,7 @@
       "behavior": "Processing a threads.create payload produces stream events for thread creation and the completed assistant item.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 162,
+        "line": 180,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn"
       },
       "status": "compliant",
@@ -280,7 +344,7 @@
       "behavior": "Serializing a threads.create request emits the expected type discriminator and content payload shape.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 15,
+        "line": 16,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.Serialize_ThreadsCreateRequest_UsesExactDiscriminator"
       },
       "status": "compliant",
@@ -296,24 +360,56 @@
       "behavior": "Simple user and assistant items are translated into the corresponding agent conversation item types and text values.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 198,
+        "line": 216,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.SimpleToAgentInput_MapsUserAndAssistantMessages"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.Tests"
     },
     {
-      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_ParsesExportAndDecodedPayload",
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_Build_RejectsInvalidStateAgainstSchema",
       "category": "Incursa.OpenAI.ChatKit",
       "tags": [],
-      "summary": "Widget exports load from disk and expose the authoring metadata and decoded widget payload.",
-      "intent": "Protect the new file-backed widget definition API used by downstream ChatKit integrations.",
+      "summary": "Widget exports reject state that does not satisfy the exported JSON schema.",
+      "intent": "Protect schema-based input validation before widget rendering occurs.",
       "scenario": "LIB-CHATKIT-CORE-004",
-      "behavior": "Loading a widget export parses the preview widget, keeps the template and schema intact, and decodes the embedded base64url widget payload.",
+      "behavior": "Rendering a widget with invalid input state fails before the Jinja template is hydrated into a widget root.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 92,
-        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_ParsesExportAndDecodedPayload"
+        "line": 160,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_Build_RejectsInvalidStateAgainstSchema"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_BuildsWidgetFromFixture",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget exports load from disk or stream, preserve their metadata, and hydrate widget roots from valid input state.",
+      "intent": "Protect the file-backed widget template abstraction used by downstream ChatKit integrations.",
+      "scenario": "LIB-CHATKIT-CORE-004",
+      "behavior": "Loading a widget export from disk or stream preserves the template, schema, preview, and encoded payload, and building with valid state hydrates the preview widget.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
+        "line": 93,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_BuildsWidgetFromFixture"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromStream_BuildsWidgetFromFixture",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget exports also load from streams and hydrate the widget preview using the same Jinja-backed pipeline.",
+      "intent": "Protect the stream-based widget definition API used by downstream integrations.",
+      "scenario": "LIB-CHATKIT-CORE-004",
+      "behavior": "Loading a widget export from a stream preserves the template, schema, preview, and encoded payload, and building with valid state hydrates the preview widget.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
+        "line": 126,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromStream_BuildsWidgetFromFixture"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.Tests"
@@ -328,7 +424,7 @@
       "behavior": "Diffing compatible before and after widgets returns only the appended text delta and completion state.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 42,
+        "line": 43,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly"
       },
       "status": "compliant",

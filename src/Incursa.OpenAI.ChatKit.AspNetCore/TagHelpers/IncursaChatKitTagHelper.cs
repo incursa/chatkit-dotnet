@@ -349,6 +349,8 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
         string? apiUrl = ResolveApiUrl(ApiUrl);
         bool forwardWidgetActions = ForwardWidgetActions ?? uiOptions.ForwardWidgetActions;
 
+        // Resolve all values into one browser-facing object before the explicit mode
+        // helpers apply their final validation rules. This keeps option precedence in one place.
         return new ChatKitHostClientConfig
         {
             ApiUrl = apiUrl,
@@ -423,6 +425,8 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
 
         if (enabled is null && (maxSize is not null || maxCount is not null || accept is not null))
         {
+            // If callers configure attachment constraints but omit the flag, treat that as
+            // an implicit request to enable attachments instead of dropping the config.
             enabled = true;
         }
 
@@ -504,6 +508,8 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
 
         if (!string.Equals(type, "direct", StringComparison.OrdinalIgnoreCase))
         {
+            // Only the direct strategy uses an upload URL. Clear it for other modes so the
+            // serialized config does not imply support the runtime will not honor.
             uploadUrl = null;
         }
 
@@ -595,6 +601,8 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
 
         if (string.IsNullOrWhiteSpace(resolvedIcon) || string.IsNullOrWhiteSpace(resolvedHandler))
         {
+            // A half-configured header action is worse than omitting it because the browser
+            // cannot infer the missing piece safely.
             throw new InvalidOperationException(
                 $"The ChatKit header {side} action requires both an icon and a browser callback lookup path.");
         }
@@ -670,6 +678,8 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
 
         if (prompt is IEnumerable<global::Incursa.OpenAI.ChatKit.UserMessageContent> content)
         {
+            // Materialize the sequence now so the serialized config is stable and does not
+            // depend on deferred enumeration during Razor rendering.
             return content.ToArray();
         }
 

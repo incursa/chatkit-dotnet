@@ -148,6 +148,8 @@ public abstract class ChatKitServer<TContext>
     public async Task<ChatKitProcessResult> ProcessAsync(byte[] request, TContext context, CancellationToken cancellationToken = default)
     {
         ChatKitRequest parsedRequest = ChatKitJson.DeserializeRequest(request);
+        // The transport shape is part of the ChatKit contract: some operations must
+        // stream incremental events while others return a single JSON document.
         if (IsStreamingRequest(parsedRequest))
         {
             return new StreamingResult(ProcessStreamingAsync(parsedRequest, context, cancellationToken));
@@ -220,6 +222,8 @@ public abstract class ChatKitServer<TContext>
                         context,
                         cancellationToken).ConfigureAwait(false);
 
+                    // Hidden context is part of the server-side conversation state, not the
+                    // client-visible history. It stays in storage but is filtered on reads.
                     items = items with { Data = items.Data.Where(x => x is not HiddenContextItem && x is not SdkHiddenContextItem).ToList() };
                     return Serialize(items);
                 }
@@ -245,6 +249,8 @@ public abstract class ChatKitServer<TContext>
         await foreach (ThreadStreamEvent @event in ProcessStreamingEventsAsync(request, context, cancellationToken).ConfigureAwait(false))
         {
             byte[] payload = Serialize(@event);
+            // The core runtime emits preformatted SSE chunks so hosts can forward them
+            // directly without re-serializing individual event objects.
             yield return Encoding.UTF8.GetBytes($"data: {Encoding.UTF8.GetString(payload)}\n\n");
         }
     }
@@ -283,6 +289,8 @@ public abstract class ChatKitServer<TContext>
             case ThreadsAddClientToolOutputRequest toolOutput:
                 {
                     ThreadMetadata thread = await Store.LoadThreadAsync(toolOutput.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
+                    // Upstream ChatKit resumes from the latest pending client tool call.
+                    // This implementation mirrors that by only looking at the newest item.
                     Page<ThreadItem> items = await Store.LoadThreadItemsAsync(thread.Id, null, 1, "desc", context, cancellationToken).ConfigureAwait(false);
                     ClientToolCallItem? toolCall = items.Data.OfType<ClientToolCallItem>().FirstOrDefault(x => string.Equals(x.Status, "pending", StringComparison.Ordinal));
                     if (toolCall is null)
@@ -305,6 +313,8 @@ public abstract class ChatKitServer<TContext>
                     ThreadMetadata thread = await Store.LoadThreadAsync(retryRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false);
                     List<ThreadItem> itemsToRemove = [];
                     UserMessageItem? userMessage = null;
+                    // Retry-after-item is destructive: everything after the target message is
+                    // discarded before the assistant turn is replayed from that message.
                     await foreach (ThreadItem item in PaginateThreadItemsReverseAsync(retryRequest.Params.ThreadId, context, cancellationToken).ConfigureAwait(false))
                     {
                         if (string.Equals(item.Id, retryRequest.Params.ItemId, StringComparison.Ordinal))
@@ -368,6 +378,8 @@ public abstract class ChatKitServer<TContext>
     {
         foreach (Attachment attachment in item.Attachments)
         {
+            // Attachments are persisted before the user item so later server logic can
+            // treat the message payload as fully materialized conversation state.
             await Store.SaveAttachmentAsync(attachment, context, cancellationToken).ConfigureAwait(false);
         }
 
@@ -389,6 +401,8 @@ public abstract class ChatKitServer<TContext>
         await Task.Yield();
         yield return new StreamOptionsEvent { StreamOptions = GetStreamOptions(thread, context) };
 
+        // Items can be announced before they are finalized. Keep them in-memory so
+        // cancellation handling can decide what partial work should survive.
         ConcurrentDictionary<string, ThreadItem> pendingItems = new(StringComparer.Ordinal);
         IAsyncEnumerator<ThreadStreamEvent> enumerator = stream(cancellationToken).GetAsyncEnumerator(cancellationToken);
         ErrorEvent? error = null;
@@ -409,6 +423,8 @@ public abstract class ChatKitServer<TContext>
                 }
                 catch (OperationCanceledException)
                 {
+                    // Cancellation is not just a transport concern. The store is updated so
+                    // later turns can see that the previous response was interrupted.
                     await HandleStreamCancelledAsync(thread, pendingItems.Values.ToList(), context, cancellationToken).ConfigureAwait(false);
                     throw;
                 }
@@ -447,6 +463,7 @@ public abstract class ChatKitServer<TContext>
                         break;
                 }
 
+                // Hidden context is intentionally persisted but never echoed back to the UI.
                 bool swallow = @event is ThreadItemDoneEvent { Item: HiddenContextItem or SdkHiddenContextItem };
                 if (!swallow)
                 {
@@ -473,6 +490,8 @@ public abstract class ChatKitServer<TContext>
             Attachment attachment = await Store.LoadAttachmentAsync(attachmentId, context, cancellationToken).ConfigureAwait(false);
             Attachment updated = attachment switch
             {
+                // Attachments can be uploaded before a thread exists. Once they are attached
+                // to a concrete user message, rewrite the thread id so storage stays consistent.
                 FileAttachment file => file with { ThreadId = thread.Id },
                 ImageAttachment image => image with { ThreadId = thread.Id },
                 _ => attachment,
@@ -541,6 +560,8 @@ public abstract class ChatKitServer<TContext>
                 Status = fullThread.Status,
                 AllowedImageDomains = fullThread.AllowedImageDomains,
                 Metadata = fullThread.Metadata,
+                // Internal context remains available to the server but is stripped from the
+                // public thread payload so clients only see user-facing conversation items.
                 Items = fullThread.Items with { Data = fullThread.Items.Data.Where(x => x is not HiddenContextItem && x is not SdkHiddenContextItem).ToList() },
             }
             : new Thread

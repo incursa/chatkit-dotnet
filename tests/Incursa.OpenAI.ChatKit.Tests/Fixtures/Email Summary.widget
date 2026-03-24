@@ -1,0 +1,150 @@
+{
+  "version": "1.0",
+  "name": "Email Summary",
+  "template": "{\"type\":\"Card\",\"size\":\"sm\",\"children\":[{\"type\":\"Col\",\"gap\":2,\"children\":[{\"type\":\"Row\",\"gap\":3,\"align\":\"center\",\"children\":[{\"type\":\"Title\",\"value\":{{ (subject) | tojson }},\"size\":\"sm\",\"maxLines\":1}]},{\"type\":\"Divider\"},{\"type\":\"Col\",\"gap\":1,\"children\":[{%- set _c -%},{\"type\":\"Row\",\"children\":[{\"type\":\"Caption\",\"value\":\"From\",\"color\":\"secondary\"},{\"type\":\"Spacer\"},{\"type\":\"Text\",\"value\":{{ (from) | tojson }},\"size\":\"sm\",\"textAlign\":\"end\",\"maxLines\":1}]},{\"type\":\"Row\",\"children\":[{\"type\":\"Caption\",\"value\":\"To\",\"color\":\"secondary\"},{\"type\":\"Spacer\"},{\"type\":\"Text\",\"value\":{{ ((none)) | tojson }},\"size\":\"sm\",\"textAlign\":\"end\",\"maxLines\":1}]}{%-if (cc and ((cc | length) > 0)) -%},{\"type\":\"Row\",\"children\":[{\"type\":\"Caption\",\"value\":\"Cc\",\"color\":\"secondary\"},{\"type\":\"Spacer\"},{\"type\":\"Text\",\"value\":{{ ((none)) | tojson }},\"size\":\"sm\",\"textAlign\":\"end\",\"maxLines\":1}]}{%-else-%}{%-endif-%}{%-if (bcc and ((bcc | length) > 0)) -%},{\"type\":\"Row\",\"children\":[{\"type\":\"Caption\",\"value\":\"Bcc\",\"color\":\"secondary\"},{\"type\":\"Spacer\"},{\"type\":\"Text\",\"value\":{{ ((none)) | tojson }},\"size\":\"sm\",\"textAlign\":\"end\",\"maxLines\":1}]}{%-else-%}{%-endif-%}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]},{\"type\":\"Divider\"},{\"type\":\"Text\",\"value\":{{ (preview) | tojson }},\"size\":\"sm\",\"color\":\"secondary\",\"maxLines\":3}]}]}",
+  "jsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "from": {
+        "type": "string"
+      },
+      "to": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cc": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "bcc": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "subject": {
+        "type": "string"
+      },
+      "preview": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "from",
+      "to",
+      "subject",
+      "preview"
+    ],
+    "additionalProperties": false
+  },
+  "outputJsonPreview": {
+    "type": "Card",
+    "size": "sm",
+    "children": [
+      {
+        "type": "Col",
+        "gap": 2,
+        "children": [
+          {
+            "type": "Row",
+            "gap": 3,
+            "align": "center",
+            "children": [
+              {
+                "type": "Title",
+                "value": "Upcoming computing symposium invitation and logistics",
+                "size": "sm",
+                "maxLines": 1
+              }
+            ]
+          },
+          {
+            "type": "Divider"
+          },
+          {
+            "type": "Col",
+            "gap": 1,
+            "children": [
+              {
+                "type": "Row",
+                "children": [
+                  {
+                    "type": "Caption",
+                    "value": "From",
+                    "color": "secondary"
+                  },
+                  {
+                    "type": "Spacer"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "Ada Lovelace <ada@analysis.co>",
+                    "size": "sm",
+                    "textAlign": "end",
+                    "maxLines": 1
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "children": [
+                  {
+                    "type": "Caption",
+                    "value": "To",
+                    "color": "secondary"
+                  },
+                  {
+                    "type": "Spacer"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "Grace Hopper <grace@navy.mil>, Alan Turing <alan@bletchley.uk>",
+                    "size": "sm",
+                    "textAlign": "end",
+                    "maxLines": 1
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "children": [
+                  {
+                    "type": "Caption",
+                    "value": "Cc",
+                    "color": "secondary"
+                  },
+                  {
+                    "type": "Spacer"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "Charles Babbage <charles@analytical.org>",
+                    "size": "sm",
+                    "textAlign": "end",
+                    "maxLines": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Divider"
+          },
+          {
+            "type": "Text",
+            "value": "Hi Grace — sharing travel details and draft agenda. Please review and let me know if the 10:30 slot works.",
+            "size": "sm",
+            "color": "secondary",
+            "maxLines": 3
+          }
+        ]
+      }
+    ]
+  },
+  "encodedWidget": "eyJpZCI6IjFlOTQ4YjhkLWFmNWItNGQ0OS05NDIwLTU2NTFmODgwZWVjYyIsIm5hbWUiOiJFbWFpbCBTdW1tYXJ5IiwidmlldyI6IjxDYXJkIHNpemU9XCJzbVwiPlxuICA8Q29sIGdhcD17Mn0-XG4gICAgPFJvdyBnYXA9ezN9IGFsaWduPVwiY2VudGVyXCI-XG4gICAgICA8VGl0bGUgdmFsdWU9e3N1YmplY3R9IHNpemU9XCJzbVwiIG1heExpbmVzPXsxfSAvPlxuICAgIDwvUm93PlxuXG4gICAgPERpdmlkZXIgLz5cblxuICAgIDxDb2wgZ2FwPXsxfT5cbiAgICAgIDxSb3c-XG4gICAgICAgIDxDYXB0aW9uIHZhbHVlPVwiRnJvbVwiIGNvbG9yPVwic2Vjb25kYXJ5XCIgLz5cbiAgICAgICAgPFNwYWNlciAvPlxuICAgICAgICA8VGV4dCB2YWx1ZT17ZnJvbX0gc2l6ZT1cInNtXCIgdGV4dEFsaWduPVwiZW5kXCIgbWF4TGluZXM9ezF9IC8-XG4gICAgICA8L1Jvdz5cbiAgICAgIDxSb3c-XG4gICAgICAgIDxDYXB0aW9uIHZhbHVlPVwiVG9cIiBjb2xvcj1cInNlY29uZGFyeVwiIC8-XG4gICAgICAgIDxTcGFjZXIgLz5cbiAgICAgICAgPFRleHQgdmFsdWU9e3RvLmpvaW4oXCIsIFwiKX0gc2l6ZT1cInNtXCIgdGV4dEFsaWduPVwiZW5kXCIgbWF4TGluZXM9ezF9IC8-XG4gICAgICA8L1Jvdz5cbiAgICAgIHtjYyAmJiBjYy5sZW5ndGggPiAwICYmIChcbiAgICAgICAgPFJvdz5cbiAgICAgICAgICA8Q2FwdGlvbiB2YWx1ZT1cIkNjXCIgY29sb3I9XCJzZWNvbmRhcnlcIiAvPlxuICAgICAgICAgIDxTcGFjZXIgLz5cbiAgICAgICAgICA8VGV4dCB2YWx1ZT17Y2Muam9pbihcIiwgXCIpfSBzaXplPVwic21cIiB0ZXh0QWxpZ249XCJlbmRcIiBtYXhMaW5lcz17MX0gLz5cbiAgICAgICAgPC9Sb3c-XG4gICAgICApfVxuICAgICAge2JjYyAmJiBiY2MubGVuZ3RoID4gMCAmJiAoXG4gICAgICAgIDxSb3c-XG4gICAgICAgICAgPENhcHRpb24gdmFsdWU9XCJCY2NcIiBjb2xvcj1cInNlY29uZGFyeVwiIC8-XG4gICAgICAgICAgPFNwYWNlciAvPlxuICAgICAgICAgIDxUZXh0IHZhbHVlPXtiY2Muam9pbihcIiwgXCIpfSBzaXplPVwic21cIiB0ZXh0QWxpZ249XCJlbmRcIiBtYXhMaW5lcz17MX0gLz5cbiAgICAgICAgPC9Sb3c-XG4gICAgICApfVxuICAgIDwvQ29sPlxuXG4gICAgPERpdmlkZXIgLz5cblxuICAgIDxUZXh0IHZhbHVlPXtwcmV2aWV3fSBzaXplPVwic21cIiBjb2xvcj1cInNlY29uZGFyeVwiIG1heExpbmVzPXszfSAvPlxuICA8L0NvbD5cbjwvQ2FyZD4iLCJkZWZhdWx0U3RhdGUiOnsiZnJvbSI6IkFkYSBMb3ZlbGFjZSA8YWRhQGFuYWx5c2lzLmNvPiIsInRvIjpbIkdyYWNlIEhvcHBlciA8Z3JhY2VAbmF2eS5taWw-IiwiQWxhbiBUdXJpbmcgPGFsYW5AYmxldGNobGV5LnVrPiJdLCJjYyI6WyJDaGFybGVzIEJhYmJhZ2UgPGNoYXJsZXNAYW5hbHl0aWNhbC5vcmc-Il0sInN1YmplY3QiOiJVcGNvbWluZyBjb21wdXRpbmcgc3ltcG9zaXVtIGludml0YXRpb24gYW5kIGxvZ2lzdGljcyIsInByZXZpZXciOiJIaSBHcmFjZSDigJQgc2hhcmluZyB0cmF2ZWwgZGV0YWlscyBhbmQgZHJhZnQgYWdlbmRhLiBQbGVhc2UgcmV2aWV3IGFuZCBsZXQgbWUga25vdyBpZiB0aGUgMTA6MzAgc2xvdCB3b3Jrcy4ifSwic3RhdGVzIjpbXSwic2NoZW1hIjoiaW1wb3J0IHsgeiB9IGZyb20gXCJ6b2RcIlxuXG5jb25zdCBXaWRnZXRTdGF0ZSA9IHouc3RyaWN0T2JqZWN0KHtcbiAgZnJvbTogei5zdHJpbmcoKSxcbiAgdG86IHouYXJyYXkoei5zdHJpbmcoKSksXG4gIGNjOiB6LmFycmF5KHouc3RyaW5nKCkpLm9wdGlvbmFsKCksXG4gIGJjYzogei5hcnJheSh6LnN0cmluZygpKS5vcHRpb25hbCgpLFxuICBzdWJqZWN0OiB6LnN0cmluZygpLFxuICBwcmV2aWV3OiB6LnN0cmluZygpLFxufSlcblxuZXhwb3J0IGRlZmF1bHQgV2lkZ2V0U3RhdGUiLCJqc29uU2NoZW1hIjp7fSwic2NoZW1hTW9kZSI6InpvZCIsInNjaGVtYVZhbGlkaXR5IjoidmFsaWQiLCJ2aWV3VmFsaWRpdHkiOiJ2YWxpZCIsImRlZmF1bHRTdGF0ZVZhbGlkaXR5IjoidmFsaWQifQ"
+}

@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Incursa.OpenAI.Agents;
 
 namespace Incursa.OpenAI.ChatKit.Tests;
@@ -84,74 +85,91 @@ public sealed class ChatKitCoreTests
         Assert.True(delta.Done);
     }
 
-    /// <summary>Widget exports load from disk and expose the authoring metadata and decoded widget payload.</summary>
-    /// <intent>Protect the new file-backed widget definition API used by downstream ChatKit integrations.</intent>
+    /// <summary>Widget exports load from disk or stream, preserve their metadata, and hydrate widget roots from valid input state.</summary>
+    /// <intent>Protect the file-backed widget template abstraction used by downstream ChatKit integrations.</intent>
     /// <scenario>LIB-CHATKIT-CORE-004</scenario>
-    /// <behavior>Loading a widget export parses the preview widget, keeps the template and schema intact, and decodes the embedded base64url widget payload.</behavior>
+    /// <behavior>Loading a widget export from disk or stream preserves the template, schema, preview, and encoded payload, and building with valid state hydrates the preview widget.</behavior>
     [Fact]
-    public void WidgetDefinition_LoadFromFile_ParsesExportAndDecodedPayload()
+    public void WidgetDefinition_LoadFromFile_BuildsWidgetFromFixture()
     {
-        string encodedPayloadJson = """
-{"id":"widget-123","name":"EmailList","view":"<Card />","defaultState":{"emails":[{"id":"msg_1"}]},"states":[{"name":"draft"}],"schema":{"type":"object","properties":{"emails":{"type":"array"}}},"schemaMode":"zod","schemaValidity":"valid","viewValidity":"valid","defaultStateValidity":"valid"}
-""";
-        string encodedWidget = EncodeBase64Url(encodedPayloadJson);
-        string widgetJson = """
-        {
-          "version": "1.0",
-          "name": "EmailList",
-          "template": "{\"type\":\"ListView\",\"children\":[{\"type\":\"Text\",\"value\":{{ title | tojson }}}]}",
-          "jsonSchema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
-            "properties": {
-              "title": { "type": "string" }
-            },
-            "required": ["title"]
-          },
-          "outputJsonPreview": {
-            "type": "Card",
-            "children": [
-              {
-                "type": "Text",
-                "value": "Preview"
-              }
-            ]
-          },
-          "encodedWidget": "__ENCODED_WIDGET__"
-        }
-        """
-        .Replace("__ENCODED_WIDGET__", encodedWidget, StringComparison.Ordinal);
+        string path = GetFixturePath("Email Summary.widget");
 
-        string path = Path.Combine(Path.GetTempPath(), $"widget-{Guid.NewGuid():N}.widget");
-        File.WriteAllText(path, widgetJson);
+        WidgetDefinition definition = WidgetDefinition.Load(path);
+        WidgetEncodedDefinition encoded = definition.DecodeEncodedWidget();
+        WidgetRoot builtWidget = definition.Build(encoded.DefaultState);
+        string builtJson = Encoding.UTF8.GetString(ChatKitJson.SerializeToUtf8Bytes(builtWidget));
 
-        try
-        {
-            WidgetDefinition definition = WidgetDefinition.Load(path);
+        Assert.Equal("1.0", definition.Version);
+        Assert.Equal("Email Summary", definition.Name);
+        Assert.Contains("\"type\":\"Card\"", definition.Template);
+        Assert.Contains("\"type\":\"object\"", definition.JsonSchema.ToJsonString());
+        Assert.NotNull(definition.OutputJsonPreview);
+        Assert.Equal("1e948b8d-af5b-4d49-9420-5651f880eecc", encoded.Id);
+        Assert.Equal("Email Summary", encoded.Name);
+        Assert.Contains("<Card", encoded.View, StringComparison.Ordinal);
+        Assert.Equal("zod", encoded.SchemaMode);
+        Assert.Equal("valid", encoded.SchemaValidity);
+        Assert.Equal("valid", encoded.ViewValidity);
+        Assert.Equal("valid", encoded.DefaultStateValidity);
+        Assert.NotNull(encoded.DefaultState);
+        Assert.Equal("Card", builtWidget.Type);
+        Assert.Equal("sm", builtWidget.TryGetString("size"));
+        Assert.Single(builtWidget.Children ?? []);
+        Assert.Contains("Ada Lovelace", builtJson, StringComparison.Ordinal);
+    }
 
-            Assert.Equal("1.0", definition.Version);
-            Assert.Equal("EmailList", definition.Name);
-            Assert.Contains("\"type\":\"ListView\"", definition.Template);
-            Assert.Contains("\"type\":\"object\"", definition.JsonSchema.ToJsonString());
+    /// <summary>Widget exports also load from streams and hydrate the widget preview using the same Jinja-backed pipeline.</summary>
+    /// <intent>Protect the stream-based widget definition API used by downstream integrations.</intent>
+    /// <scenario>LIB-CHATKIT-CORE-004</scenario>
+    /// <behavior>Loading a widget export from a stream preserves the template, schema, preview, and encoded payload, and building with valid state hydrates the preview widget.</behavior>
+    [Fact]
+    public async Task WidgetDefinition_LoadFromStream_BuildsWidgetFromFixture()
+    {
+        string path = GetFixturePath("EmailListId.widget");
 
-            WidgetRoot preview = Assert.IsType<WidgetRoot>(definition.OutputJsonPreview);
-            Assert.Equal("Card", preview.Type);
-            WidgetComponent previewText = Assert.Single(preview.Children!);
-            Assert.Equal("Preview", previewText.TryGetString("value"));
+        await using FileStream stream = File.OpenRead(path);
+        WidgetDefinition definition = await WidgetDefinition.LoadAsync(stream);
+        WidgetEncodedDefinition encoded = definition.DecodeEncodedWidget();
 
-            WidgetEncodedDefinition encoded = definition.DecodeEncodedWidget();
-            Assert.Equal("widget-123", encoded.Id);
-            Assert.Equal("EmailList", encoded.Name);
-            Assert.Equal("<Card />", encoded.View);
-            Assert.Equal("zod", encoded.SchemaMode);
-            Assert.Equal("valid", encoded.ViewValidity);
-            Assert.Equal("valid", encoded.DefaultStateValidity);
-            Assert.Contains("\"emails\"", encoded.Schema!.ToJsonString());
-        }
-        finally
-        {
-            File.Delete(path);
-        }
+        Assert.Equal("1.0", definition.Version);
+        Assert.Equal("EmailList", definition.Name);
+        Assert.Contains("\"type\":\"ListView\"", definition.Template);
+        Assert.Contains("\"type\":\"object\"", definition.JsonSchema.ToJsonString());
+        Assert.NotNull(definition.OutputJsonPreview);
+        Assert.Equal("EmailList", encoded.Name);
+        Assert.Equal("zod", encoded.SchemaMode);
+        Assert.Equal("valid", encoded.SchemaValidity);
+        Assert.Equal("valid", encoded.ViewValidity);
+        Assert.Equal("valid", encoded.DefaultStateValidity);
+        Assert.NotNull(encoded.Schema);
+        Assert.NotNull(encoded.DefaultState);
+        WidgetRoot builtWidget = definition.Build(encoded.DefaultState);
+        string builtJson = Encoding.UTF8.GetString(ChatKitJson.SerializeToUtf8Bytes(builtWidget));
+
+        Assert.Equal("ListView", builtWidget.Type);
+        Assert.Equal(3, builtWidget.Children?.Count);
+        Assert.Contains("3 emails found", builtJson, StringComparison.Ordinal);
+        Assert.Contains("alice@example.com", builtJson, StringComparison.Ordinal);
+    }
+
+    /// <summary>Widget exports reject state that does not satisfy the exported JSON schema.</summary>
+    /// <intent>Protect schema-based input validation before widget rendering occurs.</intent>
+    /// <scenario>LIB-CHATKIT-CORE-004</scenario>
+    /// <behavior>Rendering a widget with invalid input state fails before the Jinja template is hydrated into a widget root.</behavior>
+    [Fact]
+    public void WidgetDefinition_Build_RejectsInvalidStateAgainstSchema()
+    {
+        string path = GetFixturePath("EmailListId.widget");
+        WidgetDefinition definition = WidgetDefinition.Load(path);
+        WidgetEncodedDefinition encoded = definition.DecodeEncodedWidget();
+        JsonObject invalidState = Assert.IsType<JsonObject>(encoded.DefaultState!.DeepClone());
+        JsonArray emails = Assert.IsType<JsonArray>(invalidState["emails"]);
+        JsonObject firstEmail = Assert.IsType<JsonObject>(emails[0]);
+        firstEmail["unexpected"] = true;
+
+        Action act = () => definition.Build(invalidState);
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(act);
+        Assert.Contains("additional property", exception.Message, StringComparison.Ordinal);
     }
 
     /// <summary>Threads create requests stream the created thread and assistant response events through the ChatKit pipeline.</summary>
@@ -259,9 +277,7 @@ public sealed class ChatKitCoreTests
         }
     }
 
-    private static string EncodeBase64Url(string json)
-    {
-        string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
-        return base64.TrimEnd('=').Replace('+', '-').Replace('/', '_');
-    }
+    private static string GetFixturePath(string fileName)
+        => Path.Combine(AppContext.BaseDirectory, "Fixtures", fileName);
+
 }

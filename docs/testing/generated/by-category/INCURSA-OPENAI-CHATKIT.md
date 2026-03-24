@@ -1,6 +1,6 @@
 # Incursa.OpenAI.ChatKit
 
-Total tests: 25
+Total tests: 31
 
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_SetsApiModeDefaults**
   - Summary: The API service registration seeds direct browser API defaults.
@@ -28,10 +28,15 @@ Total tests: 25
   - Tags: (none)
   - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitAssetsTagHelperTests.cs#L14](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitAssetsTagHelperTests.cs#L14)
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured**
-  - Summary: The API host tag helper rejects direct browser API mode when no domain key is configured.
+  - Summary: The API host tag helper emits an error when the direct browser domain key is missing.
   - Intent: Protect the direct browser wrapper from serializing an invalid ChatKit API configuration.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L379](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L379)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L406](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L406)
+- **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperSerializesClientToolHandlers_WhenSet**
+  - Summary: The API host tag helper serializes a client tool handler lookup path in direct API mode.
+  - Intent: Protect the client tool callback parity surface for the direct browser API mode wrapper.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L512](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L512)
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperSerializesComposerConfigAndUploadStrategy**
   - Summary: The API host tag helper serializes composer options and upload strategy metadata into the browser config payload.
   - Intent: Protect the packaged API-mode projection for attachments, composer pickers, dictation, and upload strategy.
@@ -41,7 +46,7 @@ Total tests: 25
   - Summary: The API host tag helper forwards the configured domain key in direct browser API mode.
   - Intent: Protect the direct browser ChatKit configuration surface exposed by the ASP.NET Core wrapper.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L401](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L401)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L428](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L428)
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_EmitsError_WhenGenericTagHelperIsUsed**
   - Summary: The generic ChatKit tag helper now requires an explicit mode choice.
   - Intent: Prevent ambiguous Razor configuration that silently switches between local and API-backed modes.
@@ -62,6 +67,16 @@ Total tests: 25
   - Intent: Protect the upstream widgets.onAction parity surface in hosted mode.
   - Tags: (none)
   - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L353](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L353)
+- **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesClientToolHandlers_WhenSetByAttribute**
+  - Summary: The hosted host tag helper serializes a client tool handler lookup path set directly on the tag helper.
+  - Intent: Protect the client tool callback parity surface exposed by the ASP.NET Core Razor wrapper.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L462](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L462)
+- **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesCoexistenceOfHandlerAndForwarding**
+  - Summary: The hosted host tag helper serializes both a client handler and endpoint forwarding when both are configured.
+  - Intent: Protect the coexistence contract where client handling and server forwarding are both active.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L379](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L379)
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesConfiguredUiOptions**
   - Summary: The hosted host tag helper serializes configured UI options and explicit attributes into the browser config payload.
   - Intent: Protect the public Razor wrapper surface added to the ASP.NET Core package.
@@ -72,31 +87,46 @@ Total tests: 25
   - Intent: Protect the explicit OpenAI-hosted wrapper surface.
   - Tags: (none)
   - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L44](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L44)
+- **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperUsesDefaultClientToolHandlers_WhenConfigured**
+  - Summary: The hosted host tag helper propagates a default client tool handler lookup path from service options.
+  - Intent: Protect the server-side options path that wires onClientTool without requiring per-page tag helper attributes.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L486](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs#L486)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn**
   - Summary: Threads create requests stream the created thread and assistant response events through the ChatKit pipeline.
   - Intent: Protect the core thread routing path used by hosted ChatKit servers.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L162](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L162)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L180](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L180)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.Serialize_ThreadsCreateRequest_UsesExactDiscriminator**
   - Summary: Threads create requests serialize with the upstream ChatKit discriminator and payload field names.
   - Intent: Protect exact wire compatibility for the core request envelope.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L15](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L15)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L16](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L16)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.SimpleToAgentInput_MapsUserAndAssistantMessages**
   - Summary: ChatKit conversation items map into the agent input shape expected by the agents dependency.
   - Intent: Protect interop between ChatKit message history and the shared agents runtime.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L198](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L198)
-- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_ParsesExportAndDecodedPayload**
-  - Summary: Widget exports load from disk and expose the authoring metadata and decoded widget payload.
-  - Intent: Protect the new file-backed widget definition API used by downstream ChatKit integrations.
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L216](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L216)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_Build_RejectsInvalidStateAgainstSchema**
+  - Summary: Widget exports reject state that does not satisfy the exported JSON schema.
+  - Intent: Protect schema-based input validation before widget rendering occurs.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L92](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L92)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L160](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L160)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_BuildsWidgetFromFixture**
+  - Summary: Widget exports load from disk or stream, preserve their metadata, and hydrate widget roots from valid input state.
+  - Intent: Protect the file-backed widget template abstraction used by downstream ChatKit integrations.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L93](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L93)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromStream_BuildsWidgetFromFixture**
+  - Summary: Widget exports also load from streams and hydrate the widget preview using the same Jinja-backed pipeline.
+  - Intent: Protect the stream-based widget definition API used by downstream integrations.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L126](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L126)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly**
   - Summary: Streaming text widgets emit deltas instead of forcing a root replacement when text is appended.
   - Intent: Protect incremental widget updates for ChatKit streaming UI flows.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L42](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L42)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L43](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs#L43)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ReleaseVersioningScriptTests.InvokeReleaseVersioning_AllowsDirtyTreeOnTaggedHead_WhenTagCreationIsSkipped**
   - Summary: The release versioning script can advance from a tagged commit when the working tree is dirty.
   - Intent: Protect release versioning for local release preparation on top of an already-tagged HEAD commit.

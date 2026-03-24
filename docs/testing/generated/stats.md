@@ -6,8 +6,8 @@ Generated at (UTC): 1970-01-01T00:00:00Z
 
 | Metric | Count |
 | --- | ---: |
-| Total | 25 |
-| Compliant | 25 |
+| Total | 31 |
+| Compliant | 31 |
 | Missing required | 0 |
 | Invalid format | 0 |
 
@@ -15,7 +15,7 @@ Generated at (UTC): 1970-01-01T00:00:00Z
 
 | Category | Total | Compliant |
 | --- | ---: | ---: |
-| Incursa.OpenAI.ChatKit | 25 | 25 |
+| Incursa.OpenAI.ChatKit | 31 | 31 |
 
 ## By tag
 
@@ -26,5 +26,5 @@ Generated at (UTC): 1970-01-01T00:00:00Z
 
 | Project | Total | Compliant |
 | --- | ---: | ---: |
-| Incursa.OpenAI.ChatKit.AspNetCore.Tests | 14 | 14 |
-| Incursa.OpenAI.ChatKit.Tests | 11 | 11 |
+| Incursa.OpenAI.ChatKit.AspNetCore.Tests | 18 | 18 |
+| Incursa.OpenAI.ChatKit.Tests | 13 | 13 |

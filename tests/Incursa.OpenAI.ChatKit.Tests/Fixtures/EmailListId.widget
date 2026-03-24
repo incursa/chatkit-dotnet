@@ -1,0 +1,453 @@
+{
+  "version": "1.0",
+  "name": "EmailList",
+  "template": "{\"type\":\"ListView\",\"status\":{\"text\":{{ (((emails | length) ~ \" email\" ~ (\"\" if (emails | length) == 1 else \"s\") ~ \" found\")) | tojson }}},\"children\":[{%- set _c -%}{%-for item in emails -%},{\"type\":\"ListViewItem\",\"key\":{{ (item.id) | tojson }},\"gap\":2,\"onClickAction\":{\"type\":\"mail.view_details\",\"payload\":{\"messageId\":{{ (item.id) | tojson }},\"threadId\":{{ (item.threadId) | tojson }},\"mailboxId\":{{ (item.mailboxId) | tojson }}},\"loadingBehavior\":\"self\"},\"children\":[{\"type\":\"Card\",\"size\":\"sm\",\"children\":[{\"type\":\"Col\",\"gap\":2,\"children\":[{\"type\":\"Row\",\"gap\":3,\"align\":\"center\",\"children\":[{\"type\":\"Col\",\"children\":[{\"type\":\"Title\",\"value\":{{ (item.subject or \"(No subject)\") | tojson }},\"size\":\"sm\",\"maxLines\":1},{\"type\":\"Text\",\"value\":{{ (item.id) | tojson }},\"size\":\"sm\",\"maxLines\":1,\"color\":\"secondary\"}]}]},{\"type\":\"Divider\"},{\"type\":\"Col\",\"gap\":1,\"children\":[{%- set _c -%},{\"type\":\"Row\",\"children\":[{\"type\":\"Caption\",\"value\":\"From\",\"color\":\"secondary\"},{\"type\":\"Spacer\"},{\"type\":\"Text\",\"value\":{{ (item.from) | tojson }},\"size\":\"sm\",\"textAlign\":\"end\",\"maxLines\":1}]},{\"type\":\"Row\",\"children\":[{\"type\":\"Caption\",\"value\":\"To\",\"color\":\"secondary\"},{\"type\":\"Spacer\"},{\"type\":\"Text\",\"value\":{{ ((none)) | tojson }},\"size\":\"sm\",\"textAlign\":\"end\",\"maxLines\":1}]}{%-if (item.cc and ((item.cc | length) > 0)) -%},{\"type\":\"Row\",\"children\":[{\"type\":\"Caption\",\"value\":\"Cc\",\"color\":\"secondary\"},{\"type\":\"Spacer\"},{\"type\":\"Text\",\"value\":{{ ((none)) | tojson }},\"size\":\"sm\",\"textAlign\":\"end\",\"maxLines\":1}]}{%-else-%}{%-endif-%}{%-if (item.bcc and ((item.bcc | length) > 0)) -%},{\"type\":\"Row\",\"children\":[{\"type\":\"Caption\",\"value\":\"Bcc\",\"color\":\"secondary\"},{\"type\":\"Spacer\"},{\"type\":\"Text\",\"value\":{{ ((none)) | tojson }},\"size\":\"sm\",\"textAlign\":\"end\",\"maxLines\":1}]}{%-else-%}{%-endif-%}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]},{\"type\":\"Divider\"},{\"type\":\"Text\",\"value\":{{ (item.preview or \"No preview available.\") | tojson }},\"size\":\"sm\",\"color\":\"secondary\",\"maxLines\":3}]}]}]}{%-endfor-%}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]}",
+  "jsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "emails": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "threadId": {
+              "type": "string"
+            },
+            "mailboxId": {
+              "type": "string"
+            },
+            "from": {
+              "type": "string"
+            },
+            "to": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "cc": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "bcc": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "subject": {
+              "type": "string"
+            },
+            "preview": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "from",
+            "to",
+            "subject",
+            "preview"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "emails"
+    ],
+    "additionalProperties": false
+  },
+  "outputJsonPreview": {
+    "type": "ListView",
+    "status": {
+      "text": "3 emails found"
+    },
+    "children": [
+      {
+        "type": "ListViewItem",
+        "key": "eml_001",
+        "gap": 2,
+        "onClickAction": {
+          "type": "mail.view_details",
+          "payload": {
+            "messageId": "eml_001",
+            "threadId": "eml_001",
+            "mailboxId": "eml_001"
+          },
+          "loadingBehavior": "self"
+        },
+        "children": [
+          {
+            "type": "Card",
+            "size": "sm",
+            "children": [
+              {
+                "type": "Col",
+                "gap": 2,
+                "children": [
+                  {
+                    "type": "Row",
+                    "gap": 3,
+                    "align": "center",
+                    "children": [
+                      {
+                        "type": "Col",
+                        "children": [
+                          {
+                            "type": "Title",
+                            "value": "Quarterly update and next steps for 2026 planning",
+                            "size": "sm",
+                            "maxLines": 1
+                          },
+                          {
+                            "type": "Text",
+                            "value": "eml_001",
+                            "size": "sm",
+                            "maxLines": 1,
+                            "color": "secondary"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Divider"
+                  },
+                  {
+                    "type": "Col",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Caption",
+                            "value": "From",
+                            "color": "secondary"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Text",
+                            "value": "alice@example.com",
+                            "size": "sm",
+                            "textAlign": "end",
+                            "maxLines": 1
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Caption",
+                            "value": "To",
+                            "color": "secondary"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Text",
+                            "value": "you@company.com, me@company.com",
+                            "size": "sm",
+                            "textAlign": "end",
+                            "maxLines": 1
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Caption",
+                            "value": "Cc",
+                            "color": "secondary"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Text",
+                            "value": "bob@example.com",
+                            "size": "sm",
+                            "textAlign": "end",
+                            "maxLines": 1
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Divider"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "Hi team, here's the Q1 summary and the key actions for next week...",
+                    "size": "sm",
+                    "color": "secondary",
+                    "maxLines": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ListViewItem",
+        "key": "eml_002",
+        "gap": 2,
+        "onClickAction": {
+          "type": "mail.view_details",
+          "payload": {
+            "messageId": "eml_002",
+            "threadId": "eml_002",
+            "mailboxId": "eml_002"
+          },
+          "loadingBehavior": "self"
+        },
+        "children": [
+          {
+            "type": "Card",
+            "size": "sm",
+            "children": [
+              {
+                "type": "Col",
+                "gap": 2,
+                "children": [
+                  {
+                    "type": "Row",
+                    "gap": 3,
+                    "align": "center",
+                    "children": [
+                      {
+                        "type": "Col",
+                        "children": [
+                          {
+                            "type": "Title",
+                            "value": "Welcome! Here's how to get started with Product",
+                            "size": "sm",
+                            "maxLines": 1
+                          },
+                          {
+                            "type": "Text",
+                            "value": "eml_002",
+                            "size": "sm",
+                            "maxLines": 1,
+                            "color": "secondary"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Divider"
+                  },
+                  {
+                    "type": "Col",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Caption",
+                            "value": "From",
+                            "color": "secondary"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Text",
+                            "value": "news@product.com",
+                            "size": "sm",
+                            "textAlign": "end",
+                            "maxLines": 1
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Caption",
+                            "value": "To",
+                            "color": "secondary"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Text",
+                            "value": "you@company.com",
+                            "size": "sm",
+                            "textAlign": "end",
+                            "maxLines": 1
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Divider"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "Thanks for signing up. This quick guide will help you set up your first project and invite teammates.",
+                    "size": "sm",
+                    "color": "secondary",
+                    "maxLines": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ListViewItem",
+        "key": "eml_003",
+        "gap": 2,
+        "onClickAction": {
+          "type": "mail.view_details",
+          "payload": {
+            "messageId": "eml_003",
+            "threadId": "eml_003",
+            "mailboxId": "eml_003"
+          },
+          "loadingBehavior": "self"
+        },
+        "children": [
+          {
+            "type": "Card",
+            "size": "sm",
+            "children": [
+              {
+                "type": "Col",
+                "gap": 2,
+                "children": [
+                  {
+                    "type": "Row",
+                    "gap": 3,
+                    "align": "center",
+                    "children": [
+                      {
+                        "type": "Col",
+                        "children": [
+                          {
+                            "type": "Title",
+                            "value": "Reminder: Submit benefits open enrollment forms by March 20",
+                            "size": "sm",
+                            "maxLines": 1
+                          },
+                          {
+                            "type": "Text",
+                            "value": "eml_003",
+                            "size": "sm",
+                            "maxLines": 1,
+                            "color": "secondary"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Divider"
+                  },
+                  {
+                    "type": "Col",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Caption",
+                            "value": "From",
+                            "color": "secondary"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Text",
+                            "value": "hr@org.com",
+                            "size": "sm",
+                            "textAlign": "end",
+                            "maxLines": 1
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Caption",
+                            "value": "To",
+                            "color": "secondary"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Text",
+                            "value": "you@company.com, manager@org.com",
+                            "size": "sm",
+                            "textAlign": "end",
+                            "maxLines": 1
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Caption",
+                            "value": "Bcc",
+                            "color": "secondary"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Text",
+                            "value": "auditor@org.com",
+                            "size": "sm",
+                            "textAlign": "end",
+                            "maxLines": 1
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Divider"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "Please complete your enrollment in the benefits portal. It takes about 5 minutes and ensures your coverage for the year.",
+                    "size": "sm",
+                    "color": "secondary",
+                    "maxLines": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "encodedWidget": "eyJpZCI6IjE1Yjk0Y2JiLWFkZDYtNGFmZC04MzYyLTk5NzRmZTgzNjI0YiIsIm5hbWUiOiJFbWFpbExpc3QiLCJ2aWV3IjoiPExpc3RWaWV3IHN0YXR1cz17eyB0ZXh0OiBgJHtlbWFpbHMubGVuZ3RofSBlbWFpbCR7ZW1haWxzLmxlbmd0aCA9PT0gMSA_IFwiXCIgOiBcInNcIn0gZm91bmRgIH19PlxuICB7ZW1haWxzLm1hcCgoaXRlbSkgPT4gKFxuICAgIDxMaXN0Vmlld0l0ZW1cbiAgICAgIGtleT17aXRlbS5pZH1cbiAgICAgIGdhcD17Mn1cbiAgICAgIG9uQ2xpY2tBY3Rpb249e3tcbiAgICAgICAgdHlwZTogXCJtYWlsLnZpZXdfZGV0YWlsc1wiLFxuICAgICAgICBwYXlsb2FkOiB7XG4gICAgICAgICAgbWVzc2FnZUlkOiBpdGVtLmlkLFxuICAgICAgICAgIHRocmVhZElkOiBpdGVtLnRocmVhZElkLFxuICAgICAgICAgIG1haWxib3hJZDogaXRlbS5tYWlsYm94SWQsXG4gICAgICAgIH0sXG4gICAgICAgIGxvYWRpbmdCZWhhdmlvcjogXCJzZWxmXCIsXG4gICAgICB9fVxuICAgID5cbiAgICAgIDxDYXJkIHNpemU9XCJzbVwiPlxuICAgICAgICA8Q29sIGdhcD17Mn0-XG4gICAgICAgICAgPFJvdyBnYXA9ezN9IGFsaWduPVwiY2VudGVyXCI-XG4gICAgICAgICAgICA8Q29sPlxuICAgICAgICAgICAgICA8VGl0bGUgdmFsdWU9e2l0ZW0uc3ViamVjdCB8fCBcIihObyBzdWJqZWN0KVwifSBzaXplPVwic21cIiBtYXhMaW5lcz17MX0gLz5cbiAgICAgICAgICAgICAgPFRleHQgdmFsdWU9e2l0ZW0uaWR9IHNpemU9XCJzbVwiIG1heExpbmVzPXsxfSBjb2xvcj1cInNlY29uZGFyeVwiIC8-XG4gICAgICAgICAgICA8L0NvbD5cbiAgICAgICAgICA8L1Jvdz5cblxuICAgICAgICAgIDxEaXZpZGVyIC8-XG5cbiAgICAgICAgICA8Q29sIGdhcD17MX0-XG4gICAgICAgICAgICA8Um93PlxuICAgICAgICAgICAgICA8Q2FwdGlvbiB2YWx1ZT1cIkZyb21cIiBjb2xvcj1cInNlY29uZGFyeVwiIC8-XG4gICAgICAgICAgICAgIDxTcGFjZXIgLz5cbiAgICAgICAgICAgICAgPFRleHQgdmFsdWU9e2l0ZW0uZnJvbX0gc2l6ZT1cInNtXCIgdGV4dEFsaWduPVwiZW5kXCIgbWF4TGluZXM9ezF9IC8-XG4gICAgICAgICAgICA8L1Jvdz5cblxuICAgICAgICAgICAgPFJvdz5cbiAgICAgICAgICAgICAgPENhcHRpb24gdmFsdWU9XCJUb1wiIGNvbG9yPVwic2Vjb25kYXJ5XCIgLz5cbiAgICAgICAgICAgICAgPFNwYWNlciAvPlxuICAgICAgICAgICAgICA8VGV4dCB2YWx1ZT17aXRlbS50by5qb2luKFwiLCBcIil9IHNpemU9XCJzbVwiIHRleHRBbGlnbj1cImVuZFwiIG1heExpbmVzPXsxfSAvPlxuICAgICAgICAgICAgPC9Sb3c-XG5cbiAgICAgICAgICAgIHtpdGVtLmNjICYmIGl0ZW0uY2MubGVuZ3RoID4gMCAmJiAoXG4gICAgICAgICAgICAgIDxSb3c-XG4gICAgICAgICAgICAgICAgPENhcHRpb24gdmFsdWU9XCJDY1wiIGNvbG9yPVwic2Vjb25kYXJ5XCIgLz5cbiAgICAgICAgICAgICAgICA8U3BhY2VyIC8-XG4gICAgICAgICAgICAgICAgPFRleHQgdmFsdWU9e2l0ZW0uY2Muam9pbihcIiwgXCIpfSBzaXplPVwic21cIiB0ZXh0QWxpZ249XCJlbmRcIiBtYXhMaW5lcz17MX0gLz5cbiAgICAgICAgICAgICAgPC9Sb3c-XG4gICAgICAgICAgICApfVxuXG4gICAgICAgICAgICB7aXRlbS5iY2MgJiYgaXRlbS5iY2MubGVuZ3RoID4gMCAmJiAoXG4gICAgICAgICAgICAgIDxSb3c-XG4gICAgICAgICAgICAgICAgPENhcHRpb24gdmFsdWU9XCJCY2NcIiBjb2xvcj1cInNlY29uZGFyeVwiIC8-XG4gICAgICAgICAgICAgICAgPFNwYWNlciAvPlxuICAgICAgICAgICAgICAgIDxUZXh0IHZhbHVlPXtpdGVtLmJjYy5qb2luKFwiLCBcIil9IHNpemU9XCJzbVwiIHRleHRBbGlnbj1cImVuZFwiIG1heExpbmVzPXsxfSAvPlxuICAgICAgICAgICAgICA8L1Jvdz5cbiAgICAgICAgICAgICl9XG4gICAgICAgICAgPC9Db2w-XG5cbiAgICAgICAgICA8RGl2aWRlciAvPlxuXG4gICAgICAgICAgPFRleHQgdmFsdWU9e2l0ZW0ucHJldmlldyB8fCBcIk5vIHByZXZpZXcgYXZhaWxhYmxlLlwifSBzaXplPVwic21cIiBjb2xvcj1cInNlY29uZGFyeVwiIG1heExpbmVzPXszfSAvPlxuXG4gICAgICAgIDwvQ29sPlxuICAgICAgPC9DYXJkPlxuICAgIDwvTGlzdFZpZXdJdGVtPlxuICApKX1cbjwvTGlzdFZpZXc-IiwiZGVmYXVsdFN0YXRlIjp7ImVtYWlscyI6W3siaWQiOiJlbWxfMDAxIiwidGhyZWFkSWQiOiJlbWxfMDAxIiwibWFpbGJveElkIjoiZW1sXzAwMSIsImZyb20iOiJhbGljZUBleGFtcGxlLmNvbSIsInRvIjpbInlvdUBjb21wYW55LmNvbSIsIm1lQGNvbXBhbnkuY29tIl0sImNjIjpbImJvYkBleGFtcGxlLmNvbSJdLCJzdWJqZWN0IjoiUXVhcnRlcmx5IHVwZGF0ZSBhbmQgbmV4dCBzdGVwcyBmb3IgMjAyNiBwbGFubmluZyIsInByZXZpZXciOiJIaSB0ZWFtLCBoZXJlJ3MgdGhlIFExIHN1bW1hcnkgYW5kIHRoZSBrZXkgYWN0aW9ucyBmb3IgbmV4dCB3ZWVrLi4uIn0seyJpZCI6ImVtbF8wMDIiLCJ0aHJlYWRJZCI6ImVtbF8wMDIiLCJtYWlsYm94SWQiOiJlbWxfMDAyIiwiZnJvbSI6Im5ld3NAcHJvZHVjdC5jb20iLCJ0byI6WyJ5b3VAY29tcGFueS5jb20iXSwic3ViamVjdCI6IldlbGNvbWUhIEhlcmUncyBob3cgdG8gZ2V0IHN0YXJ0ZWQgd2l0aCBQcm9kdWN0IiwicHJldmlldyI6IlRoYW5rcyBmb3Igc2lnbmluZyB1cC4gVGhpcyBxdWljayBndWlkZSB3aWxsIGhlbHAgeW91IHNldCB1cCB5b3VyIGZpcnN0IHByb2plY3QgYW5kIGludml0ZSB0ZWFtbWF0ZXMuIn0seyJpZCI6ImVtbF8wMDMiLCJ0aHJlYWRJZCI6ImVtbF8wMDMiLCJtYWlsYm94SWQiOiJlbWxfMDAzIiwiZnJvbSI6ImhyQG9yZy5jb20iLCJ0byI6WyJ5b3VAY29tcGFueS5jb20iLCJtYW5hZ2VyQG9yZy5jb20iXSwiYmNjIjpbImF1ZGl0b3JAb3JnLmNvbSJdLCJzdWJqZWN0IjoiUmVtaW5kZXI6IFN1Ym1pdCBiZW5lZml0cyBvcGVuIGVucm9sbG1lbnQgZm9ybXMgYnkgTWFyY2ggMjAiLCJwcmV2aWV3IjoiUGxlYXNlIGNvbXBsZXRlIHlvdXIgZW5yb2xsbWVudCBpbiB0aGUgYmVuZWZpdHMgcG9ydGFsLiBJdCB0YWtlcyBhYm91dCA1IG1pbnV0ZXMgYW5kIGVuc3VyZXMgeW91ciBjb3ZlcmFnZSBmb3IgdGhlIHllYXIuIn1dfSwic3RhdGVzIjpbXSwic2NoZW1hIjoiaW1wb3J0IHsgeiB9IGZyb20gXCJ6b2RcIlxuXG5jb25zdCBFbWFpbCA9IHouc3RyaWN0T2JqZWN0KHtcbiAgaWQ6IHouc3RyaW5nKCksICAgICAgLy8gY2Fub25pY2FsIG1lc3NhZ2UgaWRcbiAgdGhyZWFkSWQ6IHouc3RyaW5nKCkub3B0aW9uYWwoKSxcbiAgbWFpbGJveElkOiB6LnN0cmluZygpLm9wdGlvbmFsKCksXG4gIGZyb206IHouc3RyaW5nKCksXG4gIHRvOiB6LmFycmF5KHouc3RyaW5nKCkpLm1pbigxKSxcbiAgY2M6IHouYXJyYXkoei5zdHJpbmcoKSkub3B0aW9uYWwoKSxcbiAgYmNjOiB6LmFycmF5KHouc3RyaW5nKCkpLm9wdGlvbmFsKCksXG4gIHN1YmplY3Q6IHouc3RyaW5nKCksXG4gIHByZXZpZXc6IHouc3RyaW5nKCksXG59KVxuXG5jb25zdCBXaWRnZXRTdGF0ZSA9IHouc3RyaWN0T2JqZWN0KHtcbiAgZW1haWxzOiB6LmFycmF5KEVtYWlsKSxcbn0pXG5cbmV4cG9ydCBkZWZhdWx0IFdpZGdldFN0YXRlIiwianNvblNjaGVtYSI6e30sInNjaGVtYU1vZGUiOiJ6b2QiLCJzY2hlbWFWYWxpZGl0eSI6InZhbGlkIiwidmlld1ZhbGlkaXR5IjoidmFsaWQiLCJkZWZhdWx0U3RhdGVWYWxpZGl0eSI6InZhbGlkIn0"
+}

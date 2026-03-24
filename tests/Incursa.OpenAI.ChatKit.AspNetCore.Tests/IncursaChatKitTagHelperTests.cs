@@ -398,6 +398,7 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.True(config["widgetActions"]?["forwardToEndpoint"]?.GetValue<bool>());
     }
 
+    /// <summary>The API host tag helper emits an error when the direct browser domain key is missing.</summary>
     /// <intent>Protect the direct browser wrapper from serializing an invalid ChatKit API configuration.</intent>
     /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
     /// <behavior>Direct browser API mode emits a render error instead of serializing a config payload when the domain key is missing.</behavior>

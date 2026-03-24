@@ -11,11 +11,17 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>openai;chatkit;chat;widgets;agents</PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <LocalIncursaJinjaRepoRoot>$(MSBuildThisFileDirectory)..\..\..\jinja-dotnet</LocalIncursaJinjaRepoRoot>
+    <LocalIncursaJinjaProjectPath>$(LocalIncursaJinjaRepoRoot)\src\Incursa.Jinja\Incursa.Jinja.csproj</LocalIncursaJinjaProjectPath>
     <UseLocalIncursaAgentsProject Condition="'$(UseLocalIncursaAgentsProject)' == '' and '$(USE_LOCAL_INCURSA_AGENTS_PROJECT)' != ''">$(USE_LOCAL_INCURSA_AGENTS_PROJECT)</UseLocalIncursaAgentsProject>
     <LocalIncursaAgentsRepoRoot Condition="'$(LocalIncursaAgentsRepoRoot)' == '' and '$(LOCAL_INCURSA_AGENTS_REPO_ROOT)' != ''">$(LOCAL_INCURSA_AGENTS_REPO_ROOT)</LocalIncursaAgentsRepoRoot>
     <LocalIncursaAgentsRepoRoot Condition="'$(LocalIncursaAgentsRepoRoot)' == ''">$(MSBuildThisFileDirectory)..\..\..\openai-agents-dotnet</LocalIncursaAgentsRepoRoot>
     <LocalIncursaAgentsProjectPath>$(LocalIncursaAgentsRepoRoot)\src\Incursa.OpenAI.Agents\Incursa.OpenAI.Agents.csproj</LocalIncursaAgentsProjectPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(LocalIncursaJinjaProjectPath)" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(UseLocalIncursaAgentsProject)' == 'true' and Exists('$(LocalIncursaAgentsProjectPath)')">
     <ProjectReference Include="$(LocalIncursaAgentsProjectPath)" />

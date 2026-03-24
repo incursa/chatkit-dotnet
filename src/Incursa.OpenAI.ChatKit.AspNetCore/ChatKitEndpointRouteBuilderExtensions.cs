@@ -27,6 +27,8 @@ public static class ChatKitEndpointRouteBuilderExtensions
         return endpoints.MapPost(pattern, async (HttpContext httpContext, TServer server, CancellationToken cancellationToken) =>
         {
             using MemoryStream buffer = new();
+            // Keep the HTTP adapter intentionally dumb: the core server owns request
+            // parsing, operation routing, and result classification.
             await httpContext.Request.Body.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
 
             ChatKitProcessResult result = await server.ProcessAsync(buffer.ToArray(), contextFactory(httpContext), cancellationToken).ConfigureAwait(false);
@@ -38,6 +40,8 @@ public static class ChatKitEndpointRouteBuilderExtensions
                     break;
                 case StreamingResult streaming:
                     httpContext.Response.ContentType = "text/event-stream";
+                    // Flush each chunk so the browser sees incremental ChatKit events
+                    // instead of waiting for the full assistant turn to complete.
                     await foreach (byte[] chunk in streaming.WithCancellation(cancellationToken).ConfigureAwait(false))
                     {
                         await httpContext.Response.Body.WriteAsync(chunk, cancellationToken).ConfigureAwait(false);

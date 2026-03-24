@@ -20,7 +20,7 @@ If you want ASP.NET Core endpoint mapping or Razor tag helpers, install `Incursa
 - `ChatKitProcessResult`, `StreamingResult`, and `NonStreamingResult`
 - store abstractions and the in-memory implementation
 - helper types for widgets and agent integration
-- `WidgetDefinition` loaders for exported `.widget` files and their encoded widget payloads
+- `WidgetDefinition` loaders and `Build(...)` support for exported `.widget` files, their encoded widget payloads, schema validation, and Jinja-backed rendering into `WidgetRoot`
 
 ## Minimal example
 

@@ -3,76 +3,158 @@ workbench:
   type: guide
   workItems: []
   codeRefs:
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs
     - src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs
-    - samples/Incursa.OpenAI.ChatKit.QuickstartSample/Program.cs
-    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitAssetsTagHelper.cs
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitHostedTagHelper.cs
+    - src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitApiTagHelper.cs
   pathHistory: []
   path: /docs/extensions.md
 ---
 
 # ASP.NET Core Hosting
 
-`Incursa.OpenAI.ChatKit.AspNetCore` owns both the HTTP adapter for the translated ChatKit server surface and the Razor/UI wrapper that packages ChatKit browser assets.
+`Incursa.OpenAI.ChatKit.AspNetCore` adds two kinds of integration on top of the core runtime:
 
-## API surface
+- HTTP endpoint mapping for ChatKit protocol requests
+- Razor-based browser hosting for the ChatKit UI shell
 
-- `MapChatKit<TServer, TContext>(IEndpointRouteBuilder, string, Func<HttpContext, TContext>)`
-- `AddIncursaOpenAIChatKitAspNetCore(IServiceCollection, Action<ChatKitAspNetCoreOptions>?)`
-- `AddIncursaOpenAIChatKitAspNetCore(IServiceCollection, IConfiguration)`
-- `AddIncursaOpenAIChatKitAspNetCoreApi(IServiceCollection, string, string?, Action<ChatKitAspNetCoreOptions>?)`
-- `AddIncursaOpenAIChatKitAspNetCoreHosted(IServiceCollection, Action<ChatKitAspNetCoreOptions>?)`
-- `<incursa-chatkit-assets />`
-- `<incursa-chatkit-api />`
-- `<incursa-chatkit-hosted />`
+## Endpoint hosting
 
-The endpoint extension:
-
-- resolves the registered `ChatKitServer<TContext>`
-- builds the request context from the current `HttpContext`
-- forwards the raw request payload to the core server
-- writes either JSON or streamed SSE output back to the client
-
-The Razor wrapper:
-
-- emits packaged CSS and JavaScript from `_content/Incursa.OpenAI.ChatKit.AspNetCore/chatkit`
-- serializes host configuration into `data-incursa-chatkit-config`
-- mounts the upstream `<openai-chatkit>` web component without per-page bootstrapping code
-- supports both conventional local endpoints and direct browser ChatKit API connections
-- is documented in detail in [ChatKit tag helpers](30-contracts/chatkit-tag-helper.md)
-
-## Minimal host sample
+Register your server and map the endpoint:
 
 ```csharp
+using Incursa.OpenAI.ChatKit;
+using Incursa.OpenAI.ChatKit.AspNetCore;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<DemoChatKitServer>();
 
 WebApplication app = builder.Build();
 app.MapChatKit<DemoChatKitServer, Dictionary<string, object?>>(
     "/chatkit",
-    _ => new Dictionary<string, object?>());
+    httpContext => new Dictionary<string, object?>(StringComparer.Ordinal));
+
+app.Run();
 ```
 
-## Hosting guidance
+`MapChatKit(...)` does only four things:
 
-- keep context creation in the composition root
-- keep ChatKit transport handling in the ASP.NET Core package
-- keep request routing and store behavior in the core package
-- keep Razor UI defaults in `ChatKitAspNetCoreOptions`
-- include `<incursa-chatkit-assets />` once per rendered page or layout
-- use integration tests to validate wire behavior across the endpoint boundary
+1. buffer the request body
+2. create the per-request context
+3. invoke `ChatKitServer<TContext>.ProcessAsync(...)`
+4. write JSON or SSE to the response
 
-## Razor usage
+You still own:
 
-For full tag-helper examples, supported attributes, and feature-specific patterns, see [ChatKit tag helpers](30-contracts/chatkit-tag-helper.md).
+- auth
+- authz
+- request scoping beyond the context factory
+- error policy outside of ChatKit stream errors
 
-When you need to refresh the packaged browser runtime after updating the frontend npm dependencies:
+## Browser hosting modes
 
-```bash
-cd src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime
-npm install
-npm run build
+There are two explicit browser modes.
+
+### Direct API mode
+
+Use `AddOpenAIChatKitApi(...)` and `<incursa-chatkit-api>` when the browser should call a ChatKit API endpoint directly.
+
+```csharp
+builder.Services.AddOpenAIChatKitApi(
+    "/chatkit",
+    "contoso-domain-key",
+    options =>
+    {
+        options.DefaultHeight = "760px";
+        options.Locale = "en";
+    });
 ```
 
-## References
+```cshtml
+<incursa-chatkit-assets />
+<incursa-chatkit-api
+    api-url="/chatkit"
+    domain-key="contoso-domain-key"
+    height="760px" />
+```
 
-- `samples/Incursa.OpenAI.ChatKit.QuickstartSample/Program.cs`
-- `tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs`
+Operational notes:
+
+- the helper requires `api-url`
+- the helper requires a non-empty domain key
+- upload strategy settings only apply in this mode
+
+### Hosted session mode
+
+Use `AddOpenAIChatKitHosted(...)` and `<incursa-chatkit-hosted>` when the browser should fetch a ChatKit client secret from your local app.
+
+```csharp
+builder.Services.AddOpenAIChatKitHosted(options =>
+{
+    options.SessionEndpoint = "/api/chatkit/session";
+    options.ActionEndpoint = "/api/chatkit/action";
+    options.ForwardWidgetActions = true;
+});
+```
+
+```cshtml
+<incursa-chatkit-assets />
+<incursa-chatkit-hosted
+    session-endpoint="/api/chatkit/session"
+    action-endpoint="/api/chatkit/action" />
+```
+
+Operational notes:
+
+- the helper requires `session-endpoint`
+- `action-endpoint` is required only when widget forwarding is enabled
+- direct API settings are disallowed in this mode
+
+## Service registration methods
+
+### `AddOpenAIChatKit(...)`
+
+Use this for neutral shared defaults without committing to a browser transport mode yet.
+
+### `AddOpenAIChatKitHosted(...)`
+
+Use this to clear direct API defaults and configure hosted session mode.
+
+### `AddOpenAIChatKitApi(...)`
+
+Use this to configure direct browser API mode.
+
+Current implementation detail:
+
+- the method signature accepts `string? domainKey`, but the implementation throws if it is null or whitespace
+
+## Asset responsibilities
+
+`<incursa-chatkit-assets>` is responsible for:
+
+- packaged CSS
+- upstream ChatKit web component script from the CDN
+- the local runtime bootstrap module that reads serialized config from Razor output
+
+If a layout and view both render the helper during one request, duplicates are suppressed.
+
+## Recommended integration pattern
+
+For most apps:
+
+1. keep the core assistant logic in a `ChatKitServer<TContext>` subclass
+2. make `TContext` a real request model, not a loose dictionary, once the app has stable auth and tenant needs
+3. map the ChatKit endpoint with `MapChatKit(...)`
+4. choose exactly one Razor host mode per page
+5. centralize repeated UI defaults in `AddOpenAIChatKitHosted(...)` or `AddOpenAIChatKitApi(...)`
+
+## Current gaps outside this package
+
+These are intentionally not solved by the ASP.NET Core package:
+
+- issuing hosted ChatKit session secrets
+- handling widget actions in your own controller or endpoint layer
+- production attachment storage
+- authentication of direct browser API calls
+- application-specific persistence choices
