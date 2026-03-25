@@ -1,11 +1,11 @@
 # Incursa.OpenAI.ChatKit.AspNetCore
 
-`Incursa.OpenAI.ChatKit.AspNetCore` is the ASP.NET Core integration package for `Incursa.OpenAI.ChatKit`.
+[`Incursa.OpenAI.ChatKit.AspNetCore`](README.md) is the ASP.NET Core integration package for [`Incursa.OpenAI.ChatKit`](../Incursa.OpenAI.ChatKit/README.md).
 
 It adds:
 
-- `MapChatKit<TServer, TContext>(...)` for HTTP and SSE endpoint handling
-- `AddOpenAIChatKitApi(...)` and `AddOpenAIChatKitHosted(...)` for explicit frontend hosting modes
+- [`MapChatKit<TServer, TContext>(...)`](ChatKitEndpointRouteBuilderExtensions.cs) for HTTP and SSE endpoint handling
+- [`AddOpenAIChatKitApi(...)`](ChatKitAspNetCoreServiceCollectionExtensions.cs) and [`AddOpenAIChatKitHosted(...)`](ChatKitAspNetCoreServiceCollectionExtensions.cs) for explicit frontend hosting modes
 - Razor tag helpers for mounting the ChatKit frontend from MVC or Razor views
 - packaged CSS and JavaScript assets under `_content/Incursa.OpenAI.ChatKit.AspNetCore/chatkit`
 - a thin vanilla-JS bootstrap around the upstream `<openai-chatkit>` web component
@@ -28,7 +28,7 @@ dotnet add package Incursa.OpenAI.ChatKit.AspNetCore
 
 ## What this package is not for
 
-- replacing the core `Incursa.OpenAI.ChatKit` runtime
+- replacing the core [`Incursa.OpenAI.ChatKit`](../Incursa.OpenAI.ChatKit/README.md) runtime
 - generating ChatKit UI assets during normal `dotnet build`
 - forcing a specific MVC or Razor Pages structure on your app
 
@@ -96,7 +96,7 @@ Then use the tag helpers from a layout or view:
 </incursa-chatkit-api>
 ```
 
-Use `<incursa-chatkit-api>` when your application maps a custom ChatKit endpoint with `MapChatKit(...)`. This is the explicit wrapper for self-hosted or custom API integrations.
+Use [`<incursa-chatkit-api>`](../../docs/30-contracts/chatkit-tag-helper.md) when your application maps a custom ChatKit endpoint with [`MapChatKit(...)`](ChatKitEndpointRouteBuilderExtensions.cs). This is the explicit wrapper for self-hosted or custom API integrations.
 
 For example, if your app maps a protected ChatKit endpoint at `/api/chatkit`, keep that route on the server side:
 
@@ -115,7 +115,7 @@ Then point the Razor host at that API endpoint:
     domain-key="contoso-domain-key" />
 ```
 
-Direct API mode requires a domain key. Configure it either in `AddOpenAIChatKitApi(...)` or on the `<incursa-chatkit-api>` tag helper.
+Direct API mode requires a domain key. Configure it either in [`AddOpenAIChatKitApi(...)`](ChatKitAspNetCoreServiceCollectionExtensions.cs) or on the [`<incursa-chatkit-api>`](../../docs/30-contracts/chatkit-tag-helper.md) tag helper.
 
 The wrapper also mirrors the richer upstream theme and header options:
 
@@ -155,7 +155,7 @@ To expose ChatKit `onClientTool` through the Razor wrapper, register a browser-s
 
 ## Composer configuration
 
-The wrapper can also project ChatKit composer attachments, tool pickers, model pickers, dictation, and custom upload strategies from `AddOpenAIChatKitApi(...)` or `AddOpenAIChatKitHosted(...)`:
+The wrapper can also project ChatKit composer attachments, tool pickers, model pickers, dictation, and custom upload strategies from [`AddOpenAIChatKitApi(...)`](ChatKitAspNetCoreServiceCollectionExtensions.cs) or [`AddOpenAIChatKitHosted(...)`](ChatKitAspNetCoreServiceCollectionExtensions.cs):
 
 ```csharp
 builder.Services.AddOpenAIChatKitApi("/api/chatkit", "contoso-domain-key", options =>
@@ -239,7 +239,7 @@ To expose ChatKit `entities` through the Razor wrapper, register a browser-side 
 
 `entity-handlers` accepts a dotted browser lookup path such as `window.chatkitEntities` or `app.chatkit.entityHandlers`. The runtime looks for optional `onTagSearch(query)`, `onClick(entity)`, and `onRequestPreview(entity)` functions on that object and validates the returned entity list and preview payload shape before passing them to ChatKit.
 
-When the user submits tagged content, the core server receives `UserMessageTagContent` entries alongside regular text content. That lets you convert upstream `@` tags directly into your server-side domain model:
+When the user submits tagged content, the core server receives [`UserMessageTagContent`](../Incursa.OpenAI.ChatKit/ChatKitPrimitives.cs) entries alongside regular text content. That lets you convert upstream `@` tags directly into your server-side domain model:
 
 ```csharp
 using System.Text.Json.Nodes;
@@ -285,7 +285,7 @@ Use `header-title-enabled="false"` when you want the header shell to remain visi
 
 ## OpenAI-hosted mode
 
-If the frontend should use OpenAI-hosted ChatKit through local session and action endpoints, register hosted mode explicitly and use `<incursa-chatkit-hosted>`:
+If the frontend should use OpenAI-hosted ChatKit through local session and action endpoints, register hosted mode explicitly and use [`<incursa-chatkit-hosted>`](../../docs/30-contracts/chatkit-tag-helper.md):
 
 ```csharp
 builder.Services.AddOpenAIChatKitHosted(options =>
@@ -303,7 +303,7 @@ builder.Services.AddOpenAIChatKitHosted(options =>
 </incursa-chatkit-hosted>
 ```
 
-`<incursa-chatkit-hosted>` is the explicit wrapper for the hosted `getClientSecret` flow. Use it when your app issues the browser a ChatKit client secret instead of exposing a custom ChatKit API endpoint directly.
+[`<incursa-chatkit-hosted>`](../../docs/30-contracts/chatkit-tag-helper.md) is the explicit wrapper for the hosted `getClientSecret` flow. Use it when your app issues the browser a ChatKit client secret instead of exposing a custom ChatKit API endpoint directly.
 
 ## Widget actions
 
@@ -338,7 +338,7 @@ Supported patterns:
 - Client-only: set `widget-action-handler` and disable forwarding with `forward-widget-actions="false"`.
 - Client-then-server: set both `widget-action-handler` and `action-endpoint`. The runtime invokes the client callback first and forwards the same action to the endpoint only if the client callback succeeds.
 
-In direct API mode (`<incursa-chatkit-api>`), `widget-action-handler` still works for client-handled widget actions. Local `action-endpoint` forwarding remains unavailable in that mode.
+In direct API mode ([`<incursa-chatkit-api>`](../../docs/30-contracts/chatkit-tag-helper.md)), `widget-action-handler` still works for client-handled widget actions. Local `action-endpoint` forwarding remains unavailable in that mode.
 
 ## Updating packaged UI assets
 
@@ -347,15 +347,15 @@ In direct API mode (`<incursa-chatkit-api>`), `widget-action-handler` still work
 The JavaScript pieces in this package fall into two buckets:
 
 - Handwritten source:
-  - `ClientApp/chatkit-runtime/src/entry.js`
-  - `ClientApp/chatkit-runtime/src/runtimeHost.js`
-  - `ClientApp/chatkit-runtime/src/clientToolHandlers.js`
-  - `ClientApp/chatkit-runtime/src/entityHandlers.js`
-  - `ClientApp/chatkit-runtime/src/widgetActionHandlers.js`
-  - `ClientApp/chatkit-runtime/src/runtime.css`
+  - [`ClientApp/chatkit-runtime/src/entry.js`](ClientApp/chatkit-runtime/src/entry.js)
+  - [`ClientApp/chatkit-runtime/src/runtimeHost.js`](ClientApp/chatkit-runtime/src/runtimeHost.js)
+  - [`ClientApp/chatkit-runtime/src/clientToolHandlers.js`](ClientApp/chatkit-runtime/src/clientToolHandlers.js)
+  - [`ClientApp/chatkit-runtime/src/entityHandlers.js`](ClientApp/chatkit-runtime/src/entityHandlers.js)
+  - [`ClientApp/chatkit-runtime/src/widgetActionHandlers.js`](ClientApp/chatkit-runtime/src/widgetActionHandlers.js)
+  - [`ClientApp/chatkit-runtime/src/runtime.css`](ClientApp/chatkit-runtime/src/runtime.css)
 - Generated bundle:
-  - `wwwroot/chatkit/chatkit.js`
-  - `wwwroot/chatkit/chatkit.css`
+  - [`wwwroot/chatkit/chatkit.js`](wwwroot/chatkit/chatkit.js)
+  - [`wwwroot/chatkit/chatkit.css`](wwwroot/chatkit/chatkit.css)
 
 The browser startup flow is:
 
@@ -384,4 +384,4 @@ Commit both the dependency file changes and the regenerated files under `wwwroot
 
 ## Related package
 
-- `Incursa.OpenAI.ChatKit`: core ChatKit models, routing, stores, and server runtime
+- [`Incursa.OpenAI.ChatKit`](../Incursa.OpenAI.ChatKit/README.md): core ChatKit models, routing, stores, and server runtime

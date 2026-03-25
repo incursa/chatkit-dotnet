@@ -19,13 +19,13 @@ The repo is intentionally split into a protocol/runtime package and an ASP.NET C
 
 ## Package boundaries
 
-### `Incursa.OpenAI.ChatKit`
+### [`Incursa.OpenAI.ChatKit`](../../src/Incursa.OpenAI.ChatKit/README.md)
 
 This package owns:
 
 - protocol envelopes and JSON serialization
 - thread, item, attachment, widget, and workflow object models
-- `ChatKitServer<TContext>` request routing
+- [`ChatKitServer<TContext>`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs) request routing
 - streaming event production and persistence rules
 - store abstractions and the in-memory store
 - widget diff helpers and exported widget loading
@@ -33,11 +33,11 @@ This package owns:
 
 This package does not own HTTP, Razor, or browser asset delivery.
 
-### `Incursa.OpenAI.ChatKit.AspNetCore`
+### [`Incursa.OpenAI.ChatKit.AspNetCore`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/README.md)
 
 This package owns:
 
-- `MapChatKit<TServer, TContext>(...)` endpoint mapping
+- [`MapChatKit<TServer, TContext>(...)`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs) endpoint mapping
 - writing `application/json` responses for non-streaming operations
 - writing `text/event-stream` responses for streaming operations
 - DI registration for browser host defaults
@@ -49,16 +49,16 @@ This package does not implement assistant logic or persistence itself. It is a t
 
 ### 1. Request enters the runtime
 
-The core entry point is `ChatKitServer<TContext>.ProcessAsync(...)`.
+The core entry point is [`ChatKitServer<TContext>.ProcessAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs).
 
 It:
 
-1. deserializes a UTF-8 JSON request into a `ChatKitRequest`
+1. deserializes a UTF-8 JSON request into a [`ChatKitRequest`](../../src/Incursa.OpenAI.ChatKit/ChatKitRequests.cs)
 2. classifies the request as streaming or non-streaming
 3. routes it to the matching operation
 4. returns either:
-   - `NonStreamingResult` with a JSON payload
-   - `StreamingResult` with SSE-ready byte chunks
+   - [`NonStreamingResult`](../../src/Incursa.OpenAI.ChatKit/ChatKitProcessResult.cs) with a JSON payload
+   - [`StreamingResult`](../../src/Incursa.OpenAI.ChatKit/ChatKitProcessResult.cs) with SSE-ready byte chunks
 
 ### 2. Request type decides transport behavior
 
@@ -74,7 +74,7 @@ Everything else is processed synchronously and returned as JSON.
 
 ### 3. Store-backed state is loaded or mutated
 
-`ChatKitServer<TContext>` is stateful only through `ChatKitStore<TContext>` and the optional `AttachmentStore<TContext>`.
+[`ChatKitServer<TContext>`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs) is stateful only through [`ChatKitStore<TContext>`](../../src/Incursa.OpenAI.ChatKit/Store.cs) and the optional [`AttachmentStore<TContext>`](../../src/Incursa.OpenAI.ChatKit/Store.cs).
 
 The store abstraction is responsible for:
 
@@ -87,30 +87,30 @@ The server base class handles orchestration, but it expects persistence semantic
 
 ### 4. Application code emits assistant behavior
 
-The application-specific implementation point is `RespondAsync(...)`.
+The application-specific implementation point is [`RespondAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs).
 
 Your server subclass is expected to:
 
 - inspect the current thread and optional new user message
 - run model or business logic
-- emit `ThreadStreamEvent` values in ChatKit order
+- emit [`ThreadStreamEvent`](../../src/Incursa.OpenAI.ChatKit/ChatKitEvents.cs) values in ChatKit order
 
 Optional extension points include:
 
-- `AddFeedbackAsync(...)`
-- `TranscribeAsync(...)`
-- `ActionAsync(...)`
-- `SyncActionAsync(...)`
-- `GetStreamOptions(...)`
-- `HandleStreamCancelledAsync(...)`
+- [`AddFeedbackAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
+- [`TranscribeAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
+- [`ActionAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
+- [`SyncActionAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
+- [`GetStreamOptions(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
+- [`HandleStreamCancelledAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
 
 ## Streaming event model
 
 The runtime distinguishes between:
 
-- `ThreadStreamEvent`
+- [`ThreadStreamEvent`](../../src/Incursa.OpenAI.ChatKit/ChatKitEvents.cs)
   - top-level SSE events such as thread creation, item updates, progress updates, notices, and errors
-- `ThreadItemUpdate`
+- [`ThreadItemUpdate`](../../src/Incursa.OpenAI.ChatKit/ChatKitEvents.cs)
   - nested incremental updates for message parts, widgets, workflows, and generated images
 
 Important persistence rules in `ProcessEventsAsync(...)`:
@@ -132,7 +132,7 @@ The runtime has explicit cancellation cleanup.
 If a stream is cancelled:
 
 - partially emitted assistant message items are persisted only if they are not empty
-- the runtime appends an `SdkHiddenContextItem` telling later turns that the user cancelled the previous response
+- the runtime appends an [`SdkHiddenContextItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs) telling later turns that the user cancelled the previous response
 
 That behavior matters if downstream assistant logic replays conversation history.
 
@@ -140,8 +140,8 @@ That behavior matters if downstream assistant logic replays conversation history
 
 Two item types are treated as internal-only:
 
-- `HiddenContextItem`
-- `SdkHiddenContextItem`
+- [`HiddenContextItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`SdkHiddenContextItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
 
 They are filtered out when:
 
@@ -153,28 +153,28 @@ This means the persisted record can be richer than the client-visible history.
 
 ## Retry model
 
-`threads.retry_after_item` walks backward through the thread, deletes all later items, then replays `RespondAsync(...)` starting from the retained user message.
+`threads.retry_after_item` walks backward through the thread, deletes all later items, then replays [`RespondAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs) starting from the retained user message.
 
 Operationally, this means:
 
 - retry is destructive for all later items in the thread
-- the target item must be a `UserMessageItem`
+- the target item must be a [`UserMessageItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
 - the replay behavior depends entirely on the current server implementation and store state
 
 ## Attachment model
 
 Attachments are split across two abstractions:
 
-- `ChatKitStore<TContext>`
+- [`ChatKitStore<TContext>`](../../src/Incursa.OpenAI.ChatKit/Store.cs)
   - keeps attachment records available for later lookup
-- `AttachmentStore<TContext>`
+- [`AttachmentStore<TContext>`](../../src/Incursa.OpenAI.ChatKit/Store.cs)
   - handles the create/delete workflow for the external attachment system
 
 The base server only enables `attachments.create` and `attachments.delete` when an attachment store is configured.
 
 ## ASP.NET Core request flow
 
-`MapChatKit<TServer, TContext>(...)` is intentionally thin:
+[`MapChatKit<TServer, TContext>(...)`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs) is intentionally thin:
 
 1. reads the entire POST body into memory
 2. creates a per-request context via `contextFactory`
@@ -193,13 +193,13 @@ There is no built-in:
 The Razor integration has three pieces:
 
 1. `AddOpenAIChatKit*` service registration
-   - stores shared host defaults in `ChatKitAspNetCoreOptions`
-2. `<incursa-chatkit-assets>`
+   - stores shared host defaults in [`ChatKitAspNetCoreOptions`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreOptions.cs)
+2. [`<incursa-chatkit-assets>`](../30-contracts/chatkit-tag-helper.md)
    - emits CSS, the upstream CDN component script, and the local bootstrap module
-3. `<incursa-chatkit-api>` or `<incursa-chatkit-hosted>`
+3. [`<incursa-chatkit-api>`](../30-contracts/chatkit-tag-helper.md) or [`<incursa-chatkit-hosted>`](../30-contracts/chatkit-tag-helper.md)
    - emits a host `<div>` with serialized JSON config in `data-incursa-chatkit-config`
 
-The generic `<incursa-chatkit>` tag helper intentionally fails at render time to force an explicit hosting mode choice.
+The generic [`<incursa-chatkit>`](../30-contracts/chatkit-tag-helper.md) tag helper intentionally fails at render time to force an explicit hosting mode choice.
 
 ## Architectural constraints worth documenting
 

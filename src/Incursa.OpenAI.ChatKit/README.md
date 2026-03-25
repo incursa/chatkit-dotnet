@@ -1,6 +1,6 @@
 # Incursa.OpenAI.ChatKit
 
-`Incursa.OpenAI.ChatKit` is the core .NET runtime for ChatKit.
+[`Incursa.OpenAI.ChatKit`](README.md) is the core .NET runtime for ChatKit.
 
 It contains the protocol models, request routing, thread and item primitives, streaming event types, store abstractions, and server base classes used to implement a ChatKit-compatible backend in .NET.
 
@@ -9,18 +9,18 @@ It contains the protocol models, request routing, thread and item primitives, st
 - you need the ChatKit protocol and server runtime in a non-ASP.NET Core host
 - you want to own the HTTP layer yourself
 - you are building stores, server logic, or tests against the ChatKit model
-- you plan to pair it with `Incursa.OpenAI.ChatKit.AspNetCore` for HTTP endpoints or Razor UI hosting
+- you plan to pair it with [`Incursa.OpenAI.ChatKit.AspNetCore`](../Incursa.OpenAI.ChatKit.AspNetCore/README.md) for HTTP endpoints or Razor UI hosting
 
-If you want ASP.NET Core endpoint mapping or Razor tag helpers, install `Incursa.OpenAI.ChatKit.AspNetCore` as well.
+If you want ASP.NET Core endpoint mapping or Razor tag helpers, install [`Incursa.OpenAI.ChatKit.AspNetCore`](../Incursa.OpenAI.ChatKit.AspNetCore/README.md) as well.
 
 ## What this package includes
 
 - ChatKit request, response, event, item, widget, and primitive models
-- `ChatKitServer<TContext>` for request routing and response generation
-- `ChatKitProcessResult`, `StreamingResult`, and `NonStreamingResult`
+- [`ChatKitServer<TContext>`](ChatKitServer.cs) for request routing and response generation
+- [`ChatKitProcessResult`](ChatKitProcessResult.cs), [`StreamingResult`](ChatKitProcessResult.cs), and [`NonStreamingResult`](ChatKitProcessResult.cs)
 - store abstractions and the in-memory implementation
 - helper types for widgets and agent integration
-- `WidgetDefinition` loaders and `Build(...)` support for exported `.widget` files, their encoded widget payloads, schema validation, and Jinja-backed rendering into `WidgetRoot`
+- [`WidgetDefinition`](WidgetDefinitions.cs) loaders and `Build(...)` support for exported `.widget` files, their encoded widget payloads, schema validation, and Jinja-backed rendering into [`WidgetRoot`](Widgets.cs)
 
 ## Minimal example
 
@@ -76,10 +76,10 @@ public sealed class DemoChatKitServer : ChatKitServer<Dictionary<string, object?
 
 For ASP.NET Core hosts:
 
-1. install `Incursa.OpenAI.ChatKit`
-2. install `Incursa.OpenAI.ChatKit.AspNetCore`
-3. register your `ChatKitServer<TContext>`
-4. map `MapChatKit<TServer, TContext>(...)`
+1. install [`Incursa.OpenAI.ChatKit`](README.md)
+2. install [`Incursa.OpenAI.ChatKit.AspNetCore`](../Incursa.OpenAI.ChatKit.AspNetCore/README.md)
+3. register your [`ChatKitServer<TContext>`](ChatKitServer.cs)
+4. map [`MapChatKit<TServer, TContext>(...)`](../Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs)
 
 ## Compatibility and scope
 
@@ -89,4 +89,4 @@ For ASP.NET Core hosts:
 
 ## Related package
 
-- `Incursa.OpenAI.ChatKit.AspNetCore`: ASP.NET Core endpoint mapping, Razor tag helpers, and packaged browser assets
+- [`Incursa.OpenAI.ChatKit.AspNetCore`](../Incursa.OpenAI.ChatKit.AspNetCore/README.md): ASP.NET Core endpoint mapping, Razor tag helpers, and packaged browser assets

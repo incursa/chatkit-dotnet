@@ -14,7 +14,7 @@ workbench:
 
 # ASP.NET Core Hosting
 
-`Incursa.OpenAI.ChatKit.AspNetCore` adds two kinds of integration on top of the core runtime:
+[`Incursa.OpenAI.ChatKit.AspNetCore`](../src/Incursa.OpenAI.ChatKit.AspNetCore/README.md) adds two kinds of integration on top of the core runtime:
 
 - HTTP endpoint mapping for ChatKit protocol requests
 - Razor-based browser hosting for the ChatKit UI shell
@@ -38,11 +38,11 @@ app.MapChatKit<DemoChatKitServer, Dictionary<string, object?>>(
 app.Run();
 ```
 
-`MapChatKit(...)` does only four things:
+[`MapChatKit(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs) does only four things:
 
 1. buffer the request body
 2. create the per-request context
-3. invoke `ChatKitServer<TContext>.ProcessAsync(...)`
+3. invoke [`ChatKitServer<TContext>.ProcessAsync(...)`](../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
 4. write JSON or SSE to the response
 
 You still own:
@@ -58,7 +58,7 @@ There are two explicit browser modes.
 
 ### Direct API mode
 
-Use `AddOpenAIChatKitApi(...)` and `<incursa-chatkit-api>` when the browser should call a ChatKit API endpoint directly.
+Use [`AddOpenAIChatKitApi(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs) and [`<incursa-chatkit-api>`](30-contracts/chatkit-tag-helper.md) when the browser should call a ChatKit API endpoint directly.
 
 ```csharp
 builder.Services.AddOpenAIChatKitApi(
@@ -87,7 +87,7 @@ Operational notes:
 
 ### Hosted session mode
 
-Use `AddOpenAIChatKitHosted(...)` and `<incursa-chatkit-hosted>` when the browser should fetch a ChatKit client secret from your local app.
+Use [`AddOpenAIChatKitHosted(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs) and [`<incursa-chatkit-hosted>`](30-contracts/chatkit-tag-helper.md) when the browser should fetch a ChatKit client secret from your local app.
 
 ```csharp
 builder.Services.AddOpenAIChatKitHosted(options =>
@@ -113,15 +113,15 @@ Operational notes:
 
 ## Service registration methods
 
-### `AddOpenAIChatKit(...)`
+### [`AddOpenAIChatKit(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs)
 
 Use this for neutral shared defaults without committing to a browser transport mode yet.
 
-### `AddOpenAIChatKitHosted(...)`
+### [`AddOpenAIChatKitHosted(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs)
 
 Use this to clear direct API defaults and configure hosted session mode.
 
-### `AddOpenAIChatKitApi(...)`
+### [`AddOpenAIChatKitApi(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs)
 
 Use this to configure direct browser API mode.
 
@@ -131,7 +131,7 @@ Current implementation detail:
 
 ## Asset responsibilities
 
-`<incursa-chatkit-assets>` is responsible for:
+[`<incursa-chatkit-assets>`](30-contracts/chatkit-tag-helper.md) is responsible for:
 
 - packaged CSS
 - upstream ChatKit web component script from the CDN
@@ -143,11 +143,11 @@ If a layout and view both render the helper during one request, duplicates are s
 
 For most apps:
 
-1. keep the core assistant logic in a `ChatKitServer<TContext>` subclass
+1. keep the core assistant logic in a [`ChatKitServer<TContext>`](../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs) subclass
 2. make `TContext` a real request model, not a loose dictionary, once the app has stable auth and tenant needs
-3. map the ChatKit endpoint with `MapChatKit(...)`
+3. map the ChatKit endpoint with [`MapChatKit(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs)
 4. choose exactly one Razor host mode per page
-5. centralize repeated UI defaults in `AddOpenAIChatKitHosted(...)` or `AddOpenAIChatKitApi(...)`
+5. centralize repeated UI defaults in [`AddOpenAIChatKitHosted(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs) or [`AddOpenAIChatKitApi(...)`](../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs)
 
 ## Current gaps outside this package
 

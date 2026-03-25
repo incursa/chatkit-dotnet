@@ -31,8 +31,8 @@ pwsh -File scripts/testing/run-integration-tests.ps1
 Traceability is governed by:
 
 - `specs/libraries/*.md`
-- `specs/libraries/library-conformance-matrix.md`
-- `scripts/quality/validate-library-traceability.ps1`
+- [`specs/libraries/library-conformance-matrix.md`](../specs/libraries/library-conformance-matrix.md)
+- [`scripts/quality/validate-library-traceability.ps1`](../scripts/quality/validate-library-traceability.ps1)
 - `src/*/PublicAPI.Shipped.txt`
 
 The Microsoft public API analyzer baselines and the authored `LIB-*` scenarios are both treated as quality evidence: a public API row is only considered covered when it maps to baseline files and automated tests.

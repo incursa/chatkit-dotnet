@@ -85,7 +85,7 @@ Without those settings, the packaged UI cannot enable attachment uploads even th
 - Add .NET config models for direct and two-phase upload strategies.
 - Decide how those models are represented in Razor attributes vs app-level options.
 - Document the server-side prerequisites clearly:
-  - `AttachmentStore<TContext>`
+  - [`AttachmentStore<TContext>`](../../../src/Incursa.OpenAI.ChatKit/Store.cs)
   - upload endpoint for direct uploads, or attachment creation flow for two-phase uploads
   - authorization guidance for attachment access
 - Add coverage for both direct and two-phase config serialization.

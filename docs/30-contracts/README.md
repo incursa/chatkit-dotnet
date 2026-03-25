@@ -18,7 +18,7 @@ This section documents the main runtime contracts exposed by the translated Chat
 
 ## Request operations
 
-Supported request discriminators currently defined in `ChatKitRequest` are:
+Supported request discriminators currently defined in [`ChatKitRequest`](../../src/Incursa.OpenAI.ChatKit/ChatKitRequests.cs) are:
 
 ### Thread operations
 
@@ -60,13 +60,13 @@ Supported request discriminators currently defined in `ChatKitRequest` are:
 ### Input operations
 
 - `input.transcribe`
-  - send base64 audio to `TranscribeAsync(...)`
+  - send base64 audio to [`TranscribeAsync(...)`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
 
 ## Result contracts
 
 ### Non-streaming
 
-Non-streaming operations return `NonStreamingResult` and produce `application/json` at the ASP.NET Core boundary.
+Non-streaming operations return [`NonStreamingResult`](../../src/Incursa.OpenAI.ChatKit/ChatKitProcessResult.cs) and produce `application/json` at the ASP.NET Core boundary.
 
 Examples:
 
@@ -79,7 +79,7 @@ Examples:
 
 ### Streaming
 
-Streaming operations return `StreamingResult`, which is already encoded as SSE `data:` lines. The ASP.NET Core adapter writes them as `text/event-stream`.
+Streaming operations return [`StreamingResult`](../../src/Incursa.OpenAI.ChatKit/ChatKitProcessResult.cs), which is already encoded as SSE `data:` lines. The ASP.NET Core adapter writes them as `text/event-stream`.
 
 The core runtime currently serializes each event as:
 
@@ -94,20 +94,20 @@ There is no separate event name field today; the event discriminator lives in th
 
 Important model groups in the core package:
 
-- `ThreadMetadata` and `Thread`
+- [`ThreadMetadata`](../../src/Incursa.OpenAI.ChatKit/ChatKitPrimitives.cs) and [`Thread`](../../src/Incursa.OpenAI.ChatKit/ChatKitPrimitives.cs)
   - thread identity, title, timestamps, status, metadata, and item page
-- `ThreadItem`
+- [`ThreadItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
   - base type for persisted conversation items
-- `UserMessageItem`
-- `AssistantMessageItem`
-- `ClientToolCallItem`
-- `WidgetItem`
-- `GeneratedImageItem`
-- `TaskItem`
-- `WorkflowItem`
-- `EndOfTurnItem`
-- `HiddenContextItem`
-- `SdkHiddenContextItem`
+- [`UserMessageItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`AssistantMessageItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`ClientToolCallItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`WidgetItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`GeneratedImageItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`TaskItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`WorkflowItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`EndOfTurnItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`HiddenContextItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
+- [`SdkHiddenContextItem`](../../src/Incursa.OpenAI.ChatKit/ChatKitItems.cs)
 
 Operationally:
 
@@ -142,7 +142,7 @@ Nested update types used inside item updates:
 
 ## Persistence contracts
 
-`ChatKitStore<TContext>` is the persistence boundary. A store implementation must support:
+[`ChatKitStore<TContext>`](../../src/Incursa.OpenAI.ChatKit/Store.cs) is the persistence boundary. A store implementation must support:
 
 - thread id generation
 - item id generation
@@ -151,24 +151,24 @@ Nested update types used inside item updates:
 - thread and item pagination
 - attachment save/load/delete
 
-The built-in `InMemoryChatKitStore<TContext>` is suitable for tests and samples, not production durability.
+The built-in [`InMemoryChatKitStore<TContext>`](../../src/Incursa.OpenAI.ChatKit/Store.cs) is suitable for tests and samples, not production durability.
 
 ## ASP.NET Core service contracts
 
 Public ASP.NET Core registrations:
 
-- `AddOpenAIChatKit(...)`
+- [`AddOpenAIChatKit(...)`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs)
   - register shared browser host defaults
-- `AddOpenAIChatKitHosted(...)`
+- [`AddOpenAIChatKitHosted(...)`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs)
   - configure hosted browser mode using local session/action endpoints
-- `AddOpenAIChatKitApi(...)`
+- [`AddOpenAIChatKitApi(...)`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs)
   - configure direct browser API mode using `apiUrl` and `domainKey`
-- `MapChatKit<TServer, TContext>(...)`
+- [`MapChatKit<TServer, TContext>(...)`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs)
   - map the POST transport for the core ChatKit server
 
 ## Browser host option contracts
 
-The browser-facing options surface in `ChatKitAspNetCoreOptions` currently includes:
+The browser-facing options surface in [`ChatKitAspNetCoreOptions`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreOptions.cs) currently includes:
 
 - endpoint selection
   - `ApiUrl`, `DomainKey`, `SessionEndpoint`, `ActionEndpoint`
@@ -201,9 +201,9 @@ The browser-facing options surface in `ChatKitAspNetCoreOptions` currently inclu
 
 These behaviors are easy to miss when reading only the option types:
 
-- `AddOpenAIChatKitApi(...)` requires a non-empty `domainKey` even though the method signature allows `string?`
-- `<incursa-chatkit-api>` requires the `api-url` attribute at render time
-- `<incursa-chatkit-hosted>` requires the `session-endpoint` attribute at render time
+- [`AddOpenAIChatKitApi(...)`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs) requires a non-empty `domainKey` even though the method signature allows `string?`
+- [`<incursa-chatkit-api>`](chatkit-tag-helper.md) requires the `api-url` attribute at render time
+- [`<incursa-chatkit-hosted>`](chatkit-tag-helper.md) requires the `session-endpoint` attribute at render time
 - hosted mode only emits `action-endpoint` when widget forwarding is enabled
 - API mode ignores session and action endpoints entirely
 - disclaimer config is omitted unless text is present

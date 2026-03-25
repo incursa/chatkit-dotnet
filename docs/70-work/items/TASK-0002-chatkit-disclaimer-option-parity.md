@@ -66,8 +66,8 @@ There is no .NET option, tag-helper attribute, or browser config member for disc
 
 ## Acceptance criteria
 
-- `ChatKitAspNetCoreOptions` can configure disclaimer text and high-contrast mode.
-- The `<incursa-chatkit>` surface can override the configured disclaimer per instance.
+- [`ChatKitAspNetCoreOptions`](../../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreOptions.cs) can configure disclaimer text and high-contrast mode.
+- The [`<incursa-chatkit>`](../../30-contracts/chatkit-tag-helper.md) surface can override the configured disclaimer per instance.
 - The packaged runtime forwards `disclaimer` to `useChatKit(...)`.
 - Tests cover serialization and null-handling behavior.
 - Docs include a simple example showing disclaimer usage.

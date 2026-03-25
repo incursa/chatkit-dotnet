@@ -18,7 +18,7 @@ The Razor integration exposes three different host tag helpers and one asset tag
 
 ## Asset helper
 
-### `<incursa-chatkit-assets>`
+### [`<incursa-chatkit-assets>`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitAssetsTagHelper.cs)
 
 This helper emits:
 
@@ -34,16 +34,16 @@ Behavior notes:
 
 ## Host helpers
 
-### `<incursa-chatkit>`
+### [`<incursa-chatkit>`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitTagHelper.cs)
 
 This is intentionally not a real mode.
 
 It exists to fail fast and tell callers to pick one of the explicit modes:
 
-- `<incursa-chatkit-api>`
-- `<incursa-chatkit-hosted>`
+- [`<incursa-chatkit-api>`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitApiTagHelper.cs)
+- [`<incursa-chatkit-hosted>`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitHostedTagHelper.cs)
 
-### `<incursa-chatkit-api>`
+### [`<incursa-chatkit-api>`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitApiTagHelper.cs)
 
 Use this when the browser should talk directly to a ChatKit-compatible API endpoint.
 
@@ -54,7 +54,7 @@ Current enforced rules:
 - `session-endpoint` is not allowed
 - `action-endpoint` is not allowed
 
-### `<incursa-chatkit-hosted>`
+### [`<incursa-chatkit-hosted>`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitHostedTagHelper.cs)
 
 Use this when the browser should obtain hosted ChatKit credentials from a local session endpoint.
 
@@ -85,7 +85,7 @@ If config building fails, the helper renders:
 The current precedence model is:
 
 1. explicit tag helper attributes
-2. `ChatKitAspNetCoreOptions`
+2. [`ChatKitAspNetCoreOptions`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreOptions.cs)
 3. hard-coded helper defaults where present
 
 Examples:
@@ -113,7 +113,7 @@ The helpers enforce several paired-value rules:
 - start prompts must have a label and prompt content
 - start prompt content must be either:
   - a string
-  - a sequence of `UserMessageContent`
+  - a sequence of [`UserMessageContent`](../../src/Incursa.OpenAI.ChatKit/ChatKitPrimitives.cs)
 - composer tools require `id`, `label`, and `icon`
 - composer models require `id` and `label`
 - disclaimer config is omitted if text is missing, even if `highContrast` is set

@@ -1,6 +1,6 @@
 # File-Backed Widget Rendering
 
-This note captures the architecture for exported `.widget` files in `Incursa.OpenAI.ChatKit`.
+This note captures the architecture for exported `.widget` files in [`Incursa.OpenAI.ChatKit`](../../src/Incursa.OpenAI.ChatKit/README.md).
 
 ## Scope
 
@@ -8,15 +8,15 @@ This note captures the architecture for exported `.widget` files in `Incursa.Ope
 - Preserve the authoring metadata: template source, JSON schema, preview widget, and encoded widget payload.
 - Validate supplied state against the export schema before rendering.
 - Render the Jinja template with the validated state.
-- Deserialize the rendered JSON into `WidgetRoot`.
+- Deserialize the rendered JSON into [`WidgetRoot`](../../src/Incursa.OpenAI.ChatKit/Widgets.cs).
 - Normalize the exported leading-comma slice idiom and supply a `length` filter so the current `Incursa.Jinja` runtime can render the shipped export fixtures without changing their source files.
 
 ## Public surface
 
-- `WidgetDefinition.Load(...)`
-- `WidgetDefinition.LoadAsync(...)`
-- `WidgetDefinition.DecodeEncodedWidget()`
-- `WidgetDefinition.Build(object? state = null)`
+- [`WidgetDefinition.Load(...)`](../../src/Incursa.OpenAI.ChatKit/WidgetDefinitions.cs)
+- [`WidgetDefinition.LoadAsync(...)`](../../src/Incursa.OpenAI.ChatKit/WidgetDefinitions.cs)
+- [`WidgetDefinition.DecodeEncodedWidget()`](../../src/Incursa.OpenAI.ChatKit/WidgetDefinitions.cs)
+- [`WidgetDefinition.Build(object? state = null)`](../../src/Incursa.OpenAI.ChatKit/WidgetDefinitions.cs)
 
 ## Boundary
 
@@ -24,4 +24,4 @@ This is an Incursa extension to the ChatKit .NET runtime. It does not add a gene
 
 ## Acceptance link
 
-- `LIB-CHATKIT-CORE-004`
+- [`LIB-CHATKIT-CORE-004`](../../specs/libraries/library-conformance-matrix.md)

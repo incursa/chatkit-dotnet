@@ -1,6 +1,6 @@
 # ChatKit ASP.NET Core Library Spec
 
-This specification defines the baseline conformance expectations for `Incursa.OpenAI.ChatKit.AspNetCore`.
+This specification defines the baseline conformance expectations for [`Incursa.OpenAI.ChatKit.AspNetCore`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/README.md).
 
 ## Scenarios
 

@@ -8,15 +8,15 @@ The same folder also hosts a separate npm sync script for the packaged ChatKit r
 
 - PowerShell 7 or Windows PowerShell
 - `git`, `gh`, `codex`, and `dotnet` must be on `PATH`
-- A clean `Incursa.OpenAI.ChatKit` working tree (unless overridden with `-AllowDirty`)
+- A clean [`Incursa.OpenAI.ChatKit`](../../src/Incursa.OpenAI.ChatKit/README.md) working tree (unless overridden with `-AllowDirty`)
 - The upstream Python repository must be cloned at `C:\src\openai\chatkit-python` by default (configurable)
 
 ## State files
 
-- `state.json` (tracked): stores the upstream metadata and the last translated SHA that the automation has committed.
-- `state.local.json` (ignored): tracks runtime metadata such as the last attempted SHA, the last run timestamp, and the bootstrap SHA used when this repo was empty the first time the watcher ran. This file is persisted automatically and must remain ignored.
+- [`state.json`](state.json) (tracked): stores the upstream metadata and the last translated SHA that the automation has committed.
+- [`state.local.json`](state.local.json) (ignored): tracks runtime metadata such as the last attempted SHA, the last run timestamp, and the bootstrap SHA used when this repo was empty the first time the watcher ran. This file is persisted automatically and must remain ignored.
 
-The first invocation bootstraps the state by recording the current upstream `main` SHA in `state.local.json` and exiting without translating. Rerun the script afterward to begin translating future commits.
+The first invocation bootstraps the state by recording the current upstream `main` SHA in [`state.local.json`](state.local.json) and exiting without translating. Rerun the script afterward to begin translating future commits.
 
 ## Running
 
@@ -60,12 +60,12 @@ The watcher builds a prompt that includes:
 - the upstream commit range and summaries
 - the unified diff (truncated if very large)
 - the list of changed files
-- the guidance from `AGENTS.md` and the helper notes in `CODEX_TRANSLATION_NOTES.md`
+- the guidance from [`AGENTS.md`](../../AGENTS.md) and the helper notes in [`CODEX_TRANSLATION_NOTES.md`](CODEX_TRANSLATION_NOTES.md)
 
 Codex is run via `codex exec --dangerously-bypass-approvals-and-sandbox` from the repository root with the upstream clone added via `--add-dir`.
 
 ## Post-sync state
 
-Successful syncs commit the translated files plus the updated `state.json`, push a `sync/chatkit-upstream-<shortsha>` branch, and call `gh pr create` with a title/body that references the upstream range and commits. Failed runs leave the branch and working tree intact for inspection; `state.json` is only updated when both translation and validation succeed.
+Successful syncs commit the translated files plus the updated [`state.json`](state.json), push a `sync/chatkit-upstream-<shortsha>` branch, and call `gh pr create` with a title/body that references the upstream range and commits. Failed runs leave the branch and working tree intact for inspection; [`state.json`](state.json) is only updated when both translation and validation succeed.
 
-The npm runtime sync updates `src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/package.json`, `package-lock.json`, and the generated `wwwroot/chatkit` bundle when a newer `@openai/chatkit` release is available.
+The npm runtime sync updates [`src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/package.json`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/package.json), `package-lock.json`, and the generated `wwwroot/chatkit` bundle when a newer `@openai/chatkit` release is available.

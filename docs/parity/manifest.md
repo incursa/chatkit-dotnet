@@ -15,14 +15,14 @@ This repo tracks the translated server-side ChatKit surface from `openai/chatkit
 
 ## Included .NET surface
 
-- `Incursa.OpenAI.ChatKit`
+- [`Incursa.OpenAI.ChatKit`](../../src/Incursa.OpenAI.ChatKit/README.md)
   - ChatKit request envelopes
   - thread, item, workflow, attachment, and widget models
-  - `ChatKitServer<TContext>`
+  - [`ChatKitServer<TContext>`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
   - store abstractions and in-memory store
   - widget diff and streaming helpers
   - agent interop helpers layered on `Incursa.OpenAI.Agents`
-- `Incursa.OpenAI.ChatKit.AspNetCore`
+- [`Incursa.OpenAI.ChatKit.AspNetCore`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/README.md)
   - `/chatkit` endpoint mapping
   - JSON and SSE response handling
 
@@ -51,22 +51,22 @@ This repo tracks the translated server-side ChatKit surface from `openai/chatkit
 
 - core request and event serialization:
   - status: `covered`
-  - `src/Incursa.OpenAI.ChatKit/ChatKitJson.cs`
-  - `src/Incursa.OpenAI.ChatKit/ChatKitRequests.cs`
-  - `tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs`
+  - [`src/Incursa.OpenAI.ChatKit/ChatKitJson.cs`](../../src/Incursa.OpenAI.ChatKit/ChatKitJson.cs)
+  - [`src/Incursa.OpenAI.ChatKit/ChatKitRequests.cs`](../../src/Incursa.OpenAI.ChatKit/ChatKitRequests.cs)
+  - [`tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs`](../../tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs)
 - server routing, store behavior, and widget updates:
   - status: `covered`
-  - `src/Incursa.OpenAI.ChatKit/ChatKitServer.cs`
-  - `src/Incursa.OpenAI.ChatKit/Store.cs`
-  - `src/Incursa.OpenAI.ChatKit/Widgets.cs`
-  - `tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs`
+  - [`src/Incursa.OpenAI.ChatKit/ChatKitServer.cs`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
+  - [`src/Incursa.OpenAI.ChatKit/Store.cs`](../../src/Incursa.OpenAI.ChatKit/Store.cs)
+  - [`src/Incursa.OpenAI.ChatKit/Widgets.cs`](../../src/Incursa.OpenAI.ChatKit/Widgets.cs)
+  - [`tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs`](../../tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs)
 - ASP.NET Core endpoint integration:
   - status: `covered`
-  - `src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs`
-  - `tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs`
+  - [`src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs)
+  - [`tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs`](../../tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs)
 - quickstart sample:
   - status: `covered`
-  - `samples/Incursa.OpenAI.ChatKit.QuickstartSample/Program.cs`
+  - [`samples/Incursa.OpenAI.ChatKit.QuickstartSample/Program.cs`](../../samples/Incursa.OpenAI.ChatKit.QuickstartSample/Program.cs)
 
 ## Translation rule
 

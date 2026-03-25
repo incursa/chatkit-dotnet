@@ -18,14 +18,14 @@ This repository provides a `.NET 10` ChatKit server implementation aligned to th
 The maintained product surface is:
 
 - core ChatKit request, item, event, widget, and attachment models
-- thread and item routing via `ChatKitServer<TContext>`
+- thread and item routing via [`ChatKitServer<TContext>`](../../src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)
 - in-memory store abstractions for threads, items, and attachments
 - ASP.NET Core hosting for the `/chatkit` endpoint
 - agent interop helpers layered on top of `Incursa.OpenAI.Agents`
 
 ## Operational stance
 
-`Incursa.OpenAI.ChatKit` is intentionally narrow:
+[`Incursa.OpenAI.ChatKit`](../../src/Incursa.OpenAI.ChatKit/README.md) is intentionally narrow:
 
 - preserve ChatKit wire compatibility first
 - keep .NET-facing APIs idiomatic where that does not change wire behavior
@@ -42,11 +42,11 @@ The maintained product surface is:
 
 ## Deferred surface
 
-- any upstream ChatKit behavior not yet represented in `docs/parity/manifest.md`
+- any upstream ChatKit behavior not yet represented in [`docs/parity/manifest.md`](../parity/manifest.md)
 - browser-only or client SDK concerns
 - unrelated agents runtime features that already belong to the agents repo
 
 The current inclusion boundary is tracked in:
 
-- `docs/parity/manifest.md`
-- `docs/parity/maintenance-checklist.md`
+- [`docs/parity/manifest.md`](../parity/manifest.md)
+- [`docs/parity/maintenance-checklist.md`](../parity/maintenance-checklist.md)

@@ -9,10 +9,10 @@ workbench:
 
 # Repository Scope Boundary
 
-Quality governance in this repo applies to the included .NET surface described in `docs/parity/manifest.md`:
+Quality governance in this repo applies to the included .NET surface described in [`docs/parity/manifest.md`](../parity/manifest.md):
 
-- `Incursa.OpenAI.ChatKit`
-- `Incursa.OpenAI.ChatKit.AspNetCore`
+- [`Incursa.OpenAI.ChatKit`](../../src/Incursa.OpenAI.ChatKit/README.md)
+- [`Incursa.OpenAI.ChatKit.AspNetCore`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/README.md)
 
 Out of scope for the conformance matrix:
 

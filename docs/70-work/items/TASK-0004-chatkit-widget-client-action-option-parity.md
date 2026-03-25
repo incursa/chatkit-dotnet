@@ -75,7 +75,7 @@ That means:
 ## Acceptance criteria
 
 - The packaged runtime can pass `widgets.onAction` into `useChatKit(...)`.
-- Razor integrations can register a client widget action handler without replacing `chatkit.js`.
+- Razor integrations can register a client widget action handler without replacing [`chatkit.js`](../../../src/Incursa.OpenAI.ChatKit.AspNetCore/wwwroot/chatkit/chatkit.js).
 - The local `action-endpoint` forwarding path keeps working for existing integrations.
 - Precedence and coexistence rules are documented and tested.
 - Hosted API mode supports client-handled widget actions.

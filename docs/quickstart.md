@@ -10,7 +10,7 @@ workbench:
 
 # Quickstart
 
-`Incursa.OpenAI.ChatKit` provides the server-side pieces needed to expose a ChatKit-compatible endpoint from ASP.NET Core.
+[`Incursa.OpenAI.ChatKit`](../src/Incursa.OpenAI.ChatKit/README.md) provides the server-side pieces needed to expose a ChatKit-compatible endpoint from ASP.NET Core.
 
 ## Before you begin
 

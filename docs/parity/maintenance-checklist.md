@@ -14,7 +14,7 @@ Use this checklist when upstream Python changes land in the included ChatKit sur
 ## Review Flow
 
 1. Identify the upstream change set.
-2. Check whether it touches an included doc or test family from `docs/parity/manifest.md`.
+2. Check whether it touches an included doc or test family from [`docs/parity/manifest.md`](manifest.md).
 3. Classify the change:
    - behavior change
    - public API/documentation change

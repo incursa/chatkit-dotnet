@@ -17,14 +17,14 @@ This roadmap captures the current translation state after comparing `chatkit-dot
 ## Current Status
 
 - The included server surface is already represented in the .NET core package and parity manifest.
-- The latest upstream delta checked in `chatkit-python` adds `allowed_image_domains` to client-visible `ThreadMetadata`, and the .NET model already exposes that field.
+- The latest upstream delta checked in `chatkit-python` adds `allowed_image_domains` to client-visible [`ThreadMetadata`](../../src/Incursa.OpenAI.ChatKit/ChatKitPrimitives.cs), and the .NET model already exposes that field.
 - The existing work-item set covers the known wrapper parity gaps and the direct web-component host cleanup path.
 
 ## Near-Term Maintenance
 
-- Keep `tools/upstream-sync` pointed at the upstream `chatkit-python` repository and treat each upstream commit as a translation candidate.
+- Keep [`tools/upstream-sync`](../../tools/upstream-sync/README.md) pointed at the upstream `chatkit-python` repository and treat each upstream commit as a translation candidate.
 - For any upstream changes under `chatkit/server.py`, `chatkit/types.py`, `chatkit/store.py`, `chatkit/widgets.py`, `chatkit/actions.py`, or `chatkit/agents.py`, decide whether the included .NET surface changes.
-- When the included surface changes, create a focused item under `docs/70-work/items/` with:
+- When the included surface changes, create a focused item under [`docs/70-work/items/`](../70-work/items) with:
   - the upstream reference
   - the current .NET gap
   - the acceptance criteria

@@ -72,7 +72,7 @@ That means:
 
 ## Acceptance criteria
 
-- A Razor-based integration can register one or more client tool handlers without patching `chatkit.js`.
+- A Razor-based integration can register one or more client tool handlers without patching [`chatkit.js`](../../../src/Incursa.OpenAI.ChatKit.AspNetCore/wwwroot/chatkit/chatkit.js).
 - The packaged runtime passes the resolved handler to `useChatKit({ onClientTool: ... })`.
 - The callback receives `{ name, params }` and returns JSON-compatible data to ChatKit.
 - Missing handlers fail with a clear browser error instead of silently no-oping.
