@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workbench Coverage Summary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "domain",
+    "runId",
+    "observedAt",
+    "source",
+    "summary",
+    "files"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "domain": { "type": "string", "const": "testing" },
+    "runId": { "type": "string" },
+    "observedAt": { "type": "string", "format": "date-time" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "inputPaths"],
+      "properties": {
+        "command": { "type": "string" },
+        "toolVersion": { "type": ["string", "null"] },
+        "inputPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "linesCovered",
+        "linesValid",
+        "lineRate",
+        "branchesCovered",
+        "branchesValid",
+        "branchRate"
+      ],
+      "properties": {
+        "linesCovered": { "type": "integer", "minimum": 0 },
+        "linesValid": { "type": "integer", "minimum": 0 },
+        "lineRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "branchesCovered": { "type": "integer", "minimum": 0 },
+        "branchesValid": { "type": "integer", "minimum": 0 },
+        "branchRate": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "projectPath",
+          "linesCovered",
+          "linesValid",
+          "lineRate",
+          "branchesCovered",
+          "branchesValid",
+          "branchRate"
+        ],
+        "properties": {
+          "projectPath": { "type": "string" },
+          "linesCovered": { "type": "integer", "minimum": 0 },
+          "linesValid": { "type": "integer", "minimum": 0 },
+          "lineRate": { "type": "number", "minimum": 0, "maximum": 1 },
+          "branchesCovered": { "type": "integer", "minimum": 0 },
+          "branchesValid": { "type": "integer", "minimum": 0 },
+          "branchRate": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "repoPath",
+          "linesCovered",
+          "linesValid",
+          "lineRate",
+          "branchesCovered",
+          "branchesValid",
+          "branchRate"
+        ],
+        "properties": {
+          "repoPath": { "type": "string" },
+          "linesCovered": { "type": "integer", "minimum": 0 },
+          "linesValid": { "type": "integer", "minimum": 0 },
+          "lineRate": { "type": "number", "minimum": 0, "maximum": 1 },
+          "branchesCovered": { "type": "integer", "minimum": 0 },
+          "branchesValid": { "type": "integer", "minimum": 0 },
+          "branchRate": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "criticalFiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["repoPath", "lineMin", "branchMin", "status"],
+        "properties": {
+          "repoPath": { "type": "string" },
+          "lineMin": { "type": "number", "minimum": 0, "maximum": 1 },
+          "branchMin": { "type": "number", "minimum": 0, "maximum": 1 },
+          "lineRate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "branchRate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "status": { "type": "string", "enum": ["pass", "fail", "missing"] }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
