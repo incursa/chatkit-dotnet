@@ -21,6 +21,7 @@ Upstream source of truth: [openai/chatkit-python](https://github.com/openai/chat
 - Includes exact wire-shape ChatKit request and event handling for the currently translated surface.
 - Includes a runnable ASP.NET Core quickstart sample, a Razor UI wrapper package, and repo-managed quality tooling.
 - Reuses `Incursa.OpenAI.Agents` where ChatKit needs agent-side interop instead of duplicating that runtime here.
+- Includes dedicated mutation configs, SharpFuzz harnesses, and BenchmarkDotNet suites for selected core boundaries and hot paths.
 - Excludes unrelated agent orchestration features that belong in the agents repo rather than ChatKit.
 
 ## Quickstart
@@ -54,6 +55,9 @@ $Env:LOCAL_INCURSA_AGENTS_REPO_ROOT = "C:\src\incursa\openai-agents-dotnet"
 - [`src/Incursa.OpenAI.ChatKit.AspNetCore`](src/Incursa.OpenAI.ChatKit.AspNetCore/README.md)
 - [`tests/Incursa.OpenAI.ChatKit.Tests`](tests/Incursa.OpenAI.ChatKit.Tests)
 - [`tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests`](tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests)
+- [`tests`](tests/README.md)
+- [`benchmarks`](benchmarks/README.md)
+- [`fuzz`](fuzz/README.md)
 - [`samples/Incursa.OpenAI.ChatKit.QuickstartSample`](samples/Incursa.OpenAI.ChatKit.QuickstartSample)
 - [`tools/upstream-sync`](tools/upstream-sync/README.md)
 
@@ -62,10 +66,11 @@ $Env:LOCAL_INCURSA_AGENTS_REPO_ROOT = "C:\src\incursa\openai-agents-dotnet"
 The repo carries forward the same hardened development model used in the agents translation:
 
 - `.editorconfig`, `.gitattributes`, `.githooks`, and `.pre-commit-config.yaml`
-- local dotnet tools for Workbench and Incursa Test Docs
+- local dotnet tools for Stryker, SharpFuzz, Workbench, and Incursa Test Docs
 - smoke, blocking, observational, advisory, coverage, and mutation scripts under [`scripts/quality`](scripts/quality/README.md)
 - Workbench quality contracts under [`docs/30-contracts`](docs/30-contracts/README.md)
 - traceability specs under [`specs/libraries`](specs/libraries)
+- dedicated benchmark and fuzz entrypoints under [`benchmarks`](benchmarks/README.md) and [`fuzz`](fuzz/README.md)
 
 Useful commands:
 

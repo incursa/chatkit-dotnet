@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-CHATKIT-ASPNETCORE-0001",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "ChatKit ASP.NET Core Host Boundary Architecture",
+  "owner": "chatkit-maintainers",
+  "domain": "chatkit",
+  "purpose": "Describe how the ASP.NET Core package stays a thin transport and browser-host layer over the core ChatKit runtime while projecting a bounded upstream browser configuration surface.",
+  "related_artifacts": [
+    "SPEC-CHATKIT-ASPNETCORE",
+    "VER-CHATKIT-ASPNETCORE-0001"
+  ],
+  "satisfies": [
+    "REQ-CHATKIT-ASPNETCORE-0001",
+    "REQ-CHATKIT-ASPNETCORE-0002",
+    "REQ-CHATKIT-ASPNETCORE-0003",
+    "REQ-CHATKIT-ASPNETCORE-0004",
+    "REQ-CHATKIT-ASPNETCORE-0005",
+    "REQ-CHATKIT-ASPNETCORE-0006",
+    "REQ-CHATKIT-ASPNETCORE-0007",
+    "REQ-CHATKIT-ASPNETCORE-0008",
+    "REQ-CHATKIT-ASPNETCORE-0009",
+    "REQ-CHATKIT-ASPNETCORE-0010",
+    "REQ-CHATKIT-ASPNETCORE-0011",
+    "REQ-CHATKIT-ASPNETCORE-0012",
+    "REQ-CHATKIT-ASPNETCORE-0013"
+  ],
+  "key_components": [
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitEndpointRouteBuilderExtensions.cs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreServiceCollectionExtensions.cs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ChatKitAspNetCoreOptions.cs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitTagHelperBase.cs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitTagHelper.cs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitApiTagHelper.cs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitHostedTagHelper.cs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/TagHelpers/IncursaChatKitAssetsTagHelper.cs",
+    "docs/20-architecture/README.md",
+    "docs/30-contracts/chatkit-tag-helper.md"
+  ],
+  "design_summary": "The ASP.NET Core package is intentionally split into two thin surfaces. The HTTP adapter maps one POST route, buffers the incoming body, creates a request context, and forwards the payload to the core server, which remains the owner of request parsing and protocol behavior. The browser-host layer stores shared defaults in ChatKitAspNetCoreOptions and projects those defaults through explicit tag helpers for assets, direct API mode, and hosted mode. The mode-specific helpers resolve values through one precedence stack, validate required combinations after option resolution, normalize optional substructures before serialization, and emit either one valid browser config payload or one visible initialization failure. The resulting host surface is a bounded .NET projection of the upstream browser configuration model rather than a second implementation of the browser runtime itself.",
+  "alternatives_considered": [
+    "Move JSON parsing and request classification into the endpoint layer. Rejected because it would duplicate core protocol ownership.",
+    "Provide one permissive generic Razor helper that infers mode implicitly. Rejected because mode confusion would produce invalid browser config silently.",
+    "Mirror every upstream browser and React surface directly as .NET APIs. Rejected because this package's responsibility is hosting and configuration, not re-exposing the browser runtime wholesale."
+  ],
+  "edge_cases_and_constraints": [
+    "The endpoint must preserve the core server's transport classification and not invent its own heuristics.",
+    "Asset emission must be idempotent within one Razor rendering context.",
+    "API mode and hosted mode have distinct required fields and incompatible combinations.",
+    "Tag-helper attributes override options, and options override helper defaults.",
+    "Incomplete header actions, start prompts, tools, models, font sources, upload settings, and disclaimer values are normalized or rejected before serialization.",
+    "Successful rendering and initialization failure rendering have distinct DOM contracts."
+  ],
+  "data_and_state_considerations": "Options live in ChatKitAspNetCoreOptions and are read as configuration input during rendering. The HTTP adapter keeps no protocol state beyond request buffering. Tag helpers construct HTML attributes and serialized config for the browser runtime but do not own conversation or persistence state.",
+  "risks": [
+    "If endpoint behavior grows beyond forwarding and content-type selection, the package will duplicate core runtime rules and drift from the core spec.",
+    "If mode validation or normalization weakens, callers can render browser hosts that fail only at runtime.",
+    "If the host surface implies parity with upstream browser features that are not actually supported, consumers will rely on configuration that the runtime cannot honor."
+  ]
+}

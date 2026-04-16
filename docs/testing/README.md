@@ -22,13 +22,16 @@ Workbench quality integration uses:
 - Normalized Workbench outputs: `artifacts/quality/testing/`
 - Operating model: [`docs/testing-operating-model.md`](../testing-operating-model.md)
 - Known issues: [`docs/testing-known-issues.md`](../testing-known-issues.md)
+- Test taxonomy: [`tests/README.md`](../../tests/README.md)
+- Benchmarks: [`benchmarks/README.md`](../../benchmarks/README.md)
+- Fuzzing: [`fuzz/README.md`](../../fuzz/README.md)
 
 - Schema: [`docs/testing/test-doc-schema.md`](test-doc-schema.md)
 - Generated docs: [`docs/testing/generated/README.md`](generated/README.md)
 
 ## How to document tests
 1. Add XML doc tags to each `[Fact]` or `[Theory]` method: `summary`, `intent`, `scenario`, and `behavior`.
-2. Use `Trait("Category", "...")` tags when the test should participate in smoke or known-issue lanes.
+2. Use `Trait("Category", "...")` tags when the test should participate in smoke or known-issue lanes, or when it should be explicitly classified as `Positive` or `Negative`.
 3. Refresh generated docs locally with `dotnet tool run incursa-testdocs -- generate --repoRoot . --outDir docs/testing/generated`.
 
 Optional: `Incursa.TestDocs.Analyzers` warns when required tags are missing or still placeholder text.

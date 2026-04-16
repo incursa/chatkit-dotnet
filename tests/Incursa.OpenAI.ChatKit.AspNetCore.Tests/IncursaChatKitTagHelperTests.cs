@@ -295,6 +295,88 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.True(config["composer"]?["dictation"]?["enabled"]?.GetValue<bool>());
     }
 
+    /// <summary>The API host tag helper rejects hosted-only session endpoints in direct API mode.</summary>
+    /// <intent>Protect explicit direct API mode from serializing an ambiguous mixed-mode browser configuration.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Providing session-endpoint to the API tag helper emits a render error instead of serializing a config payload.</behavior>
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0008")]
+    [Fact]
+    public async Task ProcessAsync_ApiTagHelperEmitsError_WhenSessionEndpointIsProvided()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitApi(
+                "https://example.contoso.com/chatkit",
+                "contoso-domain-key")
+            .BuildServiceProvider();
+
+        IncursaChatKitApiTagHelper tagHelper = CreateApiTagHelper(services);
+        tagHelper.ApiUrl = "https://example.contoso.com/chatkit";
+        tagHelper.SessionEndpoint = "/api/chatkit/session";
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        Assert.Equal("true", output.Attributes["data-incursa-chatkit-error"]?.Value);
+        Assert.Null(output.Attributes["data-incursa-chatkit-config"]);
+    }
+
+    /// <summary>The API host tag helper infers the direct upload strategy when only an upload URL is provided.</summary>
+    /// <intent>Protect the upload-strategy normalization branch from dropping a valid direct-upload configuration.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Providing upload-strategy-upload-url without an explicit upload-strategy-type serializes a direct upload strategy with that URL.</behavior>
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0011")]
+    [Fact]
+    public async Task ProcessAsync_ApiTagHelperInfersDirectUploadStrategy_WhenOnlyUploadUrlIsProvided()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitApi(
+                "https://example.contoso.com/chatkit",
+                "contoso-domain-key")
+            .BuildServiceProvider();
+
+        IncursaChatKitApiTagHelper tagHelper = CreateApiTagHelper(services);
+        tagHelper.ApiUrl = "https://example.contoso.com/chatkit";
+        tagHelper.UploadStrategyUploadUrl = "/files/direct";
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.Equal("direct", config["uploadStrategy"]?["type"]?.GetValue<string>());
+        Assert.Equal("/files/direct", config["uploadStrategy"]?["uploadUrl"]?.GetValue<string>());
+    }
+
+    /// <summary>The host config treats attachment constraints as an implicit request to enable attachments.</summary>
+    /// <intent>Protect the composer normalization path from dropping attachment limits when callers omit the explicit enabled flag.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Providing attachment constraints without composer-attachments-enabled serializes composer attachments as enabled.</behavior>
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0011")]
+    [Fact]
+    public async Task ProcessAsync_ApiTagHelperEnablesAttachments_WhenOnlyConstraintsAreConfigured()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitApi(
+                "https://example.contoso.com/chatkit",
+                "contoso-domain-key")
+            .BuildServiceProvider();
+
+        IncursaChatKitApiTagHelper tagHelper = CreateApiTagHelper(services);
+        tagHelper.ApiUrl = "https://example.contoso.com/chatkit";
+        tagHelper.ComposerAttachmentsMaxSize = 4096;
+        tagHelper.ComposerAttachmentsMaxCount = 2;
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        JsonNode config = ParseConfig(output);
+        Assert.True(config["composer"]?["attachments"]?["enabled"]?.GetValue<bool>());
+        Assert.Equal(4096, config["composer"]?["attachments"]?["maxSize"]?.GetValue<long>());
+        Assert.Equal(2, config["composer"]?["attachments"]?["maxCount"]?.GetValue<int>());
+    }
+
     /// <summary>The hosted host tag helper omits disclaimer settings when no disclaimer text is configured.</summary>
     /// <intent>Preserve the upstream disclaimer contract, which requires text when disclaimer settings are sent.</intent>
     /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
@@ -319,6 +401,30 @@ public sealed class IncursaChatKitTagHelperTests
 
         JsonNode config = ParseConfig(output);
         Assert.Null(config["disclaimer"]);
+    }
+
+    /// <summary>The hosted host tag helper rejects missing widget action endpoints when forwarding stays enabled.</summary>
+    /// <intent>Protect hosted mode from serializing a widget-forwarding configuration that cannot complete on the server.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Hosted mode emits a render error when widget forwarding is enabled but no action endpoint is available.</behavior>
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0009")]
+    [Fact]
+    public async Task ProcessAsync_HostedTagHelperEmitsError_WhenActionEndpointIsMissingWhileForwardingEnabled()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitHosted()
+            .BuildServiceProvider();
+
+        IncursaChatKitHostedTagHelper tagHelper = CreateHostedTagHelper(services);
+        tagHelper.SessionEndpoint = "/api/chatkit/session";
+        tagHelper.ForwardWidgetActions = true;
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        Assert.Equal("true", output.Attributes["data-incursa-chatkit-error"]?.Value);
+        Assert.Null(output.Attributes["data-incursa-chatkit-config"]);
     }
 
     /// <summary>The hosted host tag helper omits the action endpoint when widget forwarding is disabled.</summary>
@@ -396,6 +502,63 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.Equal("window.chatkit.onWidgetAction", config["widgetActionHandler"]?.GetValue<string>());
         Assert.Equal("/api/chatkit/action", config["actionEndpoint"]?.GetValue<string>());
         Assert.True(config["widgetActions"]?["forwardToEndpoint"]?.GetValue<bool>());
+    }
+
+    /// <summary>The hosted host tag helper rejects half-configured header actions.</summary>
+    /// <intent>Protect the serialized browser config from carrying a header action the runtime cannot resolve safely.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Providing only a header action icon without a callback lookup path emits a render error instead of serializing the action.</behavior>
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0010")]
+    [Fact]
+    public async Task ProcessAsync_HostedTagHelperEmitsError_WhenHeaderActionIsHalfConfigured()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitHosted()
+            .BuildServiceProvider();
+
+        IncursaChatKitHostedTagHelper tagHelper = CreateHostedTagHelper(services);
+        tagHelper.SessionEndpoint = "/api/chatkit/session";
+        tagHelper.ActionEndpoint = "/api/chatkit/action";
+        tagHelper.HeaderLeftActionIcon = "sidebar-left";
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        Assert.Equal("true", output.Attributes["data-incursa-chatkit-error"]?.Value);
+        Assert.Null(output.Attributes["data-incursa-chatkit-config"]);
+    }
+
+    /// <summary>The hosted host tag helper rejects start prompts whose content is not a string or structured user-content sequence.</summary>
+    /// <intent>Protect the serialized start-screen config from carrying invalid prompt payloads that the browser runtime cannot interpret.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-003</scenario>
+    /// <behavior>Providing a starter prompt with invalid content emits a render error instead of serializing the prompt.</behavior>
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0010")]
+    [Fact]
+    public async Task ProcessAsync_HostedTagHelperEmitsError_WhenStartPromptContentIsInvalid()
+    {
+        ServiceProvider services = new ServiceCollection()
+            .AddLogging()
+            .AddOpenAIChatKitHosted()
+            .BuildServiceProvider();
+
+        IncursaChatKitHostedTagHelper tagHelper = CreateHostedTagHelper(services);
+        tagHelper.SessionEndpoint = "/api/chatkit/session";
+        tagHelper.ActionEndpoint = "/api/chatkit/action";
+        tagHelper.StarterPrompts =
+        [
+            new ChatKitStartPrompt
+            {
+                Label = "Broken",
+                Prompt = 42,
+            },
+        ];
+
+        TagHelperOutput output = CreateOutput();
+        await tagHelper.ProcessAsync(CreateContext(), output);
+
+        Assert.Equal("true", output.Attributes["data-incursa-chatkit-error"]?.Value);
+        Assert.Null(output.Attributes["data-incursa-chatkit-config"]);
     }
 
     /// <summary>The API host tag helper emits an error when the direct browser domain key is missing.</summary>

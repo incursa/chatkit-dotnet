@@ -2,6 +2,8 @@
 
 This specification defines the baseline conformance expectations for [`Incursa.OpenAI.ChatKit`](../../src/Incursa.OpenAI.ChatKit/README.md).
 
+Canonical requirement suite: [`../requirements/chatkit/SPEC-CHATKIT-CORE.md`](../requirements/chatkit/SPEC-CHATKIT-CORE.md)
+
 ## Scenarios
 
 - [`LIB-CHATKIT-CORE-001`](library-conformance-matrix.md): The public API baseline for the core package is maintained and mapped to executable coverage.

@@ -652,7 +652,7 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     {
         IEnumerable<ChatKitStartPrompt>? prompts = StarterPrompts ?? uiOptions.StartScreen.Prompts;
         ChatKitStartPromptClientConfig[]? mapped = prompts?
-            .Where(static prompt => !string.IsNullOrWhiteSpace(prompt.Label) && HasStartPromptContent(prompt.Prompt))
+            .Where(static prompt => !string.IsNullOrWhiteSpace(prompt.Label))
             .Select(static prompt => new ChatKitStartPromptClientConfig
             {
                 Label = prompt.Label!,

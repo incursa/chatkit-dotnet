@@ -1,15 +1,18 @@
 # Specification Index
 
-This directory contains the authored quality and behavior specifications for the public ChatKit packages in this repository.
+This directory contains the repository's authored specification and traceability material.
 
-Primary files:
+Canonical SpecTrace areas:
+
+- [`specs/requirements/`](requirements/README.md)
+- [`specs/architecture/`](architecture/README.md)
+- [`specs/verification/`](verification/README.md)
+- [`specs/work-items/`](work-items/README.md)
+
+Compatibility traceability surfaces:
 
 - [`specs/libraries/chatkit-core.md`](libraries/chatkit-core.md)
 - [`specs/libraries/chatkit-aspnetcore.md`](libraries/chatkit-aspnetcore.md)
 - [`specs/libraries/library-conformance-matrix.md`](libraries/library-conformance-matrix.md)
 
-These specs are intended to work with:
-
-- [`docs/parity/manifest.md`](../docs/parity/manifest.md)
-- [`scripts/quality/validate-library-traceability.ps1`](../scripts/quality/validate-library-traceability.ps1)
-- `src/*/PublicAPI.Shipped.txt`
+The `libraries/` documents remain in place for [`scripts/quality/validate-library-traceability.ps1`](../scripts/quality/validate-library-traceability.ps1) and the current `LIB-*` coverage mapping. The canonical ChatKit requirement corpus now lives under [`specs/requirements/chatkit/`](requirements/chatkit/README.md), with supporting design and verification artifacts under the sibling `architecture/` and `verification/` areas.

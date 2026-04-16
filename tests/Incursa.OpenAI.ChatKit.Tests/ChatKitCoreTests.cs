@@ -12,6 +12,7 @@ public sealed class ChatKitCoreTests
     /// <intent>Protect exact wire compatibility for the core request envelope.</intent>
     /// <scenario>LIB-CHATKIT-CORE-002</scenario>
     /// <behavior>Serializing a threads.create request emits the expected type discriminator and content payload shape.</behavior>
+    [Trait("Category", "Positive")]
     [Fact]
     public void Serialize_ThreadsCreateRequest_UsesExactDiscriminator()
     {
@@ -39,6 +40,7 @@ public sealed class ChatKitCoreTests
     /// <intent>Protect incremental widget updates for ChatKit streaming UI flows.</intent>
     /// <scenario>LIB-CHATKIT-CORE-003</scenario>
     /// <behavior>Diffing compatible before and after widgets returns only the appended text delta and completion state.</behavior>
+    [Trait("Category", "Positive")]
     [Fact]
     public void WidgetDiff_StreamingText_ReturnsDeltaOnly()
     {
@@ -89,6 +91,7 @@ public sealed class ChatKitCoreTests
     /// <intent>Protect the file-backed widget template abstraction used by downstream ChatKit integrations.</intent>
     /// <scenario>LIB-CHATKIT-CORE-004</scenario>
     /// <behavior>Loading a widget export from disk or stream preserves the template, schema, preview, and encoded payload, and building with valid state hydrates the preview widget.</behavior>
+    [Trait("Category", "Positive")]
     [Fact]
     public void WidgetDefinition_LoadFromFile_BuildsWidgetFromFixture()
     {
@@ -122,6 +125,7 @@ public sealed class ChatKitCoreTests
     /// <intent>Protect the stream-based widget definition API used by downstream integrations.</intent>
     /// <scenario>LIB-CHATKIT-CORE-004</scenario>
     /// <behavior>Loading a widget export from a stream preserves the template, schema, preview, and encoded payload, and building with valid state hydrates the preview widget.</behavior>
+    [Trait("Category", "Positive")]
     [Fact]
     public async Task WidgetDefinition_LoadFromStream_BuildsWidgetFromFixture()
     {
@@ -156,6 +160,7 @@ public sealed class ChatKitCoreTests
     /// <intent>Protect schema-based input validation before widget rendering occurs.</intent>
     /// <scenario>LIB-CHATKIT-CORE-004</scenario>
     /// <behavior>Rendering a widget with invalid input state fails before the Jinja template is hydrated into a widget root.</behavior>
+    [Trait("Category", "Negative")]
     [Fact]
     public void WidgetDefinition_Build_RejectsInvalidStateAgainstSchema()
     {
@@ -176,6 +181,7 @@ public sealed class ChatKitCoreTests
     /// <intent>Protect the core thread routing path used by hosted ChatKit servers.</intent>
     /// <scenario>LIB-CHATKIT-CORE-003</scenario>
     /// <behavior>Processing a threads.create payload produces stream events for thread creation and the completed assistant item.</behavior>
+    [Trait("Category", "Positive")]
     [Fact]
     public async Task ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn()
     {
@@ -212,6 +218,7 @@ public sealed class ChatKitCoreTests
     /// <intent>Protect interop between ChatKit message history and the shared agents runtime.</intent>
     /// <scenario>LIB-CHATKIT-CORE-003</scenario>
     /// <behavior>Simple user and assistant items are translated into the corresponding agent conversation item types and text values.</behavior>
+    [Trait("Category", "Positive")]
     [Fact]
     public void SimpleToAgentInput_MapsUserAndAssistantMessages()
     {

@@ -9,6 +9,13 @@
       ],
       "rollForward": false
     },
+    "sharpfuzz.commandline": {
+      "version": "2.2.0",
+      "commands": [
+        "sharpfuzz"
+      ],
+      "rollForward": false
+    },
     "incursa.workbench": {
       "version": "2026.3.20.285",
       "commands": [

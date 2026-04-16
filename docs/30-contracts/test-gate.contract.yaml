@@ -1,4 +1,4 @@
-version: 1
+version: 2
 domain: Incursa OpenAI ChatKit testing evidence
 scope:
   solutionPath: Incursa.OpenAI.ChatKit.slnx
@@ -18,14 +18,101 @@ scope:
     - tests/**/obj/**
     - artifacts/**
 coverage:
-  lineMin: 0.00
-  branchMin: 0.00
+  lineMin: 0.55
+  branchMin: 0.50
+  criticalFiles:
+    - Actions.cs
+    - Agents.cs
+    - ChatKitServer.cs
+    - ChatKitRequests.cs
+    - ChatKitEvents.cs
+    - ChatKitJson.cs
+    - ChatKitPrimitives.cs
+    - Store.cs
+    - Widgets.cs
+    - WidgetDefinitionRendering.cs
+    - WidgetDefinitions.cs
+    - ChatKitAspNetCoreOptions.cs
+    - ChatKitAspNetCoreServiceCollectionExtensions.cs
+    - ChatKitEndpointRouteBuilderExtensions.cs
+    - Errors.cs
+    - TagHelpers/IncursaChatKitApiTagHelper.cs
+    - TagHelpers/IncursaChatKitHostedTagHelper.cs
+    - TagHelpers/IncursaChatKitTagHelper.cs
+    - TagHelpers/IncursaChatKitTagHelperBase.cs
 expectations:
   confidenceTarget: advisory confidence based on a required smoke precheck, the required non-Docker blocking lane, and advisory Workbench evidence from the curated advisory lane
   evidence:
     - inventory
     - results
     - coverage
+scenarios:
+  requiredTests:
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs::Serialize_ThreadsCreateRequest_UsesExactDiscriminator
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs::ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs::ProcessAsync_ItemsList_FiltersHiddenContextItemsFromResponse
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs::ProcessAsync_Throws_WhenRequestTypeDiscriminatorIsUnsupported
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_ThreadsList_UsesDefaultPageSizeAndDescendingOrder
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_ThreadsList_RespectsCursorAndLimit
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_ThreadsAddUserMessage_PersistsUserMessageAndStreamsAssistantResponse
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_ThreadsAddUserMessage_PersistsAttachmentsBeforeUserMessageAndRewritesThreadIds
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_ThreadsUpdate_PersistsUpdatedTitle
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_ThreadsDelete_RemovesThreadAndItems
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_ItemsFeedback_InvokesFeedbackHookAndReturnsEmptyObject
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_InputTranscribe_Throws_WhenAudioBase64IsInvalid
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_InputTranscribe_DecodesAudioAndInvokesTranscribeHook
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs::ProcessAsync_InputTranscribe_Throws_WhenTranscribeAsyncIsNotOverridden
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_AttachmentsCreate_PersistsCreatedAttachment
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_AttachmentsDelete_RemovesPersistedAttachment
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_AttachmentsCreate_Throws_WhenAttachmentStoreIsMissing
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_AttachmentsDelete_Throws_WhenAttachmentStoreIsMissing
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_ThreadsAddClientToolOutput_CompletesPendingToolCall
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_ThreadsAddClientToolOutput_Throws_WhenPendingToolCallIsMissing
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_ThreadsRetryAfterItem_RemovesLaterItemsAndReplays
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_ThreadsRetryAfterItem_Throws_WhenTargetIsNotUserMessage
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_ThreadsCustomAction_PassesWidgetSenderToActionHook
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_ThreadsCustomAction_Throws_WhenSenderItemIsNotWidget
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_ThreadsSyncCustomAction_ReturnsSerializedUpdatedItem
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_ThreadsSyncCustomAction_Throws_WhenSenderItemIsNotWidget
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_CancelledStream_PersistsNonEmptyPendingAssistantItem
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs::ProcessAsync_CancelledStream_SkipsEmptyPendingAssistantItem
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs::WidgetDiff_StreamingText_ReturnsDeltaOnly
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs::WidgetDefinition_LoadFromFile_BuildsWidgetFromFixture
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs::WidgetDefinition_Build_RejectsInvalidStateAgainstSchema
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs::WidgetDefinition_Parse_Throws_WhenVersionIsUnsupported
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs::Serialize_ActionConfig_UsesExpectedWireShape
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs::SimpleToAgentInput_MapsClientToolCallItem
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs::Serialize_RequestEnvelopes_UsesExpectedDiscriminatorsAndDefaults
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs::Serialize_ThreadStreamEvents_UsesExpectedDiscriminatorsAndPayloadShapes
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs::DeserializeThreadStreamEvent_Throws_WhenTypeDiscriminatorIsUnsupported
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs::WidgetDefinition_Build_SuppliesSchemaShapedDefaultsForMissingOptionalState
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs::WidgetDefinition_Build_RejectsEnumMismatch
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs::WidgetDefinition_Build_RejectsConstMismatch
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs::AgentContext_GenerateId_UsesExpectedStorePath
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs::AgentContext_StreamAsync_ThenDrainAsync_PreservesFifoOrder
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs::AgentContext_StreamWidgetAsync_BuffersWidgetItemDoneEvent
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs::StreamAgentResponse_MapsAssistantOutput_AndDrainsBufferedEventsAfterStream
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs::StreamAgentResponse_MapsToolCallOutput_WithObjectArguments
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs::StreamAgentResponse_ToolCallWithNonObjectArguments_UsesEmptyArgumentDictionary
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs::StreamAgentResponse_IgnoresNullAndUnsupportedItems
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitErrorHandlingTests.cs::ProcessAsync_EmitsCustomErrorEvent_WhenRespondAsyncThrowsCustomStreamException
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitErrorHandlingTests.cs::ProcessAsync_EmitsExplicitErrorEvent_WhenRespondAsyncThrowsStreamException
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitErrorHandlingTests.cs::ProcessAsync_EmitsCanonicalStreamError_WhenRespondAsyncThrowsUnexpectedException
+    - tests/Incursa.OpenAI.ChatKit.Tests/ChatKitErrorHandlingTests.cs::StreamExceptionTypes_PreserveConfiguredProperties
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs::AddOpenAIChatKitHosted_ClearsApiModeDefaults
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs::AddOpenAIChatKitApi_SetsApiModeDefaults
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs::AddOpenAIChatKitApi_Throws_WhenDomainKeyIsMissing
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs::MapChatKit_WritesJsonResponse
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs::MapChatKit_WritesEventStreamResponse
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitAssetsTagHelperTests.cs::Process_RendersEachAssetOnlyOncePerContext
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs::ProcessAsync_EmitsError_WhenGenericTagHelperIsUsed
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs::ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs::ProcessAsync_ApiTagHelperEmitsError_WhenSessionEndpointIsProvided
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs::ProcessAsync_ApiTagHelperInfersDirectUploadStrategy_WhenOnlyUploadUrlIsProvided
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs::ProcessAsync_ApiTagHelperEnablesAttachments_WhenOnlyConstraintsAreConfigured
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs::ProcessAsync_HostedTagHelperEmitsError_WhenActionEndpointIsMissingWhileForwardingEnabled
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs::ProcessAsync_HostedTagHelperEmitsError_WhenHeaderActionIsHalfConfigured
+    - tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs::ProcessAsync_HostedTagHelperEmitsError_WhenStartPromptContentIsInvalid
 artifacts:
   smokeResults: artifacts/test-results/smoke
   blockingResults: artifacts/test-results/blocking
@@ -56,6 +143,9 @@ related:
     - docs/testing-operating-model.md
     - docs/testing-known-issues.md
     - docs/testing/README.md
+    - tests/README.md
+    - benchmarks/README.md
+    - fuzz/README.md
     - docs/quality/library-hardening-baseline.md
     - docs/quality/repo-scope-boundary.md
   files:
@@ -69,11 +159,20 @@ related:
     - scripts/quality/run-quality-evidence.ps1
     - scripts/quality/run-workbench-evidence.ps1
     - scripts/quality/run-library-coverage.ps1
+    - scripts/quality/run-library-mutation.ps1
+    - scripts/quality/stryker/chatkit-core.stryker-config.json
+    - scripts/quality/stryker/chatkit-aspnetcore.stryker-config.json
+    - benchmarks/Incursa.OpenAI.ChatKit.Benchmarks.csproj
+    - fuzz/Incursa.OpenAI.ChatKit.Fuzz.csproj
     - .github/workflows/library-fast-quality.yml
     - .github/workflows/workbench-quality.yml
     - .github/workflows/testdocs.yml
 intentionalGaps:
-  - subject: Empty observational lane in the first pass
+  - subject: Empty observational KnownIssue lane
     rationale: The KnownIssue taxonomy and artifact path are standardized, but no current tests are intentionally left failing in automation.
   - subject: Advisory-only mutation execution
-    rationale: Mutation configs are wired for the public ChatKit packages, but remain outside the default required CI lane to keep the happy path fast.
+    rationale: Stryker configs are maintained for the public ChatKit packages, but mutation runs remain outside the default required CI lane and are not normalized into the Workbench summary.
+  - subject: Fuzz campaigns remain separately operated
+    rationale: SharpFuzz harnesses are maintained under fuzz/, but fuzzing is currently run as a dedicated boundary exercise instead of being folded into the routine quality sync.
+  - subject: Benchmarks remain performance evidence, not functional evidence
+    rationale: BenchmarkDotNet suites exist for selected hot paths, but performance baselines are tracked outside the Workbench functional quality report.

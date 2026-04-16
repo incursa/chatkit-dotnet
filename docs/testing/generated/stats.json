@@ -1,32 +1,32 @@
 {
-  "generatedAtUtc": "1970-01-01T00:00:00Z",
+  "generatedAtUtc": "2026-04-16T19:07:56.4135517Z",
   "repo": {
     "defaultBranch": "main"
   },
   "summary": {
-    "total": 31,
-    "compliant": 31,
+    "total": 88,
+    "compliant": 88,
     "missingRequired": 0,
     "invalidFormat": 0
   },
   "byCategory": [
     {
       "category": "Incursa.OpenAI.ChatKit",
-      "total": 31,
-      "compliant": 31
+      "total": 88,
+      "compliant": 88
     }
   ],
   "byTag": [],
   "byProject": [
     {
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests",
-      "total": 18,
-      "compliant": 18
+      "total": 25,
+      "compliant": 25
     },
     {
       "project": "Incursa.OpenAI.ChatKit.Tests",
-      "total": 13,
-      "compliant": 13
+      "total": 63,
+      "compliant": 63
     }
   ],
   "tests": [
@@ -40,7 +40,7 @@
       "behavior": "Calling AddOpenAIChatKitApi stores the configured API URL, domain key, and locale options.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs",
-        "line": 40,
+        "line": 44,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_SetsApiModeDefaults"
       },
       "status": "compliant",
@@ -56,7 +56,7 @@
       "behavior": "Calling AddOpenAIChatKitApi without a domain key throws an argument-null exception.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs",
-        "line": 64,
+        "line": 70,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_Throws_WhenDomainKeyIsMissing"
       },
       "status": "compliant",
@@ -72,8 +72,24 @@
       "behavior": "Calling AddOpenAIChatKitHosted resets the API URL and domain key while keeping the hosted session endpoint.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs",
-        "line": 14,
+        "line": 16,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitHosted_ClearsApiModeDefaults"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitEndpointTests.MapChatKit_WritesEventStreamResponse",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The ASP.NET Core endpoint adapter writes SSE responses for streaming ChatKit operations.",
+      "intent": "Protect the HTTP boundary for streamed ChatKit responses produced by the translated server surface.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-002",
+      "behavior": "Posting a streaming ChatKit request returns an event-stream payload containing the created thread and assistant item events.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs",
+        "line": 58,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitEndpointTests.MapChatKit_WritesEventStreamResponse"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
@@ -88,7 +104,7 @@
       "behavior": "Posting a JSON ChatKit request returns a JSON payload with the expected thread data.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs",
-        "line": 17,
+        "line": 18,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitEndpointTests.MapChatKit_WritesJsonResponse"
       },
       "status": "compliant",
@@ -120,8 +136,56 @@
       "behavior": "Direct browser API mode emits a render error instead of serializing a config payload when the domain key is missing.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 406,
+        "line": 569,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenDomainKeyIsNotConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenSessionEndpointIsProvided",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The API host tag helper rejects hosted-only session endpoints in direct API mode.",
+      "intent": "Protect explicit direct API mode from serializing an ambiguous mixed-mode browser configuration.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Providing session-endpoint to the API tag helper emits a render error instead of serializing a config payload.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 304,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEmitsError_WhenSessionEndpointIsProvided"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEnablesAttachments_WhenOnlyConstraintsAreConfigured",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The host config treats attachment constraints as an implicit request to enable attachments.",
+      "intent": "Protect the composer normalization path from dropping attachment limits when callers omit the explicit enabled flag.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Providing attachment constraints without composer-attachments-enabled serializes composer attachments as enabled.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 357,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperEnablesAttachments_WhenOnlyConstraintsAreConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperInfersDirectUploadStrategy_WhenOnlyUploadUrlIsProvided",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The API host tag helper infers the direct upload strategy when only an upload URL is provided.",
+      "intent": "Protect the upload-strategy normalization branch from dropping a valid direct-upload configuration.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Providing upload-strategy-upload-url without an explicit upload-strategy-type serializes a direct upload strategy with that URL.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 330,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperInfersDirectUploadStrategy_WhenOnlyUploadUrlIsProvided"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
@@ -136,7 +200,7 @@
       "behavior": "Setting client-tool-handlers on the API tag helper serializes the lookup path into the browser host config so the runtime can wire onClientTool.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 512,
+        "line": 675,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperSerializesClientToolHandlers_WhenSet"
       },
       "status": "compliant",
@@ -168,7 +232,7 @@
       "behavior": "Configured direct browser API defaults populate both the API URL and domain key in the serialized host config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 428,
+        "line": 591,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_ApiTagHelperUsesConfiguredDomainKey_WhenConfigured"
       },
       "status": "compliant",
@@ -200,8 +264,56 @@
       "behavior": "Disabling widget forwarding removes the action endpoint from the serialized config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 329,
+        "line": 435,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperDoesNotEmitActionEndpoint_WhenWidgetForwardingDisabled"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperEmitsError_WhenActionEndpointIsMissingWhileForwardingEnabled",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper rejects missing widget action endpoints when forwarding stays enabled.",
+      "intent": "Protect hosted mode from serializing a widget-forwarding configuration that cannot complete on the server.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Hosted mode emits a render error when widget forwarding is enabled but no action endpoint is available.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 412,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperEmitsError_WhenActionEndpointIsMissingWhileForwardingEnabled"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperEmitsError_WhenHeaderActionIsHalfConfigured",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper rejects half-configured header actions.",
+      "intent": "Protect the serialized browser config from carrying a header action the runtime cannot resolve safely.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Providing only a header action icon without a callback lookup path emits a render error instead of serializing the action.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 513,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperEmitsError_WhenHeaderActionIsHalfConfigured"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperEmitsError_WhenStartPromptContentIsInvalid",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The hosted host tag helper rejects start prompts whose content is not a string or structured user-content sequence.",
+      "intent": "Protect the serialized start-screen config from carrying invalid prompt payloads that the browser runtime cannot interpret.",
+      "scenario": "LIB-CHATKIT-ASPNETCORE-003",
+      "behavior": "Providing a starter prompt with invalid content emits a render error instead of serializing the prompt.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+        "line": 538,
+        "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperEmitsError_WhenStartPromptContentIsInvalid"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
@@ -216,7 +328,7 @@
       "behavior": "High-contrast defaults alone do not serialize a disclaimer object into the browser config.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 303,
+        "line": 385,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperOmitsDisclaimer_WhenTextIsNotConfigured"
       },
       "status": "compliant",
@@ -232,7 +344,7 @@
       "behavior": "Registering a widget action callback while disabling forwarding preserves the client handler and omits the action endpoint.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 353,
+        "line": 459,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesClientOnlyWidgetActionHandler"
       },
       "status": "compliant",
@@ -248,7 +360,7 @@
       "behavior": "Setting the client-tool-handlers attribute serializes the lookup path into the browser host config so the runtime can wire onClientTool.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 462,
+        "line": 625,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesClientToolHandlers_WhenSetByAttribute"
       },
       "status": "compliant",
@@ -264,7 +376,7 @@
       "behavior": "When a widget action handler and forward-widget-actions are both configured, both are emitted so the runtime can run client handling first, then forward to the endpoint.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 379,
+        "line": 485,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperSerializesCoexistenceOfHandlerAndForwarding"
       },
       "status": "compliant",
@@ -312,11 +424,587 @@
       "behavior": "Configuring ClientToolHandlers in AddOpenAIChatKitHosted populates the browser host config with the lookup path.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
-        "line": 486,
+        "line": 649,
         "member": "Incursa.OpenAI.ChatKit.AspNetCore.Tests.IncursaChatKitTagHelperTests.ProcessAsync_HostedTagHelperUsesDefaultClientToolHandlers_WhenConfigured"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.AspNetCore.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.AgentContext_GenerateId_UsesExpectedStorePath",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Agent context delegates thread and item identifier generation to the backing store using the expected item type and thread inputs.",
+      "intent": "Protect the bridge layer from generating incorrect ChatKit identifiers when materializing agent output.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Generating a thread id uses the store thread path, and generating an item id uses the provided item type and thread metadata.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs",
+        "line": 15,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.AgentContext_GenerateId_UsesExpectedStorePath"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.AgentContext_StreamAsync_ThenDrainAsync_PreservesFifoOrder",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Buffered bridge events drain in FIFO order after they are recorded.",
+      "intent": "Protect the bridge layer from reordering events that should be emitted after an agent turn completes.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Buffered events drain in the same order they were enqueued.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs",
+        "line": 43,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.AgentContext_StreamAsync_ThenDrainAsync_PreservesFifoOrder"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.AgentContext_StreamWidgetAsync_BuffersWidgetItemDoneEvent",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget buffering materializes a widget item event with the thread, copy text, and generated item identifier.",
+      "intent": "Protect widget bridge flows from dropping buffered widget events or generating them against the wrong thread context.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Streaming a widget through the agent context buffers a completed widget item event that can be drained afterward.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs",
+        "line": 63,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.AgentContext_StreamWidgetAsync_BuffersWidgetItemDoneEvent"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.StreamAgentResponse_IgnoresNullAndUnsupportedItems",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Null items and unsupported agent output shapes are ignored instead of leaking partial or invalid transcript events.",
+      "intent": "Protect the bridge layer from surfacing unsupported upstream items into the public ChatKit event stream.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Agent events without an item or with unsupported role/type combinations do not emit any ChatKit stream events.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs",
+        "line": 221,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.StreamAgentResponse_IgnoresNullAndUnsupportedItems"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.StreamAgentResponse_MapsAssistantOutput_AndDrainsBufferedEventsAfterStream",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Assistant message output is translated into a completed assistant thread item before any buffered post-turn events are drained.",
+      "intent": "Protect the public ChatKit transcript ordering when upstream agent output is converted into ChatKit stream events.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Assistant message output emits a thread item done event, and buffered bridge events are emitted only after the agent stream finishes.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs",
+        "line": 97,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.StreamAgentResponse_MapsAssistantOutput_AndDrainsBufferedEventsAfterStream"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.StreamAgentResponse_MapsToolCallOutput_WithObjectArguments",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Tool-call agent output is translated into a pending client tool call item with object arguments preserved.",
+      "intent": "Protect client tool interoperability between upstream agent output and the ChatKit transcript model.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Assistant tool-call output emits a pending client tool call item with the original tool name, call id, and object arguments.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs",
+        "line": 143,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.StreamAgentResponse_MapsToolCallOutput_WithObjectArguments"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.StreamAgentResponse_ToolCallWithNonObjectArguments_UsesEmptyArgumentDictionary",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Non-object tool-call argument payloads are normalized to an empty ChatKit argument bag instead of causing translation failures.",
+      "intent": "Protect the bridge layer from surfacing malformed upstream tool-call argument payloads as invalid ChatKit argument dictionaries.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Assistant tool-call output with a non-object data payload emits a client tool call item whose arguments collection is empty.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitAgentBridgeTests.cs",
+        "line": 184,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitAgentBridgeTests.StreamAgentResponse_ToolCallWithNonObjectArguments_UsesEmptyArgumentDictionary"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.AudioInput_MediaType_StripsParameters",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Audio payloads expose a stable media type without MIME parameters.",
+      "intent": "Protect the transcription contract from treating codec or charset parameters as part of the media type identifier.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "The audio input media type accessor strips any MIME parameters and preserves only the base media type.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 391,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.AudioInput_MediaType_StripsParameters"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.DeserializeThreadStreamEvent_Throws_WhenTypeDiscriminatorIsUnsupported",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Unsupported event discriminators are rejected instead of silently producing an untyped placeholder.",
+      "intent": "Protect stream consumers from accepting unknown event types outside the approved contract inventory.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "Deserializing a thread stream event with an unsupported type discriminator throws a JSON exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 372,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.DeserializeThreadStreamEvent_Throws_WhenTypeDiscriminatorIsUnsupported"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_ActionConfig_UsesExpectedWireShape",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Client-facing action configuration serializes with the expected snake-case field names and nested action payload.",
+      "intent": "Protect the public action contract consumed by ChatKit clients and widgets.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "Serializing an action configuration emits the expected field names, destructive flag, and nested JSON payload.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 18,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_ActionConfig_UsesExpectedWireShape"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_RequestEnvelopes_UsesExpectedDiscriminatorsAndDefaults",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Representative request envelopes serialize with the exact upstream discriminators, default sort order, and snake-case metadata keys.",
+      "intent": "Protect the public ChatKit request contract across common list, custom action, and transcription paths.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "Serializing request envelopes emits the expected type discriminators, default descending order, and snake-case metadata fields.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 81,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_RequestEnvelopes_UsesExpectedDiscriminatorsAndDefaults"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_ThreadStreamEvents_UsesExpectedDiscriminatorsAndPayloadShapes",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Representative stream events serialize with the expected event/update discriminators and nested payload shapes.",
+      "intent": "Protect the public ChatKit event stream contract across thread lifecycle, workflow, widget, and client-effect paths.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Serializing stream events emits the expected outer event discriminators and nested polymorphic payload types.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 133,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_ThreadStreamEvents_UsesExpectedDiscriminatorsAndPayloadShapes"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.SimpleToAgentInput_MapsClientToolCallItem",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Client tool call transcript items translate into agent tool-call items with preserved identifiers, arguments, and status.",
+      "intent": "Protect interoperability between persisted ChatKit tool calls and the shared agents runtime.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Mapping a client tool call item to agent input preserves its tool type, name, call id, arguments, and pending status.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 48,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.SimpleToAgentInput_MapsClientToolCallItem"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_RejectsConstMismatch",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget rendering rejects constant mismatches before template hydration occurs.",
+      "intent": "Protect schema-based widget validation from allowing invalid constant values into rendered output.",
+      "scenario": "LIB-CHATKIT-CORE-004",
+      "behavior": "Rendering a widget with a property that does not match the required constant value throws an invalid operation exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 489,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_RejectsConstMismatch"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_RejectsEnumMismatch",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget rendering rejects enum violations before template hydration occurs.",
+      "intent": "Protect schema-based widget validation from allowing invalid enum selections into the rendered output.",
+      "scenario": "LIB-CHATKIT-CORE-004",
+      "behavior": "Rendering a widget with an enum value outside the schema inventory throws an invalid operation exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 455,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_RejectsEnumMismatch"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_SuppliesSchemaShapedDefaultsForMissingOptionalState",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget rendering supplies schema-shaped empty values for optional properties that are omitted from state.",
+      "intent": "Protect the widget renderer from failing when optional arrays and objects are missing from otherwise valid state.",
+      "scenario": "LIB-CHATKIT-CORE-004",
+      "behavior": "Rendering a widget with omitted optional schema members supplies empty defaults that the template can safely read.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 408,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_SuppliesSchemaShapedDefaultsForMissingOptionalState"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.DeserializeRequest_Throws_WhenEnvelopeIsNull",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Request deserialization rejects null envelopes instead of producing an untyped placeholder.",
+      "intent": "Protect request routing from silently accepting invalid root request payloads.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "Deserializing a null ChatKit request payload throws an invalid operation exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs",
+        "line": 160,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.DeserializeRequest_Throws_WhenEnvelopeIsNull"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.ProcessAsync_ItemsList_FiltersHiddenContextItemsFromResponse",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Thread item list responses exclude hidden context items even when they remain persisted in storage.",
+      "intent": "Protect the public ChatKit item-list contract from leaking hidden context back to clients.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Listing thread items returns visible user-facing items and omits hidden context item variants from the serialized response payload.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs",
+        "line": 87,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.ProcessAsync_ItemsList_FiltersHiddenContextItemsFromResponse"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.ProcessAsync_ThreadsGetById_FiltersHiddenContextItemsFromResponse",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Thread detail responses exclude hidden context items even when they remain persisted in storage.",
+      "intent": "Protect the public ChatKit thread contract from leaking hidden context back to clients.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Loading a thread by id returns visible user-facing items and omits hidden context item variants from the serialized response payload.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs",
+        "line": 16,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.ProcessAsync_ThreadsGetById_FiltersHiddenContextItemsFromResponse"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.ProcessAsync_Throws_WhenRequestTypeDiscriminatorIsUnsupported",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Unknown request discriminators are rejected instead of being treated as a valid ChatKit request kind.",
+      "intent": "Protect request routing from silently accepting request types outside the approved protocol inventory.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "Processing a request payload with an unsupported type discriminator throws a JSON exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs",
+        "line": 175,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.ProcessAsync_Throws_WhenRequestTypeDiscriminatorIsUnsupported"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.WidgetDefinition_Parse_Throws_WhenVersionIsUnsupported",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget definitions reject unsupported export versions before rendering begins.",
+      "intent": "Protect file-backed widget loading from silently accepting incompatible export formats.",
+      "scenario": "LIB-CHATKIT-CORE-004",
+      "behavior": "Parsing a widget definition with an unsupported version throws an invalid operation exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs",
+        "line": 244,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.WidgetDefinition_Parse_Throws_WhenVersionIsUnsupported"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.WidgetDiff_FallsBackToRootReplace_WhenStreamingTextIsNotPrefixAppend",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Streaming widget diffs fall back to a root replacement when text no longer follows append-only semantics.",
+      "intent": "Protect incremental widget updates from emitting an invalid delta when the new text is incompatible with the prior streamed value.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Diffing a streaming text node whose updated value no longer begins with the prior value emits a widget root replacement instead of a text delta.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs",
+        "line": 194,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.WidgetDiff_FallsBackToRootReplace_WhenStreamingTextIsNotPrefixAppend"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_AttachmentsCreate_PersistsCreatedAttachment",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Attachment creation persists the created descriptor when an attachment store is configured.",
+      "intent": "Protect the external attachment creation lane owned by the core runtime and attachment store boundary.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing an attachments.create request calls the configured attachment store, persists the returned attachment, and returns the created payload as JSON.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 16,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_AttachmentsCreate_PersistsCreatedAttachment"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_AttachmentsCreate_Throws_WhenAttachmentStoreIsMissing",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Attachment operations reject requests when no external attachment store has been configured.",
+      "intent": "Protect attachment endpoints from appearing enabled when the repo owner has not supplied an attachment implementation.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing an attachments.create request without an attachment store throws an invalid operation exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 90,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_AttachmentsCreate_Throws_WhenAttachmentStoreIsMissing"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_AttachmentsDelete_RemovesPersistedAttachment",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Attachment deletion removes persisted descriptors and forwards the delete to the attachment store.",
+      "intent": "Protect the two-phase attachment delete workflow from leaving stale records behind.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing an attachments.delete request calls the configured attachment store delete hook and removes the attachment from the backing ChatKit store.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 53,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_AttachmentsDelete_RemovesPersistedAttachment"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_AttachmentsDelete_Throws_WhenAttachmentStoreIsMissing",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Attachment deletion rejects requests when no external attachment store has been configured.",
+      "intent": "Protect attachment delete endpoints from appearing enabled when the repo owner has not supplied an attachment implementation.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing an attachments.delete request without an attachment store throws an invalid operation exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 116,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_AttachmentsDelete_Throws_WhenAttachmentStoreIsMissing"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_CancelledStream_PersistsNonEmptyPendingAssistantItem",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Stream cancellation persists non-empty pending assistant content and an SDK hidden-context marker.",
+      "intent": "Protect cancellation cleanup so partially emitted assistant content and the interruption marker survive for later turns.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Canceling a streaming threads.create request after a non-empty assistant item is added persists that partial item and appends an SDK hidden-context item.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 626,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_CancelledStream_PersistsNonEmptyPendingAssistantItem"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_CancelledStream_SkipsEmptyPendingAssistantItem",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Stream cancellation skips empty pending assistant content instead of persisting blank items.",
+      "intent": "Protect cancellation cleanup from polluting persisted history with empty assistant placeholders.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Canceling a streaming request after an empty assistant item is added does not persist that assistant item, but still appends the SDK hidden-context marker.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 688,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_CancelledStream_SkipsEmptyPendingAssistantItem"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsAddClientToolOutput_CompletesPendingToolCall",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Client tool output completes the pending tool-call item before the assistant response continues.",
+      "intent": "Protect the tool continuation lane used when the client returns a tool result into an existing thread.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.add_client_tool_output request marks the pending tool call completed, persists the tool result, and then streams the next assistant response.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 369,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsAddClientToolOutput_CompletesPendingToolCall"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsAddClientToolOutput_Throws_WhenPendingToolCallIsMissing",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Client tool output rejects threads that do not end with a pending tool-call item.",
+      "intent": "Protect the continuation pipeline from applying client tool results to the wrong kind of thread item.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.add_client_tool_output request without a pending client tool call throws an invalid operation exception during stream evaluation.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 450,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsAddClientToolOutput_Throws_WhenPendingToolCallIsMissing"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsCustomAction_PassesWidgetSenderToActionHook",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Asynchronous custom actions load the widget sender and stream the action result.",
+      "intent": "Protect the custom widget-action lane from losing the sender context before the server action hook runs.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.custom_action request with a widget item sender passes that widget to the action hook and streams the resulting assistant item.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 141,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsCustomAction_PassesWidgetSenderToActionHook"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsCustomAction_Throws_WhenSenderItemIsNotWidget",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Asynchronous custom actions reject sender items that are not widgets.",
+      "intent": "Protect the widget-action pipeline from passing a non-widget thread item into the action hook.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.custom_action request with a non-widget sender item throws an invalid operation exception during stream evaluation.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 214,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsCustomAction_Throws_WhenSenderItemIsNotWidget"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsRetryAfterItem_RemovesLaterItemsAndReplays",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Retry-after-item removes later items and replays the assistant turn from the retained user message.",
+      "intent": "Protect the destructive retry lane from leaving superseded items behind after a replay.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.retry_after_item request deletes later items after the target user message and streams a replacement assistant response based on that retained message.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 495,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsRetryAfterItem_RemovesLaterItemsAndReplays"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsRetryAfterItem_Throws_WhenTargetIsNotUserMessage",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Retry-after-item rejects non-user-message targets instead of replaying from an invalid point in the thread.",
+      "intent": "Protect destructive retry from treating assistant or system items as valid replay anchors.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.retry_after_item request for an assistant item throws an invalid operation exception during stream evaluation.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 587,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsRetryAfterItem_Throws_WhenTargetIsNotUserMessage"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsSyncCustomAction_ReturnsSerializedUpdatedItem",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Synchronous custom actions load the widget sender and return a JSON response from the sync action hook.",
+      "intent": "Protect the synchronous custom action lane from losing sender context or drifting away from the non-streaming response contract.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.sync_custom_action request with a widget item sender passes that widget to the sync action hook and returns the serialized updated item.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 258,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsSyncCustomAction_ReturnsSerializedUpdatedItem"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsSyncCustomAction_Throws_WhenSenderItemIsNotWidget",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Synchronous custom actions reject sender items that are not widgets.",
+      "intent": "Protect the synchronous widget-action pipeline from passing a non-widget thread item into the sync action hook.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.sync_custom_action request with a non-widget sender item throws an invalid operation exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreLifecycleTests.cs",
+        "line": 327,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreLifecycleTests.ProcessAsync_ThreadsSyncCustomAction_Throws_WhenSenderItemIsNotWidget"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
     },
     {
       "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn",
@@ -328,7 +1016,7 @@
       "behavior": "Processing a threads.create payload produces stream events for thread creation and the completed assistant item.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 180,
+        "line": 186,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.ProcessAsync_ThreadsCreate_StreamsUserAndAssistantTurn"
       },
       "status": "compliant",
@@ -344,7 +1032,7 @@
       "behavior": "Serializing a threads.create request emits the expected type discriminator and content payload shape.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 16,
+        "line": 17,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.Serialize_ThreadsCreateRequest_UsesExactDiscriminator"
       },
       "status": "compliant",
@@ -360,7 +1048,7 @@
       "behavior": "Simple user and assistant items are translated into the corresponding agent conversation item types and text values.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 216,
+        "line": 223,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.SimpleToAgentInput_MapsUserAndAssistantMessages"
       },
       "status": "compliant",
@@ -376,7 +1064,7 @@
       "behavior": "Rendering a widget with invalid input state fails before the Jinja template is hydrated into a widget root.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 160,
+        "line": 165,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_Build_RejectsInvalidStateAgainstSchema"
       },
       "status": "compliant",
@@ -392,7 +1080,7 @@
       "behavior": "Loading a widget export from disk or stream preserves the template, schema, preview, and encoded payload, and building with valid state hydrates the preview widget.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 93,
+        "line": 96,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromFile_BuildsWidgetFromFixture"
       },
       "status": "compliant",
@@ -408,7 +1096,7 @@
       "behavior": "Loading a widget export from a stream preserves the template, schema, preview, and encoded payload, and building with valid state hydrates the preview widget.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 126,
+        "line": 130,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDefinition_LoadFromStream_BuildsWidgetFromFixture"
       },
       "status": "compliant",
@@ -424,8 +1112,232 @@
       "behavior": "Diffing compatible before and after widgets returns only the appended text delta and completion state.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
-        "line": 43,
+        "line": 45,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitCoreTests.WidgetDiff_StreamingText_ReturnsDeltaOnly"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitErrorHandlingTests.ProcessAsync_EmitsCanonicalStreamError_WhenRespondAsyncThrowsUnexpectedException",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Unexpected stream failures collapse to the canonical runtime stream error code with retry enabled.",
+      "intent": "Protect public stream error behavior when an unhandled runtime failure escapes the response stream.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "When a response stream throws an unexpected exception, the emitted error event uses the canonical stream error code and allows retry.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitErrorHandlingTests.cs",
+        "line": 48,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitErrorHandlingTests.ProcessAsync_EmitsCanonicalStreamError_WhenRespondAsyncThrowsUnexpectedException"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitErrorHandlingTests.ProcessAsync_EmitsCustomErrorEvent_WhenRespondAsyncThrowsCustomStreamException",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Custom stream failures surface the default custom error code and preserve retry/message semantics.",
+      "intent": "Protect public stream error behavior for application-defined failures that intentionally use the default ChatKit custom code.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "When a response stream throws a custom stream exception, the emitted error event uses the custom code and preserves the configured retry and message values.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitErrorHandlingTests.cs",
+        "line": 14,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitErrorHandlingTests.ProcessAsync_EmitsCustomErrorEvent_WhenRespondAsyncThrowsCustomStreamException"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitErrorHandlingTests.ProcessAsync_EmitsExplicitErrorEvent_WhenRespondAsyncThrowsStreamException",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Explicit stream failures surface their configured protocol code and preserve retry/message semantics.",
+      "intent": "Protect public stream error behavior for failures that intentionally choose a non-default protocol code.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "When a response stream throws a stream exception, the emitted error event uses the configured code and preserves the configured retry and message values.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitErrorHandlingTests.cs",
+        "line": 31,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitErrorHandlingTests.ProcessAsync_EmitsExplicitErrorEvent_WhenRespondAsyncThrowsStreamException"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitErrorHandlingTests.StreamExceptionTypes_PreserveConfiguredProperties",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "The stream exception types preserve the configured public code, retry, and message values.",
+      "intent": "Protect the exception contracts that the runtime translates into public ChatKit error events.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "Constructed stream exception types expose the expected code, retry, and message property values.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitErrorHandlingTests.cs",
+        "line": 65,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitErrorHandlingTests.StreamExceptionTypes_PreserveConfiguredProperties"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_InputTranscribe_DecodesAudioAndInvokesTranscribeHook",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Audio transcription requests decode the audio payload, normalize the MIME type, and pass both values into the explicit transcription hook.",
+      "intent": "Protect the transcription route from losing the uploaded bytes or bypassing the application-owned transcription service.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing an input.transcribe request decodes the base64 audio input, forwards it to TranscribeAsync, and serializes the returned text.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 463,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_InputTranscribe_DecodesAudioAndInvokesTranscribeHook"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_InputTranscribe_Throws_WhenAudioBase64IsInvalid",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Malformed transcription payloads fail fast before the transcription hook is invoked.",
+      "intent": "Protect the transcription route from accepting invalid base64 audio data as if it were valid input.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing an input.transcribe request with an invalid base64 payload throws a format exception and does not call TranscribeAsync.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 424,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_InputTranscribe_Throws_WhenAudioBase64IsInvalid"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_InputTranscribe_Throws_WhenTranscribeAsyncIsNotOverridden",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Audio transcription requests fail fast when a server does not override the transcription extension point.",
+      "intent": "Protect the transcription route from implying a default transcription implementation where none exists.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing an input.transcribe request against a server that has not overridden TranscribeAsync throws the base not-implemented exception.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 513,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_InputTranscribe_Throws_WhenTranscribeAsyncIsNotOverridden"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ItemsFeedback_InvokesFeedbackHookAndReturnsEmptyObject",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Feedback requests hand their thread and item identifiers to the explicit extension hook instead of hard-coding repository-specific behavior.",
+      "intent": "Protect the feedback route from bypassing the server extension point that owns application-specific feedback handling.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing an items.feedback request forwards the thread id, item ids, and feedback kind to AddFeedbackAsync and returns an empty object.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 374,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ItemsFeedback_InvokesFeedbackHookAndReturnsEmptyObject"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsAddUserMessage_PersistsAttachmentsBeforeUserMessageAndRewritesThreadIds",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Attached files and images are normalized to the destination thread before the owning user message is persisted.",
+      "intent": "Protect the attachment lifecycle from losing thread ownership or saving the user turn before its attachments are materialized.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.add_user_message request with attachments rewrites the attachment thread ids, persists the attachments first, and then stores the user message.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 199,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsAddUserMessage_PersistsAttachmentsBeforeUserMessageAndRewritesThreadIds"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsAddUserMessage_PersistsUserMessageAndStreamsAssistantResponse",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Adding a user message to an existing thread persists the user turn and streams the assistant response from the translated hook.",
+      "intent": "Protect the add-user-message lane from losing the user payload or skipping store-backed persistence before the assistant turn begins.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.add_user_message request stores the user message, passes it into RespondAsync, and streams the assistant reply.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 127,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsAddUserMessage_PersistsUserMessageAndStreamsAssistantResponse"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsDelete_RemovesThreadAndItems",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Thread deletion removes the thread and its items instead of leaving stale conversation state behind.",
+      "intent": "Protect the delete route from orphaning items after the owning thread has been removed.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.delete request removes the thread from the store and returns an empty JSON object.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 328,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsDelete_RemovesThreadAndItems"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsList_RespectsCursorAndLimit",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Thread listings preserve explicit cursors and limits when callers request a smaller page.",
+      "intent": "Protect the translated pagination contract from regressions in limit and cursor propagation.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.list request with an explicit limit and cursor returns the requested page and exposes the next-page cursor.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 74,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsList_RespectsCursorAndLimit"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsList_UsesDefaultPageSizeAndDescendingOrder",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Thread listings honor the translated default page size and descending sort order when no cursor is provided.",
+      "intent": "Protect the non-streaming thread list route from silently drifting away from the translated pagination contract.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.list request without an explicit limit passes the default page size to the store and returns the newest threads first.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 17,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsList_UsesDefaultPageSizeAndDescendingOrder"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsUpdate_PersistsUpdatedTitle",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Thread metadata updates are persisted through the store boundary and returned as the updated public thread shape.",
+      "intent": "Protect the update route from mutating thread titles without writing through the storage boundary.",
+      "scenario": "LIB-CHATKIT-CORE-003",
+      "behavior": "Processing a threads.update request saves the updated title and returns the updated thread payload.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitServerRequestTests.cs",
+        "line": 292,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitServerRequestTests.ProcessAsync_ThreadsUpdate_PersistsUpdatedTitle"
       },
       "status": "compliant",
       "project": "Incursa.OpenAI.ChatKit.Tests"

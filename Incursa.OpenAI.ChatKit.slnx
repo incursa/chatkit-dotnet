@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Incursa.OpenAI.ChatKit.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/fuzz/">
+    <Project Path="fuzz/Incursa.OpenAI.ChatKit.Fuzz.csproj" />
+  </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/Incursa.OpenAI.ChatKit.QuickstartSample/Incursa.OpenAI.ChatKit.QuickstartSample.csproj" />
   </Folder>

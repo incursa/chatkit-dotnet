@@ -2,6 +2,8 @@
 
 This specification defines the baseline conformance expectations for [`Incursa.OpenAI.ChatKit.AspNetCore`](../../src/Incursa.OpenAI.ChatKit.AspNetCore/README.md).
 
+Canonical requirement suite: [`../requirements/chatkit/SPEC-CHATKIT-ASPNETCORE.md`](../requirements/chatkit/SPEC-CHATKIT-ASPNETCORE.md)
+
 ## Scenarios
 
 - `LIB-CHATKIT-ASPNETCORE-001`: The public API baseline for the ASP.NET Core package is maintained and mapped to executable coverage.

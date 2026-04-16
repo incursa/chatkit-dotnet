@@ -1,5 +1,7 @@
 # Library Conformance Matrix
 
+Compatibility note: the canonical ChatKit SpecTrace corpus now lives under [`../requirements/chatkit/`](../requirements/chatkit/README.md). This matrix remains the compatibility mapping consumed by the current `LIB-*` traceability script.
+
 | Scenario ID | Library | Area | Status | Mapped Files |
 | --- | --- | --- | --- | --- |
 | LIB-CHATKIT-CORE-001 | Incursa.OpenAI.ChatKit | PublicApi | Covered | [`src/Incursa.OpenAI.ChatKit/PublicAPI.Shipped.txt`](../../src/Incursa.OpenAI.ChatKit/PublicAPI.Shipped.txt), [`src/Incursa.OpenAI.ChatKit/PublicAPI.Unshipped.txt`](../../src/Incursa.OpenAI.ChatKit/PublicAPI.Unshipped.txt), [`tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs`](../../tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs) |

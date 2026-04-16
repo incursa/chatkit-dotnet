@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-CHATKIT-CORE-0001",
+  "artifact_type": "verification",
+  "status": "draft",
+  "title": "ChatKit Core Runtime Verification",
+  "owner": "chatkit-maintainers",
+  "domain": "chatkit",
+  "verification_method": "Execution, inspection, and documented test-inventory evidence from the current core test suite.",
+  "related_artifacts": [
+    "SPEC-CHATKIT-CORE",
+    "ARC-CHATKIT-CORE-0001"
+  ],
+  "verifies": [
+    "REQ-CHATKIT-CORE-0001",
+    "REQ-CHATKIT-CORE-0002",
+    "REQ-CHATKIT-CORE-0003",
+    "REQ-CHATKIT-CORE-0004",
+    "REQ-CHATKIT-CORE-0005",
+    "REQ-CHATKIT-CORE-0006",
+    "REQ-CHATKIT-CORE-0007",
+    "REQ-CHATKIT-CORE-0008",
+    "REQ-CHATKIT-CORE-0009",
+    "REQ-CHATKIT-CORE-0010",
+    "REQ-CHATKIT-CORE-0011",
+    "REQ-CHATKIT-CORE-0012",
+    "REQ-CHATKIT-CORE-0013",
+    "REQ-CHATKIT-CORE-0014"
+  ],
+  "preconditions": [
+    "SPEC-CHATKIT-CORE and ARC-CHATKIT-CORE-0001 exist.",
+    "The Incursa.OpenAI.ChatKit test project builds and executes successfully.",
+    "The generated test inventory under docs/testing/generated is current enough to reflect the present suite."
+  ],
+  "scope": "This verification slice covers the current core-package proof for public API baseline mapping, request-envelope serialization, supported request-kind handling, transport classification, hidden-context filtering, selected streaming persistence and cancellation behavior, client-tool continuation, destructive retry, attachment-store gating, explicit extension-point behavior, widget diff behavior, and exported widget-definition loading and rendering. It records the current proof set without claiming branch-complete negative-path coverage for every store, retry, and attachment edge case.",
+  "expected_result": "The core package exposes the intended ChatKit runtime surface, serializes the documented protocol shape, constrains processing to the approved request inventory, classifies requests into JSON versus streaming results correctly, persists and filters state through the store boundary according to the documented rules, keeps assistant-specific behavior behind explicit extension points, and proves the current widget update and widget-definition contracts through executable tests.",
+  "procedure": [
+    "Review the public API analyzer files for the core package against the intended package surface.",
+    "Run the current core test suite and inspect generated test-inventory metadata.",
+    "Confirm that serialization, request classification, hidden-context filtering, client-tool continuation, retry, attachment, widget diff, and widget-definition tests map back to the current requirement set.",
+    "Review cancellation and store-boundary tests to confirm that persisted and client-visible behavior still match the specification."
+  ],
+  "evidence": [
+    "src/Incursa.OpenAI.ChatKit/PublicAPI.Shipped.txt",
+    "src/Incursa.OpenAI.ChatKit/PublicAPI.Unshipped.txt",
+    "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreTests.cs",
+    "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitCoreBoundaryTests.cs",
+    "docs/testing/generated/stats.json",
+    "specs/libraries/library-conformance-matrix.md"
+  ],
+  "status_summary": "Current execution evidence is sufficient to anchor the expanded canonical requirements for the core package, but proof depth remains uneven. Serialization, request classification, visible-versus-hidden state, widget behavior, and selected lifecycle paths are exercised. Broader destructive retry paths, attachment lifecycle edges, pagination and ordering guarantees, and more negative or error branches remain open follow-up work rather than proven-complete coverage.",
+  "supplemental_sections": [
+    {
+      "heading": "Current Evidence Notes",
+      "content": "The generated inventory currently documents the core and ASP.NET Core suites together and shows the repository has a maintained set of executable ChatKit tests. The core slice relies primarily on ChatKitCoreTests and ChatKitCoreBoundaryTests for direct evidence."
+    }
+  ]
+}

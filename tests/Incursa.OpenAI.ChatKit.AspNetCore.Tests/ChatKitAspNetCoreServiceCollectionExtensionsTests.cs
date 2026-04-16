@@ -10,6 +10,8 @@ public sealed class ChatKitAspNetCoreServiceCollectionExtensionsTests
     /// <intent>Protect the DI setup that switches consumers from direct API mode to hosted session mode.</intent>
     /// <scenario>LIB-CHATKIT-ASPNETCORE-001</scenario>
     /// <behavior>Calling <c>AddOpenAIChatKitHosted</c> resets the API URL and domain key while keeping the hosted session endpoint.</behavior>
+    [Trait("Category", "Positive")]
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0003")]
     [Fact]
     public void AddOpenAIChatKitHosted_ClearsApiModeDefaults()
     {
@@ -36,6 +38,8 @@ public sealed class ChatKitAspNetCoreServiceCollectionExtensionsTests
     /// <intent>Protect the DI setup that configures the ASP.NET Core wrapper for direct API mode.</intent>
     /// <scenario>LIB-CHATKIT-ASPNETCORE-001</scenario>
     /// <behavior>Calling <c>AddOpenAIChatKitApi</c> stores the configured API URL, domain key, and locale options.</behavior>
+    [Trait("Category", "Positive")]
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0003")]
     [Fact]
     public void AddOpenAIChatKitApi_SetsApiModeDefaults()
     {
@@ -60,6 +64,8 @@ public sealed class ChatKitAspNetCoreServiceCollectionExtensionsTests
     /// <intent>Protect the DI setup from seeding an invalid direct ChatKit API configuration.</intent>
     /// <scenario>LIB-CHATKIT-ASPNETCORE-001</scenario>
     /// <behavior>Calling <c>AddOpenAIChatKitApi</c> without a domain key throws an argument-null exception.</behavior>
+    [Trait("Category", "Negative")]
+    [Trait("Requirement", "REQ-CHATKIT-ASPNETCORE-0003")]
     [Fact]
     public void AddOpenAIChatKitApi_Throws_WhenDomainKeyIsMissing()
     {

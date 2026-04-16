@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-CHATKIT-ASPNETCORE-0001",
+  "artifact_type": "verification",
+  "status": "draft",
+  "title": "ChatKit ASP.NET Core Host Verification",
+  "owner": "chatkit-maintainers",
+  "domain": "chatkit",
+  "verification_method": "Execution, inspection, and documented test-inventory evidence from the current ASP.NET Core test suite.",
+  "related_artifacts": [
+    "SPEC-CHATKIT-ASPNETCORE",
+    "ARC-CHATKIT-ASPNETCORE-0001"
+  ],
+  "verifies": [
+    "REQ-CHATKIT-ASPNETCORE-0001",
+    "REQ-CHATKIT-ASPNETCORE-0002",
+    "REQ-CHATKIT-ASPNETCORE-0003",
+    "REQ-CHATKIT-ASPNETCORE-0004",
+    "REQ-CHATKIT-ASPNETCORE-0005",
+    "REQ-CHATKIT-ASPNETCORE-0006",
+    "REQ-CHATKIT-ASPNETCORE-0007",
+    "REQ-CHATKIT-ASPNETCORE-0008",
+    "REQ-CHATKIT-ASPNETCORE-0009",
+    "REQ-CHATKIT-ASPNETCORE-0010",
+    "REQ-CHATKIT-ASPNETCORE-0011",
+    "REQ-CHATKIT-ASPNETCORE-0012",
+    "REQ-CHATKIT-ASPNETCORE-0013"
+  ],
+  "preconditions": [
+    "SPEC-CHATKIT-ASPNETCORE and ARC-CHATKIT-ASPNETCORE-0001 exist.",
+    "The Incursa.OpenAI.ChatKit.AspNetCore test project builds and executes successfully.",
+    "The generated test inventory under docs/testing/generated is current enough to reflect the present suite."
+  ],
+  "scope": "This verification slice covers the current proof for the ASP.NET Core package public API baseline, HTTP endpoint result handling, service-registration modes, packaged asset emission, explicit host-mode selection, direct versus hosted mode validation, serialized browser host configuration, value-precedence rules, host-surface normalization, and success versus failure DOM rendering. It records the current proof set without claiming browser-runtime end-to-end proof beyond the rendered configuration contract.",
+  "expected_result": "The ASP.NET Core package exposes the intended host-facing API surface, keeps endpoint behavior thin and result-driven, applies the expected service-registration defaults and guards, emits packaged assets once per rendering context, rejects invalid mode combinations clearly, serializes the documented browser config surface with the expected precedence and normalization behavior, and renders either a valid host element or a visible initialization failure.",
+  "procedure": [
+    "Review the public API analyzer files for the ASP.NET Core package against the intended host-facing surface.",
+    "Run the ASP.NET Core test suite and inspect generated test-inventory metadata.",
+    "Confirm that endpoint, service-registration, assets, and tag-helper tests map back to the current requirement set.",
+    "Review the host-render tests to confirm that valid and invalid modes, normalization rules, and failure rendering are distinguished at render time rather than deferred silently to the browser."
+  ],
+  "evidence": [
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/PublicAPI.Shipped.txt",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/PublicAPI.Unshipped.txt",
+    "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitEndpointTests.cs",
+    "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/ChatKitAspNetCoreServiceCollectionExtensionsTests.cs",
+    "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitAssetsTagHelperTests.cs",
+    "tests/Incursa.OpenAI.ChatKit.AspNetCore.Tests/IncursaChatKitTagHelperTests.cs",
+    "docs/testing/generated/stats.json",
+    "docs/30-contracts/chatkit-tag-helper.md"
+  ],
+  "status_summary": "Current evidence is stronger for the ASP.NET Core package than for the core runtime. The endpoint adapter, service registration, asset helper, and host tag helpers all have direct test coverage and documented inventory entries. The main remaining gap is that the browser runtime itself is still verified indirectly through the rendered config and DOM contract rather than through a deeper end-to-end client harness.",
+  "supplemental_sections": [
+    {
+      "heading": "Current Evidence Notes",
+      "content": "The generated inventory currently shows the ASP.NET Core project contributes a substantial share of the repository's executable ChatKit tests, including endpoint, options, assets, and mode-validation coverage."
+    }
+  ]
+}

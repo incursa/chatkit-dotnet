@@ -1,13 +1,13 @@
 # Test documentation stats
 
-Generated at (UTC): 1970-01-01T00:00:00Z
+Generated at (UTC): 2026-04-16T19:07:56.4135517Z
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
-| Total | 31 |
-| Compliant | 31 |
+| Total | 88 |
+| Compliant | 88 |
 | Missing required | 0 |
 | Invalid format | 0 |
 
@@ -15,7 +15,7 @@ Generated at (UTC): 1970-01-01T00:00:00Z
 
 | Category | Total | Compliant |
 | --- | ---: | ---: |
-| Incursa.OpenAI.ChatKit | 31 | 31 |
+| Incursa.OpenAI.ChatKit | 88 | 88 |
 
 ## By tag
 
@@ -26,5 +26,5 @@ Generated at (UTC): 1970-01-01T00:00:00Z
 
 | Project | Total | Compliant |
 | --- | ---: | ---: |
-| Incursa.OpenAI.ChatKit.AspNetCore.Tests | 18 | 18 |
-| Incursa.OpenAI.ChatKit.Tests | 13 | 13 |
+| Incursa.OpenAI.ChatKit.AspNetCore.Tests | 25 | 25 |
+| Incursa.OpenAI.ChatKit.Tests | 63 | 63 |

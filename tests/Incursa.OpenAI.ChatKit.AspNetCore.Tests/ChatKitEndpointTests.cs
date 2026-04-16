@@ -13,6 +13,7 @@ public sealed class ChatKitEndpointTests
     /// <intent>Protect the HTTP boundary for the translated ChatKit server surface.</intent>
     /// <scenario>LIB-CHATKIT-ASPNETCORE-002</scenario>
     /// <behavior>Posting a JSON ChatKit request returns a JSON payload with the expected thread data.</behavior>
+    [Trait("Category", "Positive")]
     [Fact]
     public async Task MapChatKit_WritesJsonResponse()
     {
@@ -40,6 +41,52 @@ public sealed class ChatKitEndpointTests
 
             Assert.Equal("application/json", response.Content.Headers.ContentType?.MediaType);
             Assert.Contains("\"id\":\"thr_1\"", body, StringComparison.Ordinal);
+        }
+        finally
+        {
+            await app.StopAsync();
+            await app.DisposeAsync();
+        }
+    }
+
+    /// <summary>The ASP.NET Core endpoint adapter writes SSE responses for streaming ChatKit operations.</summary>
+    /// <intent>Protect the HTTP boundary for streamed ChatKit responses produced by the translated server surface.</intent>
+    /// <scenario>LIB-CHATKIT-ASPNETCORE-002</scenario>
+    /// <behavior>Posting a streaming ChatKit request returns an event-stream payload containing the created thread and assistant item events.</behavior>
+    [Trait("Category", "Positive")]
+    [Fact]
+    public async Task MapChatKit_WritesEventStreamResponse()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Services.AddSingleton<TestServerHandler>();
+
+        WebApplication app = builder.Build();
+        app.MapChatKit<TestServerHandler, Dictionary<string, object?>>("/chatkit", _ => new Dictionary<string, object?>());
+        await app.StartAsync();
+
+        try
+        {
+            HttpClient client = app.GetTestClient();
+            string payload = Encoding.UTF8.GetString(ChatKitJson.SerializeToUtf8Bytes<ChatKitRequest>(new ThreadsCreateRequest
+            {
+                Params = new ThreadCreateParams
+                {
+                    Input = new UserMessageInput
+                    {
+                        Content = [new UserMessageTextContent { Text = "ping" }],
+                    },
+                },
+            }));
+
+            HttpResponseMessage response = await client.PostAsync("/chatkit", new StringContent(payload, Encoding.UTF8, "application/json"));
+            string body = await response.Content.ReadAsStringAsync();
+
+            Assert.Equal("text/event-stream", response.Content.Headers.ContentType?.MediaType);
+            Assert.Contains("data:", body, StringComparison.Ordinal);
+            Assert.Contains("\"type\":\"thread.created\"", body, StringComparison.Ordinal);
+            Assert.Contains("\"type\":\"thread.item.done\"", body, StringComparison.Ordinal);
+            Assert.Contains("hello", body, StringComparison.Ordinal);
         }
         finally
         {
