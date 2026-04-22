@@ -13,6 +13,31 @@ import {
  * @typedef {import("@openai/chatkit").OpenAIChatKit} OpenAIChatKit
  */
 
+const CHATKIT_EVENT_NAMES = Object.freeze([
+  "chatkit.ready",
+  "chatkit.error",
+  "chatkit.effect",
+  "chatkit.deeplink",
+  "chatkit.response.start",
+  "chatkit.response.end",
+  "chatkit.thread.change",
+  "chatkit.thread.load.start",
+  "chatkit.thread.load.end",
+  "chatkit.tool.change",
+  "chatkit.log"
+]);
+
+const CHATKIT_METHOD_NAMES = Object.freeze([
+  "focusComposer",
+  "setThreadId",
+  "sendUserMessage",
+  "setComposerValue",
+  "fetchUpdates",
+  "sendCustomAction",
+  "showHistory",
+  "hideHistory"
+]);
+
 /**
  * @typedef {{
  *   colorScheme?: "light" | "dark";
@@ -202,6 +227,8 @@ import {
  *   dataset: Record<string, string | undefined>;
  *   textContent: string;
  *   replaceChildren: (...nodes: unknown[]) => void;
+ *   addEventListener: (type: string, listener: EventListenerOrEventListenerObject) => void;
+ *   dispatchEvent: (event: Event) => boolean;
  * }} ChatKitHostElement
  */
 
@@ -526,6 +553,44 @@ function applyOptions(chatkit, options, registry) {
   });
 }
 
+async function invokeChatKitMethod(chatkit, registry, methodName, args) {
+  if (!registry.get("openai-chatkit")) {
+    await registry.whenDefined("openai-chatkit");
+  }
+
+  const method = chatkit[methodName];
+  if (typeof method !== "function") {
+    throw new Error(`ChatKit method '${methodName}' is unavailable on the rendered host.`);
+  }
+
+  return await method.apply(chatkit, args);
+}
+
+function mirrorChatKitEvents(host, chatkit) {
+  for (const eventName of CHATKIT_EVENT_NAMES) {
+    chatkit.addEventListener(eventName, (event) => {
+      host.dispatchEvent(
+        new CustomEvent(event.type, {
+          detail: event.detail,
+          bubbles: event.bubbles,
+          cancelable: event.cancelable,
+          composed: event.composed
+        })
+      );
+    });
+  }
+}
+
+function installHostMethods(host, chatkit, registry) {
+  host.setOptions = (options) => {
+    applyOptions(chatkit, options, registry);
+  };
+
+  for (const methodName of CHATKIT_METHOD_NAMES) {
+    host[methodName] = (...args) => invokeChatKitMethod(chatkit, registry, methodName, args);
+  }
+}
+
 /**
  * @param {ChatKitHostElement} host
  * @param {typeof window} [globalScope]
@@ -557,6 +622,8 @@ export function renderHost(
   root.append(chatkit);
 
   host.replaceChildren(root);
+  mirrorChatKitEvents(host, chatkit);
+  installHostMethods(host, chatkit, registry);
   applyOptions(chatkit, buildOptions(config, globalScope), registry);
 }
 

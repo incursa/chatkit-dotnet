@@ -1,0 +1,115 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-CHATKIT-ASPNETCORE-BROWSER",
+  "artifact_type": "specification",
+  "status": "draft",
+  "title": "Incursa.OpenAI.ChatKit.AspNetCore Browser Runtime Host Mirror",
+  "owner": "chatkit-maintainers",
+  "domain": "chatkit",
+  "capability": "aspnetcore-browser-runtime",
+  "purpose": "Define the canonical browser-runtime requirements for the packaged ChatKit bootstrap that turns a Razor-rendered host div into a supported mirror of the upstream openai-chatkit web component.",
+  "scope": "This specification covers the handwritten browser runtime under src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/, including ChatKit option projection, browser callback resolution, host control and event mirroring, multi-host mounting, and visible runtime failure behavior. It does not redefine tag-helper serialization rules or endpoint behavior, which remain owned by SPEC-CHATKIT-ASPNETCORE.",
+  "context": "The ASP.NET Core package renders config-only host elements from Razor, then relies on a small repo-managed browser runtime to create and configure the upstream ChatKit custom element. That runtime is the browser parity boundary for this package: if it only passes setOptions(...) through and hides the wrapped element's control and event surface, the .NET wrapper drifts from the upstream chatkit-js contract even when its serialized config is correct.",
+  "related_artifacts": [
+    "SPEC-CHATKIT-ASPNETCORE",
+    "ARC-CHATKIT-ASPNETCORE-BROWSER-0001",
+    "VER-CHATKIT-ASPNETCORE-BROWSER-0001"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-CHATKIT-ASPNETCORE-BROWSER-0001",
+      "title": "Translate rendered host config into supported ChatKit browser options",
+      "statement": "The packaged browser runtime MUST parse each rendered data-incursa-chatkit-config payload, create one inner <openai-chatkit> element, translate the supported hosted or direct-API settings into ChatKitOptions, and apply those options immediately when the custom element is already defined or after customElements.whenDefined(\"openai-chatkit\") resolves when it is not.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-CHATKIT-ASPNETCORE-BROWSER-0001"
+        ],
+        "verified_by": [
+          "VER-CHATKIT-ASPNETCORE-BROWSER-0001"
+        ],
+        "upstream_refs": [
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/runtimeHost.js",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entry.test.mjs",
+          "packages/chatkit/types/index.d.ts"
+        ]
+      }
+    },
+    {
+      "id": "REQ-CHATKIT-ASPNETCORE-BROWSER-0002",
+      "title": "Resolve browser callback registries explicitly and preserve validated client-side behavior",
+      "statement": "The packaged browser runtime MUST resolve dotted browser lookup paths against the page global for client-tool, entity, header-action, and widget-action callbacks, MUST throw clear runtime errors when configured handlers are missing or invalid, MUST validate entity search and preview payloads before passing them to ChatKit, and MUST invoke client widget handling before optional endpoint forwarding when both are configured.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-CHATKIT-ASPNETCORE-BROWSER-0001"
+        ],
+        "verified_by": [
+          "VER-CHATKIT-ASPNETCORE-BROWSER-0001"
+        ],
+        "upstream_refs": [
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/runtimeHost.js",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/clientToolHandlers.js",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entityHandlers.js",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/widgetActionHandlers.js",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/clientToolHandlers.test.mjs",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entityHandlers.test.mjs",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/widgetActionHandlers.test.mjs",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entry.test.mjs",
+          "packages/chatkit/types/index.d.ts"
+        ]
+      }
+    },
+    {
+      "id": "REQ-CHATKIT-ASPNETCORE-BROWSER-0003",
+      "title": "Mirror the upstream web-component control and event surface on the rendered Razor host",
+      "statement": "After mounting the inner <openai-chatkit> element, the packaged browser runtime MUST expose setOptions(...), focusComposer(), setThreadId(...), sendUserMessage(...), setComposerValue(...), fetchUpdates(), sendCustomAction(...), showHistory(), and hideHistory() on the rendered host element, and it MUST re-dispatch the upstream chatkit.ready, chatkit.error, chatkit.effect, chatkit.deeplink, chatkit.response.start, chatkit.response.end, chatkit.thread.change, chatkit.thread.load.start, chatkit.thread.load.end, chatkit.tool.change, and chatkit.log events from the inner element onto that outer host.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-CHATKIT-ASPNETCORE-BROWSER-0001"
+        ],
+        "verified_by": [
+          "VER-CHATKIT-ASPNETCORE-BROWSER-0001"
+        ],
+        "upstream_refs": [
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/runtimeHost.js",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entry.test.mjs",
+          "packages/chatkit/types/index.d.ts",
+          "packages/chatkit-react/src/ChatKit.tsx",
+          "packages/chatkit-react/src/useChatKit.ts",
+          "packages/docs/src/content/docs/quick-reference/use-chatkit.mdx"
+        ]
+      }
+    },
+    {
+      "id": "REQ-CHATKIT-ASPNETCORE-BROWSER-0004",
+      "title": "Mount each rendered host once and surface runtime initialization failures visibly",
+      "statement": "The packaged browser runtime MUST discover every data-incursa-chatkit-host element on the page, MUST skip hosts already marked as mounted, MUST mark successful mounts so later scans do not double-initialize them, and MUST render visible ChatKit error: ... text inside the host when mounting fails instead of failing silently.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-CHATKIT-ASPNETCORE-BROWSER-0001"
+        ],
+        "verified_by": [
+          "VER-CHATKIT-ASPNETCORE-BROWSER-0001"
+        ],
+        "upstream_refs": [
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/runtimeHost.js",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entry.js",
+          "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entry.test.mjs"
+        ]
+      }
+    }
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Runtime Surface Inventory",
+      "content": "- runtimeHost.js parses the serialized host config, creates the inner <openai-chatkit> element, and bridges host behavior.\n- clientToolHandlers.js, entityHandlers.js, and widgetActionHandlers.js resolve browser registries and validate callback payloads.\n- entry.js mounts every Razor-rendered host on page load.\n- wwwroot/chatkit/chatkit.js packages the same runtime behavior for consumers."
+    },
+    {
+      "heading": "Upstream Source Lineage",
+      "content": "The browser runtime was reviewed against the upstream chatkit-js web-component and React wrapper contracts, primarily packages/chatkit/types/index.d.ts, packages/chatkit-react/src/ChatKit.tsx, packages/chatkit-react/src/useChatKit.ts, and packages/docs/src/content/docs/quick-reference/use-chatkit.mdx. The local runtime does not re-create the upstream UI. It preserves parity by configuring the upstream element directly and by mirroring its supported control and event surface on the outer Razor host."
+    },
+    {
+      "heading": "Scope Exclusions",
+      "content": "This specification does not redefine endpoint mapping, DI registration, tag-helper render-time validation, or browser-config precedence. Those behaviors remain owned by SPEC-CHATKIT-ASPNETCORE. It also does not define the upstream React hook API as a .NET surface; it only governs the packaged browser runtime that preserves the web-component control and event contract on the rendered Razor host."
+    }
+  ]
+}

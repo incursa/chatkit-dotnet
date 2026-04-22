@@ -19,14 +19,17 @@ This directory is the canonical SpecTrace requirement suite for the ChatKit pack
 
 - [`SPEC-CHATKIT-CORE.json`](SPEC-CHATKIT-CORE.json) / [`SPEC-CHATKIT-CORE.md`](SPEC-CHATKIT-CORE.md): core runtime, protocol, persistence, widget, and public API requirements for [`Incursa.OpenAI.ChatKit`](../../../src/Incursa.OpenAI.ChatKit/README.md)
 - [`SPEC-CHATKIT-ASPNETCORE.json`](SPEC-CHATKIT-ASPNETCORE.json) / [`SPEC-CHATKIT-ASPNETCORE.md`](SPEC-CHATKIT-ASPNETCORE.md): endpoint, DI, Razor host, and public API requirements for [`Incursa.OpenAI.ChatKit.AspNetCore`](../../../src/Incursa.OpenAI.ChatKit.AspNetCore/README.md)
+- [`SPEC-CHATKIT-ASPNETCORE-BROWSER.json`](SPEC-CHATKIT-ASPNETCORE-BROWSER.json) / [`SPEC-CHATKIT-ASPNETCORE-BROWSER.md`](SPEC-CHATKIT-ASPNETCORE-BROWSER.md): packaged browser runtime, callback resolution, mount behavior, and mirrored web-component host requirements for [`Incursa.OpenAI.ChatKit.AspNetCore`](../../../src/Incursa.OpenAI.ChatKit.AspNetCore/README.md)
 
 ## Related Artifacts
 
 - [`REQUIREMENT-GAPS.md`](REQUIREMENT-GAPS.md)
 - [`../../architecture/chatkit/ARC-CHATKIT-CORE-0001.json`](../../architecture/chatkit/ARC-CHATKIT-CORE-0001.json)
 - [`../../architecture/chatkit/ARC-CHATKIT-ASPNETCORE-0001.json`](../../architecture/chatkit/ARC-CHATKIT-ASPNETCORE-0001.json)
+- [`../../architecture/chatkit/ARC-CHATKIT-ASPNETCORE-BROWSER-0001.json`](../../architecture/chatkit/ARC-CHATKIT-ASPNETCORE-BROWSER-0001.json)
 - [`../../verification/chatkit/VER-CHATKIT-CORE-0001.json`](../../verification/chatkit/VER-CHATKIT-CORE-0001.json)
 - [`../../verification/chatkit/VER-CHATKIT-ASPNETCORE-0001.json`](../../verification/chatkit/VER-CHATKIT-ASPNETCORE-0001.json)
+- [`../../verification/chatkit/VER-CHATKIT-ASPNETCORE-BROWSER-0001.json`](../../verification/chatkit/VER-CHATKIT-ASPNETCORE-BROWSER-0001.json)
 
 ## Migration Note
 

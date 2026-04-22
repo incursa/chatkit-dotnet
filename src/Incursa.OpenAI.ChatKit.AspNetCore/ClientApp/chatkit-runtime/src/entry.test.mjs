@@ -12,6 +12,7 @@ class FakeElement {
     this.textContent = "";
     this.children = [];
     this.optionsSet = [];
+    this.listeners = new Map();
   }
 
   append(child) {
@@ -20,6 +21,34 @@ class FakeElement {
 
   replaceChildren(...children) {
     this.children = [...children];
+  }
+
+  addEventListener(type, listener) {
+    const listeners = this.listeners.get(type) ?? [];
+    listeners.push(listener);
+    this.listeners.set(type, listeners);
+  }
+
+  removeEventListener(type, listener) {
+    const listeners = this.listeners.get(type) ?? [];
+    this.listeners.set(
+      type,
+      listeners.filter((registered) => registered !== listener)
+    );
+  }
+
+  dispatchEvent(event) {
+    const listeners = this.listeners.get(event.type) ?? [];
+    for (const listener of listeners) {
+      if (typeof listener === "function") {
+        listener.call(this, event);
+        continue;
+      }
+
+      listener.handleEvent?.(event);
+    }
+
+    return !event.defaultPrevented;
   }
 
   setOptions(options) {
@@ -339,6 +368,197 @@ test("renderHost creates a direct openai-chatkit element and applies options imm
   assert.equal(host.children[0], root);
   assert.equal(chatkit.optionsSet.length, 1);
   assert.equal(chatkit.optionsSet[0].api.url, "/api/chatkit");
+});
+
+test("renderHost mirrors the upstream imperative methods on the outer host", async () => {
+  const host = new FakeElement("div");
+  host.dataset.incursaChatkitConfig = JSON.stringify({
+    apiUrl: "/api/chatkit",
+    domainKey: "domain-key"
+  });
+
+  const created = [];
+  const calls = [];
+  const documentScope = {
+    createElement(tagName) {
+      const element = new FakeElement(tagName);
+      if (tagName === "openai-chatkit") {
+        element.focusComposer = async () => {
+          calls.push(["focusComposer"]);
+          return "focused";
+        };
+        element.setThreadId = async (threadId) => {
+          calls.push(["setThreadId", threadId]);
+        };
+        element.sendUserMessage = async (params) => {
+          calls.push(["sendUserMessage", params]);
+        };
+        element.setComposerValue = async (params) => {
+          calls.push(["setComposerValue", params]);
+        };
+        element.fetchUpdates = async () => {
+          calls.push(["fetchUpdates"]);
+        };
+        element.sendCustomAction = async (action, itemId) => {
+          calls.push(["sendCustomAction", action, itemId]);
+        };
+        element.showHistory = async () => {
+          calls.push(["showHistory"]);
+        };
+        element.hideHistory = async () => {
+          calls.push(["hideHistory"]);
+        };
+      }
+
+      created.push(element);
+      return element;
+    }
+  };
+  const registry = {
+    get(name) {
+      return name === "openai-chatkit" ? {} : undefined;
+    },
+    whenDefined() {
+      return Promise.resolve();
+    }
+  };
+
+  renderHost(host, {}, documentScope, registry);
+
+  const overrideOptions = {
+    api: {
+      url: "/api/override",
+      domainKey: "override-domain-key"
+    }
+  };
+
+  assert.equal(await host.focusComposer(), "focused");
+  await host.setThreadId("thread-123");
+  await host.sendUserMessage({ text: "Hello" });
+  await host.setComposerValue({ text: "Draft" });
+  await host.fetchUpdates();
+  await host.sendCustomAction({ type: "save_profile" }, "widget-1");
+  await host.showHistory();
+  await host.hideHistory();
+  host.setOptions(overrideOptions);
+
+  assert.deepEqual(calls, [
+    ["focusComposer"],
+    ["setThreadId", "thread-123"],
+    ["sendUserMessage", { text: "Hello" }],
+    ["setComposerValue", { text: "Draft" }],
+    ["fetchUpdates"],
+    ["sendCustomAction", { type: "save_profile" }, "widget-1"],
+    ["showHistory"],
+    ["hideHistory"]
+  ]);
+
+  const chatkit = created[1];
+  assert.equal(chatkit.optionsSet.length, 2);
+  assert.equal(chatkit.optionsSet[1], overrideOptions);
+});
+
+test("renderHost re-dispatches upstream chatkit events on the outer host", () => {
+  const host = new FakeElement("div");
+  host.dataset.incursaChatkitConfig = JSON.stringify({
+    sessionEndpoint: "/api/chatkit/session"
+  });
+
+  const created = [];
+  const received = [];
+  const documentScope = {
+    createElement(tagName) {
+      const element = new FakeElement(tagName);
+      created.push(element);
+      return element;
+    }
+  };
+  const registry = {
+    get(name) {
+      return name === "openai-chatkit" ? {} : undefined;
+    },
+    whenDefined() {
+      return Promise.resolve();
+    }
+  };
+
+  renderHost(host, {}, documentScope, registry);
+
+  const eventPayloads = new Map([
+    ["chatkit.ready", null],
+    ["chatkit.error", { error: new Error("boom") }],
+    ["chatkit.effect", { name: "copy_to_clipboard", data: { id: "1" } }],
+    ["chatkit.deeplink", { name: "open_thread", data: { threadId: "thread-1" } }],
+    ["chatkit.response.start", null],
+    ["chatkit.response.end", null],
+    ["chatkit.thread.change", { threadId: "thread-1" }],
+    ["chatkit.thread.load.start", { threadId: "thread-1" }],
+    ["chatkit.thread.load.end", { threadId: "thread-1" }],
+    ["chatkit.tool.change", { toolId: "summarize" }],
+    ["chatkit.log", { name: "debug", data: { source: "test" } }]
+  ]);
+
+  for (const [eventName, detail] of eventPayloads) {
+    host.addEventListener(eventName, (event) => {
+      received.push([event.type, event.detail]);
+    });
+  }
+
+  const chatkit = created[1];
+  for (const [eventName, detail] of eventPayloads) {
+    chatkit.dispatchEvent(new CustomEvent(eventName, { detail, bubbles: true, composed: true }));
+  }
+
+  assert.deepEqual(received, Array.from(eventPayloads.entries()));
+});
+
+test("renderHost waits for custom element definition before invoking proxied methods", async () => {
+  const host = new FakeElement("div");
+  host.dataset.incursaChatkitConfig = JSON.stringify({
+    sessionEndpoint: "/api/chatkit/session"
+  });
+
+  const created = [];
+  const calls = [];
+  const documentScope = {
+    createElement(tagName) {
+      const element = new FakeElement(tagName);
+      if (tagName === "openai-chatkit") {
+        element.focusComposer = async () => {
+          calls.push("focusComposer");
+        };
+      }
+
+      created.push(element);
+      return element;
+    }
+  };
+
+  let resolveDefinition;
+  const definitionPromise = new Promise((resolve) => {
+    resolveDefinition = resolve;
+  });
+  const registry = {
+    get() {
+      return undefined;
+    },
+    whenDefined(name) {
+      assert.equal(name, "openai-chatkit");
+      return definitionPromise;
+    }
+  };
+
+  renderHost(host, {}, documentScope, registry);
+
+  const focusPromise = host.focusComposer();
+  assert.deepEqual(calls, []);
+
+  resolveDefinition();
+  await focusPromise;
+
+  assert.deepEqual(calls, ["focusComposer"]);
+  const chatkit = created[1];
+  assert.equal(chatkit.optionsSet.length, 1);
 });
 
 test("mountAll waits for the custom element definition before applying options", async () => {

@@ -125,6 +125,52 @@ The wrapper also mirrors the richer upstream theme and header options:
 
 For start-screen prompts, the wrapper accepts either plain text or rich `UserMessageContent[]` values through the .NET options model.
 
+## Browser host control and events
+
+The rendered Razor host remains a `div`, but once the packaged runtime mounts it behaves like the wrapped `<openai-chatkit>` element for browser integration purposes. That means you can listen for the upstream `chatkit.*` events and call the mirrored control methods directly on the rendered host element:
+
+```html
+<script>
+  const host = document.getElementById("workspace-assistant");
+
+  host.addEventListener("chatkit.thread.change", (event) => {
+    localStorage.setItem("chatkit.threadId", event.detail.threadId ?? "");
+  });
+
+  host.addEventListener("chatkit.deeplink", (event) => {
+    console.log("deeplink", event.detail.name, event.detail.data);
+  });
+
+  void host.focusComposer();
+</script>
+```
+
+Mirrored control methods:
+
+- `setOptions(...)`
+- `focusComposer()`
+- `setThreadId(...)`
+- `sendUserMessage(...)`
+- `setComposerValue(...)`
+- `fetchUpdates()`
+- `sendCustomAction(...)`
+- `showHistory()`
+- `hideHistory()`
+
+Mirrored events:
+
+- `chatkit.ready`
+- `chatkit.error`
+- `chatkit.effect`
+- `chatkit.deeplink`
+- `chatkit.response.start`
+- `chatkit.response.end`
+- `chatkit.thread.change`
+- `chatkit.thread.load.start`
+- `chatkit.thread.load.end`
+- `chatkit.tool.change`
+- `chatkit.log`
+
 ## Client tool handlers
 
 To expose ChatKit `onClientTool` through the Razor wrapper, register a browser-side object whose keys match your server-side `ClientToolCall.name` values, then point the tag helper at that object:
@@ -363,7 +409,8 @@ The browser startup flow is:
 2. The CDN script defines the upstream `<openai-chatkit>` custom element.
 3. The local bundle finds each `data-incursa-chatkit-host` element rendered by the Razor tag helper.
 4. The local bundle parses `data-incursa-chatkit-config`, creates `<openai-chatkit>`, and calls `setOptions(...)`.
-5. Optional browser callback registries such as `client-tool-handlers`, `entity-handlers`, and `widget-action-handler` are resolved from dotted lookup paths like `window.chatkit.clientTools`.
+5. The local bundle mirrors the wrapped element's supported control methods and `chatkit.*` events on the outer Razor host.
+6. Optional browser callback registries such as `client-tool-handlers`, `entity-handlers`, and `widget-action-handler` are resolved from dotted lookup paths like `window.chatkit.clientTools`.
 
 This package intentionally carries both:
 
@@ -375,6 +422,7 @@ When the packaged ChatKit bootstrap or related npm dependencies need to move for
 ```bash
 cd src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime
 npm install
+npm test
 npm run build
 ```
 

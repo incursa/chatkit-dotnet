@@ -23,7 +23,7 @@ The ASP.NET Core package is intentionally a thin host and transport layer over t
 
 - The .NET host surface was reviewed against the upstream `chatkit-js` browser contract, primarily `packages/chatkit/types/index.d.ts`.
 - Additional upstream source lineage came from `packages/docs/src/content/docs/quickstart.mdx`, `packages/docs/src/content/docs/customize.mdx`, `packages/docs/src/content/docs/quick-reference/chatkit-component.mdx`, `packages/docs/src/content/docs/quick-reference/use-chatkit.mdx`, and `packages/chatkit-react/src/useChatKit.ts`.
-- This repository does not expose the React hook or web-component imperative methods as .NET APIs, so this spec only requirementizes the bounded subset represented by `ChatKitAspNetCoreOptions`, endpoint mapping, assets, and tag helpers.
+- This repository does not expose the React hook as a .NET API. This spec owns render-time host serialization, DI, assets, and tag-helper behavior, while the packaged browser runtime that mirrors the upstream web-component control and event surface is owned by [`SPEC-CHATKIT-ASPNETCORE-BROWSER`](SPEC-CHATKIT-ASPNETCORE-BROWSER.md).
 
 ## REQ-CHATKIT-ASPNETCORE-0001 Keep the ASP.NET Core package surface aligned with the approved hosting facade
 
@@ -173,4 +173,4 @@ Trace:
 
 ## Scope Exclusions
 
-This specification does not define assistant behavior, persistence semantics, request discriminators, or widget diff logic. Those behaviors are owned by [`SPEC-CHATKIT-CORE`](SPEC-CHATKIT-CORE.md) even when they are exercised through the ASP.NET Core package. It also does not claim full browser-runtime parity with the upstream React hook or DOM event model.
+This specification does not define assistant behavior, persistence semantics, request discriminators, or widget diff logic. Those behaviors are owned by [`SPEC-CHATKIT-CORE`](SPEC-CHATKIT-CORE.md) even when they are exercised through the ASP.NET Core package. Browser-runtime mount behavior, callback resolution, and the mirrored web-component control and event surface are owned by [`SPEC-CHATKIT-ASPNETCORE-BROWSER`](SPEC-CHATKIT-ASPNETCORE-BROWSER.md).

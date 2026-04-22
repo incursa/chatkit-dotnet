@@ -12,6 +12,7 @@
   "context": "The ASP.NET Core package is intentionally a thin host and transport layer over the core ChatKit runtime. Its public behavior still matters because endpoint shape, DI defaults, rendered DOM shape, and serialized browser config are contractual surfaces for consumers even though the assistant logic itself remains in the core package. This package also acts as the repository's .NET projection of a bounded subset of the upstream chatkit-js browser configuration surface.",
   "related_artifacts": [
     "SPEC-CHATKIT-CORE",
+    "SPEC-CHATKIT-ASPNETCORE-BROWSER",
     "ARC-CHATKIT-ASPNETCORE-0001",
     "VER-CHATKIT-ASPNETCORE-0001"
   ],
@@ -276,11 +277,11 @@
     },
     {
       "heading": "Upstream Source Lineage",
-      "content": "The .NET host surface was reviewed against the upstream chatkit-js browser contract, primarily packages/chatkit/types/index.d.ts, packages/docs/src/content/docs/quickstart.mdx, packages/docs/src/content/docs/customize.mdx, packages/docs/src/content/docs/quick-reference/chatkit-component.mdx, packages/docs/src/content/docs/quick-reference/use-chatkit.mdx, and packages/chatkit-react/src/useChatKit.ts. This repository does not expose the React hook or web-component imperative methods as .NET APIs, so the canonical ASP.NET Core requirements cover the bounded subset represented by ChatKitAspNetCoreOptions, endpoint mapping, assets, and tag helpers."
+      "content": "The .NET host surface was reviewed against the upstream chatkit-js browser contract, primarily packages/chatkit/types/index.d.ts, packages/docs/src/content/docs/quickstart.mdx, packages/docs/src/content/docs/customize.mdx, packages/docs/src/content/docs/quick-reference/chatkit-component.mdx, packages/docs/src/content/docs/quick-reference/use-chatkit.mdx, and packages/chatkit-react/src/useChatKit.ts. This repository does not expose the React hook as a .NET API. This specification owns render-time host serialization, DI, assets, and tag-helper behavior, while the packaged browser runtime that mirrors the upstream web-component control and event surface is owned by SPEC-CHATKIT-ASPNETCORE-BROWSER."
     },
     {
       "heading": "Scope Exclusions",
-      "content": "This specification does not define assistant behavior, persistence semantics, request discriminators, or widget diff logic. Those behaviors are owned by SPEC-CHATKIT-CORE even when they are exercised through the ASP.NET Core package. It also does not claim full browser-runtime parity with the upstream React hook or DOM event model."
+      "content": "This specification does not define assistant behavior, persistence semantics, request discriminators, or widget diff logic. Those behaviors are owned by SPEC-CHATKIT-CORE even when they are exercised through the ASP.NET Core package. Browser-runtime mount behavior, callback resolution, and the mirrored web-component control and event surface are owned by SPEC-CHATKIT-ASPNETCORE-BROWSER."
     }
   ]
 }

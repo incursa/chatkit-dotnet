@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-CHATKIT-ASPNETCORE-BROWSER-0001",
+  "artifact_type": "verification",
+  "status": "draft",
+  "title": "ChatKit ASP.NET Core Browser Runtime Verification",
+  "owner": "chatkit-maintainers",
+  "domain": "chatkit",
+  "verification_method": "Execution and inspection of the node-based packaged runtime tests plus the maintained browser-host contract documentation.",
+  "related_artifacts": [
+    "SPEC-CHATKIT-ASPNETCORE-BROWSER",
+    "ARC-CHATKIT-ASPNETCORE-BROWSER-0001"
+  ],
+  "verifies": [
+    "REQ-CHATKIT-ASPNETCORE-BROWSER-0001",
+    "REQ-CHATKIT-ASPNETCORE-BROWSER-0002",
+    "REQ-CHATKIT-ASPNETCORE-BROWSER-0003",
+    "REQ-CHATKIT-ASPNETCORE-BROWSER-0004"
+  ],
+  "preconditions": [
+    "SPEC-CHATKIT-ASPNETCORE-BROWSER and ARC-CHATKIT-ASPNETCORE-BROWSER-0001 exist.",
+    "The packaged runtime dependencies under src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime are restored.",
+    "The node-based runtime tests execute successfully."
+  ],
+  "scope": "This verification slice covers direct proof for packaged browser-runtime option projection, browser callback resolution and payload validation, host control and event mirroring, multi-host mount behavior, and visible runtime failure rendering. It intentionally complements rather than replaces the render-time host and endpoint proof in VER-CHATKIT-ASPNETCORE-0001.",
+  "expected_result": "The packaged runtime translates the serialized host config into supported ChatKitOptions, resolves callback registries and validates payloads with clear failures, preserves client-first widget action handling, mirrors the upstream control and event surface on the rendered host, mounts each host once, and renders visible runtime errors when mounting fails.",
+  "procedure": [
+    "Run the node-based packaged runtime tests in src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime.",
+    "Review the runtimeHost.js bridge and its helper modules against the current browser-runtime requirement set.",
+    "Confirm that the maintained README and tag-helper contract documentation match the mirrored host control and event surface."
+  ],
+  "evidence": [
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/runtimeHost.js",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/clientToolHandlers.js",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entityHandlers.js",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/widgetActionHandlers.js",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entry.js",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/clientToolHandlers.test.mjs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entityHandlers.test.mjs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/widgetActionHandlers.test.mjs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/ClientApp/chatkit-runtime/src/entry.test.mjs",
+    "src/Incursa.OpenAI.ChatKit.AspNetCore/README.md",
+    "docs/30-contracts/chatkit-tag-helper.md"
+  ],
+  "status_summary": "The packaged runtime now has direct executable proof for config translation, callback resolution, widget-action ordering, mirrored imperative host methods, mirrored chatkit.* events, and deferred custom-element definition handling. The main remaining gap is full browser end-to-end proof against the real upstream custom element in a live page; this verification slice still relies on the focused node harness rather than a browser automation layer."
+}

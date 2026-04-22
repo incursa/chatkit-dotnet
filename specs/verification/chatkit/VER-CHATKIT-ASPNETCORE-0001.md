@@ -22,7 +22,7 @@ Execution, inspection, and documented test-inventory evidence from the current A
 
 ## Scope
 
-This verification slice covers the current proof for the ASP.NET Core package public API baseline, HTTP endpoint result handling, service-registration modes, packaged asset emission, explicit host-mode selection, direct versus hosted mode validation, serialized browser host configuration, value-precedence rules, host-surface normalization, and success versus failure DOM rendering.
+This verification slice covers the current proof for the ASP.NET Core package public API baseline, HTTP endpoint result handling, service-registration modes, packaged asset emission, explicit host-mode selection, direct versus hosted mode validation, serialized browser host configuration, value-precedence rules, host-surface normalization, and success versus failure DOM rendering. Direct browser-runtime proof for the packaged JavaScript host bridge now lives in [`VER-CHATKIT-ASPNETCORE-BROWSER-0001`](VER-CHATKIT-ASPNETCORE-BROWSER-0001.md).
 
 ## Evidence
 
@@ -37,4 +37,4 @@ This verification slice covers the current proof for the ASP.NET Core package pu
 
 ## Status Summary
 
-Current evidence is stronger for the ASP.NET Core package than for the core runtime. The endpoint adapter, service registration, asset helper, and host tag helpers all have direct test coverage and documented inventory entries. The main remaining gap is that the browser runtime itself is still verified indirectly through the rendered config and DOM contract rather than through a deeper end-to-end client harness.
+Current evidence is stronger for the ASP.NET Core package than for the core runtime. The endpoint adapter, service registration, asset helper, and host tag helpers all have direct test coverage and documented inventory entries. The packaged browser runtime no longer relies only on indirect proof from the rendered config contract; that direct runtime evidence is now tracked in [`VER-CHATKIT-ASPNETCORE-BROWSER-0001`](VER-CHATKIT-ASPNETCORE-BROWSER-0001.md).

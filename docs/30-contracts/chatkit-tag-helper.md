@@ -75,6 +75,11 @@ Both explicit host helpers render a `<div>` with:
 - optional `id`
 - inline height styles when configured
 
+After the packaged browser runtime mounts, that rendered host `div` also becomes the browser integration point for the wrapped ChatKit element. The runtime:
+
+- forwards `setOptions(...)`, `focusComposer()`, `setThreadId(...)`, `sendUserMessage(...)`, `setComposerValue(...)`, `fetchUpdates()`, `sendCustomAction(...)`, `showHistory()`, and `hideHistory()` to the inner `<openai-chatkit>` element
+- re-dispatches upstream `chatkit.ready`, `chatkit.error`, `chatkit.effect`, `chatkit.deeplink`, `chatkit.response.start`, `chatkit.response.end`, `chatkit.thread.change`, `chatkit.thread.load.start`, `chatkit.thread.load.end`, `chatkit.tool.change`, and `chatkit.log` events on the outer host so page code can listen on the rendered Razor element directly
+
 If config building fails, the helper renders:
 
 - `data-incursa-chatkit-error="true"`
