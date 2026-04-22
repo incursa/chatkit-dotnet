@@ -1,15 +1,15 @@
 ---
 name: ChatKit upstream update
-about: Standard issue for a detected upstream chatkit-python change
+about: Standard issue for a detected upstream chatkit-js change
 labels:
   - upstream
   - parity
-  - chatkit-python
+  - chatkit-js
 ---
 
 ## Summary
 
-A new upstream `chatkit-python` change is available for review and translation.
+A new upstream `chatkit-js` change is available for review and translation.
 
 ## Upstream Range
 

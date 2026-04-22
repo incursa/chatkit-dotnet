@@ -11,7 +11,7 @@ workbench:
 
 # Included Parity Manifest
 
-This repo tracks the translated server-side ChatKit surface from `openai/chatkit-python`. It does not attempt to absorb the entire upstream ecosystem.
+This repo tracks the included .NET ChatKit surface against `openai/chatkit-js`. It does not attempt to absorb the entire upstream ecosystem.
 
 ## Included .NET surface
 

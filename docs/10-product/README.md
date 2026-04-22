@@ -13,7 +13,7 @@ workbench:
 
 ## Core concept
 
-This repository provides a `.NET 10` ChatKit server implementation aligned to the upstream Python ChatKit library.
+This repository provides a `.NET 10` ChatKit server implementation aligned to the included upstream `chatkit-js` contract.
 
 The maintained product surface is:
 

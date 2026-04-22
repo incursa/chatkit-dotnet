@@ -363,6 +363,132 @@ public sealed class ChatKitContractModelTests
         Assert.Contains("\"type\":\"locked\"", json, StringComparison.Ordinal);
     }
 
+    /// <summary>Widget transcript items preserve newer upstream root and component shapes without requiring typed .NET wrappers for each addition.</summary>
+    /// <intent>Protect the generic widget wire contract when upstream ChatKit adds new widget roots or component types that the current .NET model can already represent.</intent>
+    /// <scenario>LIB-CHATKIT-CORE-002</scenario>
+    /// <behavior>Serializing and deserializing a widget item with a Basic root, table hierarchy, and Card border properties preserves the current upstream type names and nested payload members.</behavior>
+    [Trait("Category", "Positive")]
+    [Fact]
+    public void Serialize_WidgetItem_PreservesBasicRootTableAndBorderShapes()
+    {
+        WidgetItem item = new()
+        {
+            Id = "widget_1",
+            ThreadId = "thr_1",
+            CreatedAt = ChatKitClock.Now(),
+            Widget = new WidgetRoot
+            {
+                Type = "Basic",
+                Id = "root",
+                Properties = new Dictionary<string, object?>(StringComparer.Ordinal)
+                {
+                    ["theme"] = "dark",
+                    ["direction"] = "col",
+                    ["gap"] = 12,
+                },
+                Children =
+                [
+                    new WidgetComponent
+                    {
+                        Type = "Card",
+                        Id = "card_1",
+                        Properties = new Dictionary<string, object?>(StringComparer.Ordinal)
+                        {
+                            ["border"] = new Dictionary<string, object?>(StringComparer.Ordinal)
+                            {
+                                ["size"] = 2,
+                                ["style"] = "dashed",
+                            },
+                        },
+                        Children =
+                        [
+                            new WidgetComponent
+                            {
+                                Type = "Table",
+                                Id = "table_1",
+                                Children =
+                                [
+                                    new WidgetComponent
+                                    {
+                                        Type = "Table.Row",
+                                        Id = "row_1",
+                                        Properties = new Dictionary<string, object?>(StringComparer.Ordinal)
+                                        {
+                                            ["header"] = true,
+                                        },
+                                        Children =
+                                        [
+                                            new WidgetComponent
+                                            {
+                                                Type = "Table.Cell",
+                                                Id = "cell_1",
+                                                Properties = new Dictionary<string, object?>(StringComparer.Ordinal)
+                                                {
+                                                    ["colSpan"] = 2,
+                                                    ["align"] = "center",
+                                                    ["colSize"] = "lg",
+                                                },
+                                                Children =
+                                                [
+                                                    new WidgetComponent
+                                                    {
+                                                        Type = "Text",
+                                                        Properties = new Dictionary<string, object?>(StringComparer.Ordinal)
+                                                        {
+                                                            ["value"] = "Summary",
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        };
+
+        string json = Serialize(item);
+
+        using JsonDocument document = JsonDocument.Parse(json);
+        JsonElement widget = document.RootElement.GetProperty("widget");
+        Assert.Equal("Basic", widget.GetProperty("type").GetString());
+        Assert.Equal("dark", widget.GetProperty("theme").GetString());
+
+        JsonElement card = widget.GetProperty("children")[0];
+        Assert.Equal("Card", card.GetProperty("type").GetString());
+        Assert.Equal(2, card.GetProperty("border").GetProperty("size").GetInt32());
+        Assert.Equal("dashed", card.GetProperty("border").GetProperty("style").GetString());
+
+        JsonElement table = card.GetProperty("children")[0];
+        Assert.Equal("Table", table.GetProperty("type").GetString());
+
+        JsonElement row = table.GetProperty("children")[0];
+        Assert.Equal("Table.Row", row.GetProperty("type").GetString());
+        Assert.True(row.GetProperty("header").GetBoolean());
+
+        JsonElement cell = row.GetProperty("children")[0];
+        Assert.Equal("Table.Cell", cell.GetProperty("type").GetString());
+        Assert.Equal(2, cell.GetProperty("colSpan").GetInt32());
+        Assert.Equal("center", cell.GetProperty("align").GetString());
+        Assert.Equal("lg", cell.GetProperty("colSize").GetString());
+
+        WidgetItem roundTripped = ChatKitJson.Deserialize<WidgetItem>(Encoding.UTF8.GetBytes(json))
+            ?? throw new InvalidOperationException("Round-tripped widget item did not deserialize.");
+
+        WidgetRoot roundTrippedWidget = roundTripped.Widget;
+        WidgetComponent roundTrippedCard = Assert.Single(roundTrippedWidget.Children ?? throw new InvalidOperationException("Round-tripped widget root is missing children."));
+        WidgetComponent roundTrippedTable = Assert.Single(roundTrippedCard.Children ?? throw new InvalidOperationException("Round-tripped card is missing children."));
+        WidgetComponent roundTrippedRow = Assert.Single(roundTrippedTable.Children ?? throw new InvalidOperationException("Round-tripped table is missing children."));
+
+        Assert.Equal("Basic", roundTrippedWidget.Type);
+        Assert.Equal("Card", roundTrippedCard.Type);
+        Assert.Equal("Table", roundTrippedTable.Type);
+        Assert.Equal("Table.Row", roundTrippedRow.Type);
+    }
+
     /// <summary>Unsupported event discriminators are rejected instead of silently producing an untyped placeholder.</summary>
     /// <intent>Protect stream consumers from accepting unknown event types outside the approved contract inventory.</intent>
     /// <scenario>LIB-CHATKIT-CORE-002</scenario>

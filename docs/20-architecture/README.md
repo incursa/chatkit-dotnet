@@ -203,7 +203,7 @@ The generic [`<incursa-chatkit>`](../30-contracts/chatkit-tag-helper.md) tag hel
 
 ## Architectural constraints worth documenting
 
-- upstream Python behavior is the source of truth for protocol behavior
+- upstream `chatkit-js` behavior is the source of truth for protocol behavior
 - the repo keeps transport concerns separate from core orchestration
 - the runtime favors small hand-written mapping code over heavy framework abstraction
 - some option surfaces are broader than the tests currently exercise, so tests and docs are part of the conformance boundary

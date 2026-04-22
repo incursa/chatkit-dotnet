@@ -1,6 +1,6 @@
 # Incursa.OpenAI.ChatKit
 
-Total tests: 88
+Total tests: 89
 
 - **Incursa.OpenAI.ChatKit.AspNetCore.Tests:Incursa.OpenAI.ChatKit.AspNetCore.Tests.ChatKitAspNetCoreServiceCollectionExtensionsTests.AddOpenAIChatKitApi_SetsApiModeDefaults**
   - Summary: The API service registration seeds direct browser API defaults.
@@ -166,12 +166,12 @@ Total tests: 88
   - Summary: Audio payloads expose a stable media type without MIME parameters.
   - Intent: Protect the transcription contract from treating codec or charset parameters as part of the media type identifier.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L391](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L391)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L517](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L517)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.DeserializeThreadStreamEvent_Throws_WhenTypeDiscriminatorIsUnsupported**
   - Summary: Unsupported event discriminators are rejected instead of silently producing an untyped placeholder.
   - Intent: Protect stream consumers from accepting unknown event types outside the approved contract inventory.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L372](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L372)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L498](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L498)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_ActionConfig_UsesExpectedWireShape**
   - Summary: Client-facing action configuration serializes with the expected snake-case field names and nested action payload.
   - Intent: Protect the public action contract consumed by ChatKit clients and widgets.
@@ -187,6 +187,11 @@ Total tests: 88
   - Intent: Protect the public ChatKit event stream contract across thread lifecycle, workflow, widget, and client-effect paths.
   - Tags: (none)
   - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L133](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L133)
+- **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_WidgetItem_PreservesBasicRootTableAndBorderShapes**
+  - Summary: Widget transcript items preserve newer upstream root and component shapes without requiring typed .NET wrappers for each addition.
+  - Intent: Protect the generic widget wire contract when upstream ChatKit adds new widget roots or component types that the current .NET model can already represent.
+  - Tags: (none)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L372](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L372)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.SimpleToAgentInput_MapsClientToolCallItem**
   - Summary: Client tool call transcript items translate into agent tool-call items with preserved identifiers, arguments, and status.
   - Intent: Protect interoperability between persisted ChatKit tool calls and the shared agents runtime.
@@ -196,17 +201,17 @@ Total tests: 88
   - Summary: Widget rendering rejects constant mismatches before template hydration occurs.
   - Intent: Protect schema-based widget validation from allowing invalid constant values into rendered output.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L489](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L489)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L615](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L615)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_RejectsEnumMismatch**
   - Summary: Widget rendering rejects enum violations before template hydration occurs.
   - Intent: Protect schema-based widget validation from allowing invalid enum selections into the rendered output.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L455](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L455)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L581](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L581)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_SuppliesSchemaShapedDefaultsForMissingOptionalState**
   - Summary: Widget rendering supplies schema-shaped empty values for optional properties that are omitted from state.
   - Intent: Protect the widget renderer from failing when optional arrays and objects are missing from otherwise valid state.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L408](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L408)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L534](tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs#L534)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitCoreBoundaryTests.DeserializeRequest_Throws_WhenEnvelopeIsNull**
   - Summary: Request deserialization rejects null envelopes instead of producing an untyped placeholder.
   - Intent: Protect request routing from silently accepting invalid root request payloads.
@@ -436,9 +441,9 @@ Total tests: 88
   - Summary: The upstream sync prompt builder carries the ChatKit translation constraints and trims oversized diff content.
   - Intent: Protect the Codex prompt contract used for automated upstream translation runs.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L48](tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L48)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L50](tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L50)
 - **Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.SyncMetadataHelpers_UseChatKitNaming**
   - Summary: The upstream sync metadata helpers produce ChatKit-specific branch, commit, and pull request text.
   - Intent: Protect predictable naming for automated sync branches and PRs.
   - Tags: (none)
-  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L85](tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L85)
+  - Source: [tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L87](tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs#L87)

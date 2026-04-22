@@ -13,7 +13,7 @@ workbench:
 
 # Overview
 
-`chatkit-dotnet` is the maintained .NET translation of the server-side ChatKit surface from `openai/chatkit-python`.
+`chatkit-dotnet` is the maintained .NET translation of the included ChatKit surface from `openai/chatkit-js`.
 
 The repository currently centers on two production packages:
 

@@ -61,7 +61,7 @@ function Get-DefaultTrackedState {
     param(
         [Parameter(Mandatory)][string]$UpstreamPath,
         [Parameter(Mandatory)][string]$UpstreamBranch,
-        [string]$UpstreamRepoUrl = 'https://github.com/openai/chatkit-python.git'
+        [string]$UpstreamRepoUrl = 'https://github.com/openai/chatkit-js.git'
     )
 
     return [ordered]@{
@@ -69,6 +69,7 @@ function Get-DefaultTrackedState {
         targetRepoUrl = 'https://github.com/incursa/chatkit-dotnet.git'
         upstreamLocalPath = $UpstreamPath
         upstreamBranch = $UpstreamBranch
+        lastReviewedSha = $null
         lastTranslatedSha = $null
         lastSuccessUtc = $null
     }
@@ -78,6 +79,7 @@ function Get-DefaultLocalState {
     return [ordered]@{
         lastAttemptedSha = $null
         lastRunUtc = $null
+        bootstrapLastReviewedSha = $null
         bootstrapLastTranslatedSha = $null
     }
 }
@@ -88,7 +90,7 @@ function Initialize-UpstreamSyncState {
         [Parameter(Mandatory)][string]$LocalStatePath,
         [Parameter(Mandatory)][string]$UpstreamPath,
         [Parameter(Mandatory)][string]$UpstreamBranch,
-        [string]$UpstreamRepoUrl = 'https://github.com/openai/chatkit-python.git'
+        [string]$UpstreamRepoUrl = 'https://github.com/openai/chatkit-js.git'
     )
 
     $defaultTracked = Get-DefaultTrackedState -UpstreamPath $UpstreamPath -UpstreamBranch $UpstreamBranch -UpstreamRepoUrl $UpstreamRepoUrl
@@ -209,14 +211,14 @@ function Get-SyncCommitMessage {
     param([Parameter(Mandatory)][string]$LatestSha)
 
     $shortSha = $LatestSha.Substring(0, [Math]::Min(7, $LatestSha.Length))
-    return "Sync upstream chatkit-python through $shortSha"
+    return "Sync upstream chatkit-js through $shortSha"
 }
 
 function Get-SyncPullRequestTitle {
     param([Parameter(Mandatory)][string]$LatestSha)
 
     $shortSha = $LatestSha.Substring(0, [Math]::Min(7, $LatestSha.Length))
-    return "Sync upstream chatkit-python through $shortSha"
+    return "Sync upstream chatkit-js through $shortSha"
 }
 
 function Get-SyncPullRequestBody {

@@ -22,7 +22,7 @@ public sealed class UpstreamSyncScriptTests
             $state = Initialize-UpstreamSyncState `
                 -TrackedStatePath '{{EscapePowerShellLiteral(trackedPath)}}' `
                 -LocalStatePath '{{EscapePowerShellLiteral(localPath)}}' `
-                -UpstreamPath 'C:\src\openai\chatkit-python' `
+                -UpstreamPath 'C:\src\openai\chatkit-js' `
                 -UpstreamBranch 'main'
             $state | ConvertTo-Json -Depth 8 -Compress
             """);
@@ -31,11 +31,13 @@ public sealed class UpstreamSyncScriptTests
         JsonElement tracked = document.RootElement.GetProperty("tracked");
         JsonElement local = document.RootElement.GetProperty("local");
 
-        Assert.Equal("https://github.com/openai/chatkit-python.git", tracked.GetProperty("upstreamRepoUrl").GetString());
+        Assert.Equal("https://github.com/openai/chatkit-js.git", tracked.GetProperty("upstreamRepoUrl").GetString());
         Assert.Equal("https://github.com/incursa/chatkit-dotnet.git", tracked.GetProperty("targetRepoUrl").GetString());
-        Assert.Equal(@"C:\src\openai\chatkit-python", tracked.GetProperty("upstreamLocalPath").GetString());
+        Assert.Equal(@"C:\src\openai\chatkit-js", tracked.GetProperty("upstreamLocalPath").GetString());
         Assert.Equal("main", tracked.GetProperty("upstreamBranch").GetString());
+        Assert.True(tracked.TryGetProperty("lastReviewedSha", out _));
         Assert.True(local.TryGetProperty("bootstrapLastTranslatedSha", out _));
+        Assert.True(local.TryGetProperty("bootstrapLastReviewedSha", out _));
         Assert.True(File.Exists(trackedPath));
         Assert.True(File.Exists(localPath));
     }
@@ -60,17 +62,17 @@ public sealed class UpstreamSyncScriptTests
             $prompt = New-TranslationPrompt `
                 -BaseSha 'abc1234' `
                 -LatestSha 'def5678' `
-                -CommitLines @('abc1234 add request mapping') `
+                -CommitLines @('abc1234 add widget table typing') `
                 -DiffLines @('{{largeDiff}}') `
-                -ChangedFiles @('src/chatkit/server.py') `
-                -UpstreamRepoUrl 'https://github.com/openai/chatkit-python.git' `
+                -ChangedFiles @('packages/chatkit/types/widgets.d.ts') `
+                -UpstreamRepoUrl 'https://github.com/openai/chatkit-js.git' `
                 -UpstreamBranch 'main' `
                 -GuidancePath '{{EscapePowerShellLiteral(guidancePath)}}' `
                 -CodexNotesPath '{{EscapePowerShellLiteral(notesPath)}}'
             $prompt
             """);
 
-        Assert.Contains("https://github.com/openai/chatkit-python.git", prompt, StringComparison.Ordinal);
+        Assert.Contains("https://github.com/openai/chatkit-js.git", prompt, StringComparison.Ordinal);
         Assert.Contains("Preserve exact ChatKit wire compatibility", prompt, StringComparison.Ordinal);
         Assert.Contains("Repo guidance line.", prompt, StringComparison.Ordinal);
         Assert.Contains("Notes line.", prompt, StringComparison.Ordinal);
@@ -92,7 +94,7 @@ public sealed class UpstreamSyncScriptTests
                 commitMessage = Get-SyncCommitMessage -LatestSha '0123456789abcdef'
                 title = Get-SyncPullRequestTitle -LatestSha '0123456789abcdef'
                 body = Get-SyncPullRequestBody `
-                    -UpstreamRepoUrl 'https://github.com/openai/chatkit-python.git' `
+                    -UpstreamRepoUrl 'https://github.com/openai/chatkit-js.git' `
                     -BaseSha 'abc1234' `
                     -LatestSha '0123456789abcdef' `
                     -CommitLines @('abc1234 add widget diff', 'def5678 add endpoint test')
@@ -102,8 +104,8 @@ public sealed class UpstreamSyncScriptTests
 
         using JsonDocument document = JsonDocument.Parse(json);
         Assert.Equal("sync/chatkit-upstream-0123456", document.RootElement.GetProperty("branch").GetString());
-        Assert.Equal("Sync upstream chatkit-python through 0123456", document.RootElement.GetProperty("commitMessage").GetString());
-        Assert.Equal("Sync upstream chatkit-python through 0123456", document.RootElement.GetProperty("title").GetString());
+        Assert.Equal("Sync upstream chatkit-js through 0123456", document.RootElement.GetProperty("commitMessage").GetString());
+        Assert.Equal("Sync upstream chatkit-js through 0123456", document.RootElement.GetProperty("title").GetString());
 
         string body = document.RootElement.GetProperty("body").GetString()!;
         Assert.Contains("- abc1234 add widget diff", body, StringComparison.Ordinal);

@@ -1,20 +1,20 @@
 # Upstream Sync Watcher
 
-This folder hosts a PowerShell watcher that polls the local `chatkit-python` clone, generates Codex-driven translations of new upstream commits, validates them locally, and pushes or creates PRs for the translated changes.
+This folder hosts a PowerShell watcher that polls the local `chatkit-js` clone, generates Codex-driven translations of new upstream commits, validates them locally, and pushes or creates PRs for the translated changes.
 
-The same folder also hosts a separate npm sync script for the packaged ChatKit runtime assets. The Python translation flow and the npm dependency flow are intentionally split so each upstream source can be updated independently.
+The same folder also hosts a separate npm sync script for the packaged ChatKit runtime assets. The JS contract review flow and the npm dependency flow are intentionally split so each upstream source can be updated independently.
 
 ## Requirements
 
 - PowerShell 7 or Windows PowerShell
 - `git`, `gh`, `codex`, and `dotnet` must be on `PATH`
 - A clean [`Incursa.OpenAI.ChatKit`](../../src/Incursa.OpenAI.ChatKit/README.md) working tree (unless overridden with `-AllowDirty`)
-- The upstream Python repository must be cloned at `C:\src\openai\chatkit-python` by default (configurable)
+- The upstream ChatKit JS repository must be cloned at `C:\src\openai\chatkit-js` by default (configurable)
 
 ## State files
 
-- [`state.json`](state.json) (tracked): stores the upstream metadata and the last translated SHA that the automation has committed.
-- [`state.local.json`](state.local.json) (ignored): tracks runtime metadata such as the last attempted SHA, the last run timestamp, and the bootstrap SHA used when this repo was empty the first time the watcher ran. This file is persisted automatically and must remain ignored.
+- [`state.json`](state.json) (tracked): stores the upstream metadata together with the last reviewed SHA and the last translated SHA recorded by the automation.
+- [`state.local.json`](state.local.json) (ignored): tracks runtime metadata such as the last attempted SHA, the last run timestamp, and the bootstrap reviewed SHA used when this repo was empty the first time the watcher ran. This file is persisted automatically and must remain ignored.
 
 The first invocation bootstraps the state by recording the current upstream `main` SHA in [`state.local.json`](state.local.json) and exiting without translating. Rerun the script afterward to begin translating future commits.
 
@@ -35,12 +35,12 @@ The first invocation bootstraps the state by recording the current upstream `mai
   pwsh tools/upstream-sync/Invoke-UpstreamSync.ps1 -Once -ForceFromSha <sha>
   ```
 
-- Check whether the Python upstream has moved without translating it:
+- Check whether the JS upstream has moved without translating it:
   ```
   pwsh tools/upstream-sync/Invoke-UpstreamSync.ps1 -CheckOnly
   ```
 
-  In GitHub Actions, the daily Python check uses this mode to open a standardized issue when new upstream commits are detected. If Copilot coding agent is enabled for the repository, the workflow also attempts to assign the issue to Copilot so the translation work can start automatically.
+  In GitHub Actions, the daily JS check uses this mode to open a standardized issue when new upstream commits are detected. If Copilot coding agent is enabled for the repository, the workflow also attempts to assign the issue to Copilot so the translation work can start automatically.
 
 - Update the packaged ChatKit runtime from the latest `@openai/chatkit` release:
   ```

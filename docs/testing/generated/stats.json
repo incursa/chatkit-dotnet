@@ -1,19 +1,19 @@
 {
-  "generatedAtUtc": "2026-04-16T19:07:56.4135517Z",
+  "generatedAtUtc": "2026-04-22T20:07:02.7568943Z",
   "repo": {
     "defaultBranch": "main"
   },
   "summary": {
-    "total": 88,
-    "compliant": 88,
+    "total": 89,
+    "compliant": 89,
     "missingRequired": 0,
     "invalidFormat": 0
   },
   "byCategory": [
     {
       "category": "Incursa.OpenAI.ChatKit",
-      "total": 88,
-      "compliant": 88
+      "total": 89,
+      "compliant": 89
     }
   ],
   "byTag": [],
@@ -25,8 +25,8 @@
     },
     {
       "project": "Incursa.OpenAI.ChatKit.Tests",
-      "total": 63,
-      "compliant": 63
+      "total": 64,
+      "compliant": 64
     }
   ],
   "tests": [
@@ -552,7 +552,7 @@
       "behavior": "The audio input media type accessor strips any MIME parameters and preserves only the base media type.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
-        "line": 391,
+        "line": 517,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.AudioInput_MediaType_StripsParameters"
       },
       "status": "compliant",
@@ -568,7 +568,7 @@
       "behavior": "Deserializing a thread stream event with an unsupported type discriminator throws a JSON exception.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
-        "line": 372,
+        "line": 498,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.DeserializeThreadStreamEvent_Throws_WhenTypeDiscriminatorIsUnsupported"
       },
       "status": "compliant",
@@ -623,6 +623,22 @@
       "project": "Incursa.OpenAI.ChatKit.Tests"
     },
     {
+      "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_WidgetItem_PreservesBasicRootTableAndBorderShapes",
+      "category": "Incursa.OpenAI.ChatKit",
+      "tags": [],
+      "summary": "Widget transcript items preserve newer upstream root and component shapes without requiring typed .NET wrappers for each addition.",
+      "intent": "Protect the generic widget wire contract when upstream ChatKit adds new widget roots or component types that the current .NET model can already represent.",
+      "scenario": "LIB-CHATKIT-CORE-002",
+      "behavior": "Serializing and deserializing a widget item with a Basic root, table hierarchy, and Card border properties preserves the current upstream type names and nested payload members.",
+      "source": {
+        "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
+        "line": 372,
+        "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.Serialize_WidgetItem_PreservesBasicRootTableAndBorderShapes"
+      },
+      "status": "compliant",
+      "project": "Incursa.OpenAI.ChatKit.Tests"
+    },
+    {
       "testId": "Incursa.OpenAI.ChatKit.Tests:Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.SimpleToAgentInput_MapsClientToolCallItem",
       "category": "Incursa.OpenAI.ChatKit",
       "tags": [],
@@ -648,7 +664,7 @@
       "behavior": "Rendering a widget with a property that does not match the required constant value throws an invalid operation exception.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
-        "line": 489,
+        "line": 615,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_RejectsConstMismatch"
       },
       "status": "compliant",
@@ -664,7 +680,7 @@
       "behavior": "Rendering a widget with an enum value outside the schema inventory throws an invalid operation exception.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
-        "line": 455,
+        "line": 581,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_RejectsEnumMismatch"
       },
       "status": "compliant",
@@ -680,7 +696,7 @@
       "behavior": "Rendering a widget with omitted optional schema members supplies empty defaults that the template can safely read.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/ChatKitContractModelTests.cs",
-        "line": 408,
+        "line": 534,
         "member": "Incursa.OpenAI.ChatKit.Tests.ChatKitContractModelTests.WidgetDefinition_Build_SuppliesSchemaShapedDefaultsForMissingOptionalState"
       },
       "status": "compliant",
@@ -1416,7 +1432,7 @@
       "behavior": "Building a prompt includes the ChatKit guidance and notes content while truncating large diff excerpts.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs",
-        "line": 48,
+        "line": 50,
         "member": "Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.NewTranslationPrompt_UsesChatKitConstraintsAndTruncatesDiff"
       },
       "status": "compliant",
@@ -1432,7 +1448,7 @@
       "behavior": "Generating sync metadata returns the expected ChatKit branch name, commit text, and commit summary body.",
       "source": {
         "file": "tests/Incursa.OpenAI.ChatKit.Tests/UpstreamSyncScriptTests.cs",
-        "line": 85,
+        "line": 87,
         "member": "Incursa.OpenAI.ChatKit.Tests.UpstreamSyncScriptTests.SyncMetadataHelpers_UseChatKitNaming"
       },
       "status": "compliant",

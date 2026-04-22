@@ -9,7 +9,7 @@ workbench:
 
 # Included Surface Maintenance Checklist
 
-Use this checklist when upstream Python changes land in the included ChatKit surface.
+Use this checklist when upstream `chatkit-js` changes land in the included ChatKit surface.
 
 ## Review Flow
 

@@ -3,7 +3,7 @@ param(
     [int]$IntervalMinutes = 5,
     [switch]$Once,
     [switch]$CheckOnly,
-    [string]$UpstreamPath = 'C:\src\openai\chatkit-python',
+    [string]$UpstreamPath = 'C:\src\openai\chatkit-js',
     [string]$UpstreamBranch = 'main',
     [switch]$SkipPush,
     [switch]$SkipPr,
@@ -287,7 +287,11 @@ function Run-SyncCycle {
         throw 'Unable to resolve latest upstream SHA.'
     }
 
-    $baseSha = $ForceFromSha ?? $TrackedState.tracked.lastTranslatedSha ?? $TrackedState.local.bootstrapLastTranslatedSha
+    $baseSha = $ForceFromSha `
+        ?? $TrackedState.tracked.lastReviewedSha `
+        ?? $TrackedState.tracked.lastTranslatedSha `
+        ?? $TrackedState.local.bootstrapLastReviewedSha `
+        ?? $TrackedState.local.bootstrapLastTranslatedSha
     if (-not $baseSha) {
         if ($CheckOnly) {
             [ordered]@{
@@ -300,9 +304,10 @@ function Run-SyncCycle {
             return
         }
 
+        $TrackedState.local.bootstrapLastReviewedSha = $latestSha
         $TrackedState.local.bootstrapLastTranslatedSha = $latestSha
         Persist-LocalState -State $TrackedState.local
-        Write-SyncLog 'INFO' "Bootstrapped last translated SHA to $latestSha. Run again to translate future commits."
+        Write-SyncLog 'INFO' "Bootstrapped last reviewed SHA to $latestSha. Run again to translate future commits."
         Update-LocalMetadata -Sha $latestSha
         return
     }
@@ -367,6 +372,7 @@ function Run-SyncCycle {
         }
 
         $branchName = Create-SyncBranch -LatestSha $latestSha
+        $TrackedState.tracked.lastReviewedSha = $latestSha
         $TrackedState.tracked.lastTranslatedSha = $latestSha
         $TrackedState.tracked.lastSuccessUtc = (Get-Date).ToUniversalTime().ToString('o')
         Persist-TrackedState -State $TrackedState.tracked
