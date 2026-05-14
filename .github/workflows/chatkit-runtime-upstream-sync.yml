@@ -35,6 +35,7 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v8.1.0
         with:
+          token: ${{ secrets.WORKBENCH_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           branch: bot/chatkit-runtime-upstream-sync
           delete-branch: true
           title: Sync ChatKit runtime from @openai/chatkit-react
