@@ -126,6 +126,12 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     public bool? ComposerDictationEnabled { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the frontend should auto-scroll the thread during streaming responses.
+    /// </summary>
+    [HtmlAttributeName("thread-auto-scroll")]
+    public bool? ThreadAutoScroll { get; set; }
+
+    /// <summary>
     /// Gets or sets the upload strategy type used by direct API mode.
     /// </summary>
     [HtmlAttributeName("upload-strategy-type")]
@@ -373,6 +379,7 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
             History = BuildHistoryConfig(uiOptions),
             StartScreen = BuildStartScreenConfig(uiOptions),
             Composer = BuildComposerConfig(uiOptions),
+            Thread = BuildThreadConfig(uiOptions),
             UploadStrategy = string.IsNullOrWhiteSpace(apiUrl)
                 ? null
                 : BuildUploadStrategyConfig(uiOptions),
@@ -414,7 +421,9 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
     {
         ChatKitComposerAttachmentsOptions attachments = uiOptions.Composer.Attachments;
         bool? enabled = ComposerAttachmentsEnabled ?? attachments.Enabled;
-        long? maxSize = ComposerAttachmentsMaxSize ?? attachments.MaxSize;
+        object? maxSize = ComposerAttachmentsMaxSize is { } tagHelperMaxSize
+            ? tagHelperMaxSize
+            : BuildAttachmentMaxSizeMap(attachments.MaxSizeByMimeType) ?? (object?)attachments.MaxSize;
         int? maxCount = ComposerAttachmentsMaxCount ?? attachments.MaxCount;
         IReadOnlyDictionary<string, string[]>? accept = attachments.Accept;
 
@@ -437,6 +446,20 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
             MaxCount = maxCount,
             Accept = accept,
         };
+    }
+
+    private static IReadOnlyDictionary<string, long>? BuildAttachmentMaxSizeMap(IReadOnlyDictionary<string, long>? maxSizeByMimeType)
+    {
+        if (maxSizeByMimeType is null || maxSizeByMimeType.Count == 0)
+        {
+            return null;
+        }
+
+        Dictionary<string, long> mapped = maxSizeByMimeType
+            .Where(static pair => !string.IsNullOrWhiteSpace(pair.Key))
+            .ToDictionary(static pair => pair.Key, static pair => pair.Value, StringComparer.Ordinal);
+
+        return mapped.Count == 0 ? null : mapped;
     }
 
     private IReadOnlyList<ChatKitComposerToolClientConfig>? BuildComposerToolsConfig(ChatKitAspNetCoreOptions uiOptions)
@@ -488,6 +511,17 @@ public class IncursaChatKitTagHelper : IncursaChatKitTagHelperBase
             : new ChatKitComposerDictationClientConfig
             {
                 Enabled = enabled.Value,
+            };
+    }
+
+    private ChatKitThreadClientConfig? BuildThreadConfig(ChatKitAspNetCoreOptions uiOptions)
+    {
+        bool? autoScroll = ThreadAutoScroll ?? uiOptions.Thread.AutoScroll;
+        return autoScroll is null
+            ? null
+            : new ChatKitThreadClientConfig
+            {
+                AutoScroll = autoScroll,
             };
     }
 

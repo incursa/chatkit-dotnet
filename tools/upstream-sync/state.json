@@ -1,9 +1,9 @@
 {
   "upstreamRepoUrl": "https://github.com/openai/chatkit-js.git",
   "targetRepoUrl": "https://github.com/incursa/chatkit-dotnet.git",
-  "upstreamLocalPath": "C:\\src\\openai\\chatkit-js",
+  "upstreamLocalPath": "C:\\shared\\src\\openai\\chatkit-js",
   "upstreamBranch": "main",
-  "lastReviewedSha": "d333da9c45f13511f32e557fce5b921469a69775",
-  "lastTranslatedSha": "d333da9c45f13511f32e557fce5b921469a69775",
-  "lastSuccessUtc": "2026-04-22T20:01:16.3114036Z"
+  "lastReviewedSha": "26ffdd8e243c6ce42005b5ad103f2feb7f6b84bf",
+  "lastTranslatedSha": "26ffdd8e243c6ce42005b5ad103f2feb7f6b84bf",
+  "lastSuccessUtc": "2026-07-04T02:12:13.1642212Z"
 }

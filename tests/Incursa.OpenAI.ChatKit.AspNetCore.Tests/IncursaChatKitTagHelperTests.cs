@@ -139,6 +139,7 @@ public sealed class IncursaChatKitTagHelperTests
                 {
                     ["application/pdf"] = [".pdf"],
                 };
+                options.Thread.AutoScroll = false;
                 options.Composer.Tools.Add(new ChatKitComposerTool
                 {
                     Id = "summarize",
@@ -181,6 +182,7 @@ public sealed class IncursaChatKitTagHelperTests
         tagHelper.ComposerAttachmentsMaxSize = 2048;
         tagHelper.ComposerAttachmentsMaxCount = 3;
         tagHelper.ComposerDictationEnabled = false;
+        tagHelper.ThreadAutoScroll = true;
         tagHelper.FeedbackEnabled = true;
         tagHelper.RetryEnabled = true;
 
@@ -226,6 +228,7 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.Equal("summarize", config["composer"]?["tools"]?[0]?["id"]?.GetValue<string>());
         Assert.Equal("Quality", config["composer"]?["models"]?[0]?["label"]?.GetValue<string>());
         Assert.False(config["composer"]?["dictation"]?["enabled"]?.GetValue<bool>());
+        Assert.True(config["thread"]?["autoScroll"]?.GetValue<bool>());
         Assert.Equal("Review important details before taking action.", config["disclaimer"]?["text"]?.GetValue<string>());
         Assert.True(config["disclaimer"]?["highContrast"]?.GetValue<bool>());
         Assert.True(config["entities"]?["showComposerMenu"]?.GetValue<bool>());
@@ -250,7 +253,11 @@ public sealed class IncursaChatKitTagHelperTests
                 {
                     options.Composer.Attachments.Enabled = true;
                     options.Composer.Attachments.MaxCount = 5;
-                    options.Composer.Attachments.MaxSize = 2048;
+                    options.Composer.Attachments.MaxSizeByMimeType = new Dictionary<string, long>
+                    {
+                        ["image/*"] = 1_048_576,
+                        ["*"] = 524_288,
+                    };
                     options.Composer.Attachments.Accept = new Dictionary<string, string[]>
                     {
                         ["image/*"] = [".png", ".jpg"],
@@ -287,7 +294,8 @@ public sealed class IncursaChatKitTagHelperTests
         Assert.Equal("two_phase", config["uploadStrategy"]?["type"]?.GetValue<string>());
         Assert.Null(config["uploadStrategy"]?["uploadUrl"]);
         Assert.True(config["composer"]?["attachments"]?["enabled"]?.GetValue<bool>());
-        Assert.Equal(2048, config["composer"]?["attachments"]?["maxSize"]?.GetValue<long>());
+        Assert.Equal(1_048_576, config["composer"]?["attachments"]?["maxSize"]?["image/*"]?.GetValue<long>());
+        Assert.Equal(524_288, config["composer"]?["attachments"]?["maxSize"]?["*"]?.GetValue<long>());
         Assert.Equal(4, config["composer"]?["attachments"]?["maxCount"]?.GetValue<int>());
         Assert.Equal(".png", config["composer"]?["attachments"]?["accept"]?["image/*"]?[0]?.GetValue<string>());
         Assert.Equal("translate", config["composer"]?["tools"]?[0]?["id"]?.GetValue<string>());

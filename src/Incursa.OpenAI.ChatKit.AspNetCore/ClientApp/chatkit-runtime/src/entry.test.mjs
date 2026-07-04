@@ -126,7 +126,10 @@ test("buildOptions preserves serializable config and wires callbacks without Rea
       composer: {
         attachments: {
           enabled: true,
-          maxSize: 1024,
+          maxSize: {
+            "image/*": 1048576,
+            "*": 524288
+          },
           maxCount: 3,
           accept: {
             "application/pdf": [".pdf"]
@@ -150,6 +153,9 @@ test("buildOptions preserves serializable config and wires callbacks without Rea
         dictation: {
           enabled: true
         }
+      },
+      thread: {
+        autoScroll: true
       }
     },
     globalScope
@@ -175,7 +181,10 @@ test("buildOptions preserves serializable config and wires callbacks without Rea
   options.header.leftAction.onClick();
   assert.equal(globalScope.headerActionCalls, 1);
   assert.equal(options.composer.attachments.enabled, true);
-  assert.equal(options.composer.attachments.maxSize, 1024);
+  assert.deepEqual(options.composer.attachments.maxSize, {
+    "image/*": 1048576,
+    "*": 524288
+  });
   assert.equal(options.composer.attachments.maxCount, 3);
   assert.deepEqual(options.composer.attachments.accept, {
     "application/pdf": [".pdf"]
@@ -183,6 +192,7 @@ test("buildOptions preserves serializable config and wires callbacks without Rea
   assert.equal(options.composer.tools[0].id, "summarize");
   assert.equal(options.composer.models[0].default, true);
   assert.equal(options.composer.dictation.enabled, true);
+  assert.equal(options.thread.autoScroll, true);
   assert.equal(typeof options.onClientTool, "function");
 });
 
@@ -435,7 +445,11 @@ test("renderHost mirrors the upstream imperative methods on the outer host", asy
   assert.equal(await host.focusComposer(), "focused");
   await host.setThreadId("thread-123");
   await host.sendUserMessage({ text: "Hello" });
-  await host.setComposerValue({ text: "Draft" });
+  await host.setComposerValue({
+    text: "Draft",
+    selectedToolId: null,
+    selectedModelId: "gpt-4.1"
+  });
   await host.fetchUpdates();
   await host.sendCustomAction({ type: "save_profile" }, "widget-1");
   await host.showHistory();
@@ -446,7 +460,14 @@ test("renderHost mirrors the upstream imperative methods on the outer host", asy
     ["focusComposer"],
     ["setThreadId", "thread-123"],
     ["sendUserMessage", { text: "Hello" }],
-    ["setComposerValue", { text: "Draft" }],
+    [
+      "setComposerValue",
+      {
+        text: "Draft",
+        selectedToolId: null,
+        selectedModelId: "gpt-4.1"
+      }
+    ],
     ["fetchUpdates"],
     ["sendCustomAction", { type: "save_profile" }, "widget-1"],
     ["showHistory"],

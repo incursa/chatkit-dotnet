@@ -130,7 +130,7 @@ const CHATKIT_METHOD_NAMES = Object.freeze([
  *   placeholder?: string;
  *   attachments?: {
  *     enabled: boolean;
- *     maxSize?: number;
+ *     maxSize?: number | Record<string, number>;
  *     maxCount?: number;
  *     accept?: Record<string, string[]>;
  *   };
@@ -171,6 +171,12 @@ const CHATKIT_METHOD_NAMES = Object.freeze([
 
 /**
  * @typedef {{
+ *   autoScroll?: boolean;
+ * }} ChatKitThreadConfig
+ */
+
+/**
+ * @typedef {{
  *   feedback?: boolean;
  *   retry?: boolean;
  * }} ChatKitThreadItemActionsConfig
@@ -207,6 +213,7 @@ const CHATKIT_METHOD_NAMES = Object.freeze([
  *   history?: ChatKitHistoryConfig;
  *   startScreen?: ChatKitStartScreenConfig;
  *   composer?: ChatKitComposerConfig;
+ *   thread?: ChatKitThreadConfig;
  *   uploadStrategy?: ChatKitUploadStrategyConfig;
  *   disclaimer?: ChatKitDisclaimerConfig;
  *   entities?: ChatKitEntitiesConfig;
@@ -485,6 +492,10 @@ export function buildOptions(config, globalScope = window) {
 
   if (config.composer) {
     options.composer = config.composer;
+  }
+
+  if (config.thread) {
+    options.thread = config.thread;
   }
 
   if (config.disclaimer) {

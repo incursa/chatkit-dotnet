@@ -103,6 +103,11 @@ public sealed class ChatKitAspNetCoreOptions
     public ChatKitComposerOptions Composer { get; } = new();
 
     /// <summary>
+    /// Gets thread display defaults for rendered ChatKit hosts.
+    /// </summary>
+    public ChatKitThreadOptions Thread { get; } = new();
+
+    /// <summary>
     /// Gets the upload strategy used when the packaged frontend connects directly to a custom ChatKit API endpoint.
     /// </summary>
     public ChatKitFileUploadStrategyOptions UploadStrategy { get; } = new();
@@ -421,6 +426,12 @@ public sealed class ChatKitComposerAttachmentsOptions
     public long? MaxSize { get; set; }
 
     /// <summary>
+    /// Gets or sets the maximum file size by MIME type pattern.
+    /// Use <c>*</c> or an empty key as the fallback for files that do not match another pattern.
+    /// </summary>
+    public Dictionary<string, long>? MaxSizeByMimeType { get; set; }
+
+    /// <summary>
     /// Gets or sets the maximum number of attachments per message.
     /// </summary>
     public int? MaxCount { get; set; }
@@ -512,6 +523,17 @@ public sealed class ChatKitComposerDictationOptions
     /// Gets or sets a value indicating whether dictation is enabled.
     /// </summary>
     public bool? Enabled { get; set; }
+}
+
+/// <summary>
+/// Configures ChatKit thread display defaults.
+/// </summary>
+public sealed class ChatKitThreadOptions
+{
+    /// <summary>
+    /// Gets or sets a value indicating whether the thread auto-scrolls while responses stream.
+    /// </summary>
+    public bool? AutoScroll { get; set; }
 }
 
 /// <summary>

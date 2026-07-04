@@ -34,6 +34,8 @@ internal sealed class ChatKitHostClientConfig
 
     public ChatKitComposerClientConfig? Composer { get; init; }
 
+    public ChatKitThreadClientConfig? Thread { get; init; }
+
     public ChatKitFileUploadStrategyClientConfig? UploadStrategy { get; init; }
 
     public ChatKitDisclaimerClientConfig? Disclaimer { get; init; }
@@ -183,7 +185,7 @@ internal sealed class ChatKitComposerAttachmentsClientConfig
 {
     public bool Enabled { get; init; }
 
-    public long? MaxSize { get; init; }
+    public object? MaxSize { get; init; }
 
     public int? MaxCount { get; init; }
 
@@ -223,6 +225,11 @@ internal sealed class ChatKitComposerModelClientConfig
 internal sealed class ChatKitComposerDictationClientConfig
 {
     public bool Enabled { get; init; }
+}
+
+internal sealed class ChatKitThreadClientConfig
+{
+    public bool? AutoScroll { get; init; }
 }
 
 internal sealed class ChatKitFileUploadStrategyClientConfig

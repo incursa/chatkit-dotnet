@@ -18,6 +18,7 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore
         public string? SessionEndpoint { get; set; }
         public ChatKitStartScreenOptions StartScreen { get; }
         public ChatKitThemeOptions Theme { get; }
+        public ChatKitThreadOptions Thread { get; }
         public ChatKitFileUploadStrategyOptions UploadStrategy { get; }
         public ChatKitThreadItemActionsOptions ThreadItemActions { get; }
     }
@@ -45,6 +46,7 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore
         public bool? Enabled { get; set; }
         public int? MaxCount { get; set; }
         public long? MaxSize { get; set; }
+        public System.Collections.Generic.Dictionary<string, long>? MaxSizeByMimeType { get; set; }
     }
 
     public sealed class ChatKitComposerDictationOptions
@@ -127,6 +129,12 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore
         public string? Radius { get; set; }
     }
 
+    public sealed class ChatKitThreadOptions
+    {
+        public ChatKitThreadOptions() { }
+        public bool? AutoScroll { get; set; }
+    }
+
     public sealed class ChatKitThreadItemActionsOptions
     {
         public ChatKitThreadItemActionsOptions() { }
@@ -192,6 +200,7 @@ namespace Incursa.OpenAI.ChatKit.AspNetCore.TagHelpers
         public System.Collections.Generic.IEnumerable<Incursa.OpenAI.ChatKit.AspNetCore.ChatKitStartPrompt>? StarterPrompts { get; set; }
         public string? UploadStrategyType { get; set; }
         public string? UploadStrategyUploadUrl { get; set; }
+        public bool? ThreadAutoScroll { get; set; }
         public string? Theme { get; set; }
         public string? ThemeDensity { get; set; }
         public string? ThemeRadius { get; set; }

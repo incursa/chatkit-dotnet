@@ -22,13 +22,13 @@ jobs:
           fetch-depth: 0
 
       - name: Clone upstream chatkit-js
-        run: git clone https://github.com/openai/chatkit-js.git "$GITHUB_WORKSPACE/_upstream/chatkit-js"
+        run: git clone https://github.com/openai/chatkit-js.git "$RUNNER_TEMP/chatkit-js-upstream"
 
       - name: Check upstream translation state
         id: check
         shell: pwsh
         run: |
-          $output = & ./tools/upstream-sync/Invoke-UpstreamSync.ps1 -CheckOnly -UpstreamPath "$env:GITHUB_WORKSPACE/_upstream/chatkit-js" 2>&1
+          $output = & ./tools/upstream-sync/Invoke-UpstreamSync.ps1 -CheckOnly -UpstreamPath "$env:RUNNER_TEMP/chatkit-js-upstream" 2>&1
           if ($LASTEXITCODE -ne 0) {
             $output
             exit $LASTEXITCODE
