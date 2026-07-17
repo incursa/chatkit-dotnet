@@ -62,9 +62,9 @@ jobs:
         shell: bash
         run: |
           if [ -x ./.tools/workbench ]; then
-            ./.tools/workbench item sync -- --import-issues
+            ./.tools/workbench sync --items --import-issues
           else
-            dotnet tool run workbench -- item sync -- --import-issues
+            dotnet tool run workbench -- sync --items --import-issues
           fi
 
       - name: Detect imported issue changes
