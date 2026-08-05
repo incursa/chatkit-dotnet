@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
   issues: read
-  pull-requests: write
 
 jobs:
   import-issues:
@@ -62,9 +61,9 @@ jobs:
         shell: bash
         run: |
           if [ -x ./.tools/workbench ]; then
-            ./.tools/workbench sync --items --import-issues
+            ./.tools/workbench sync --items --import-issues --prefer local
           else
-            dotnet tool run workbench -- sync --items --import-issues
+            dotnet tool run workbench -- sync --items --import-issues --prefer local
           fi
 
       - name: Detect imported issue changes
@@ -77,16 +76,13 @@ jobs:
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create work item import pull request
+      - name: Commit imported work items directly to main
         if: steps.import_diff.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.WORKBENCH_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          branch: codex/workbench-import-issues
-          delete-branch: true
-          commit-message: "chore: import GitHub issues into workbench items"
-          title: "chore: import GitHub issues into workbench items"
-          body: |
-            Automated import of GitHub issues that were not yet represented in the local workbench files.
-
-            This PR was created by the scheduled workbench import workflow.
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: import GitHub issues into workbench items"
+          git push origin HEAD:main

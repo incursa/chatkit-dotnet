@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   notice-check:
@@ -38,18 +37,13 @@ jobs:
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create NOTICE refresh pull request
+      - name: Commit NOTICE refresh directly to main
         if: steps.notice_diff.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.WORKBENCH_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          branch: codex/notice-refresh
-          delete-branch: true
-          commit-message: "chore: refresh NOTICE.md"
-          title: "chore: refresh NOTICE.md"
-          body: |
-            Automated NOTICE refresh generated from the current resolved NuGet dependency graph.
-
-            This updates `NOTICE.md` when package inventory or nested notice references change.
-          add-paths: |
-            NOTICE.md
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- NOTICE.md
+          git commit -m "chore: refresh NOTICE.md"
+          git push origin HEAD:main

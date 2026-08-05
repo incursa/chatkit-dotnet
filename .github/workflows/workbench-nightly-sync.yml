@@ -35,11 +35,12 @@ jobs:
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          WORKBENCH_GITHUB_TOKEN: ${{ secrets.WORKBENCH_GITHUB_TOKEN || github.token }}
         run: |
           $outDir = "artifacts/workbench/nightly-sync"
           New-Item -ItemType Directory -Path $outDir -Force | Out-Null
           $logPath = Join-Path $outDir "sync.log"
-          dotnet tool run workbench sync -- --items --issues --import-issues --docs --nav --dry-run 2>&1 | Tee-Object -FilePath $logPath
+          dotnet tool run workbench sync -- --items --issues --import-issues --docs --nav --dry-run --prefer local 2>&1 | Tee-Object -FilePath $logPath
           if ($LASTEXITCODE -ne 0) {
             exit $LASTEXITCODE
           }
