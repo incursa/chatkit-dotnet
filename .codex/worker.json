@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "name": "chatkit-dotnet",
+  "platform": { "os": "debian", "majorVersion": 13 },
+  "workingDirectory": ".",
+  "dependencies": {
+    "aptPackages": ["ca-certificates", "curl", "git"],
+    "dotnet": { "globalJson": "global.json" },
+    "codexCli": { "install": true, "updateOnBootstrap": true }
+  },
+  "commands": {
+    "bootstrap": [
+      { "file": "dotnet", "args": ["restore", "Incursa.OpenAI.ChatKit.slnx"] },
+      { "file": "dotnet", "args": ["build", "Incursa.OpenAI.ChatKit.slnx", "--configuration", "Release", "--no-restore", "-p:ContinuousIntegrationBuild=true"] }
+    ],
+    "test": [
+      { "file": "dotnet", "args": ["test", "Incursa.OpenAI.ChatKit.slnx", "--configuration", "Release", "--no-build"] }
+    ]
+  },
+  "readiness": { "codexAuthenticationRequired": true }
+}
