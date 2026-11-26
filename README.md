@@ -42,11 +42,11 @@ dotnet run --project samples/Incursa.OpenAI.ChatKit.QuickstartSample/Incursa.Ope
 
 The sample maps `/chatkit` and returns a simple assistant message through the ChatKit server pipeline.
 
-If you need to validate ChatKit against a local checkout of `openai-agents-dotnet` before `Incursa.OpenAI.Agents` `1.0.22` is available on your configured NuGet source, set:
+To validate ChatKit against a local checkout of `openai-agents-dotnet` instead of the configured NuGet source, set:
 
 ```powershell
 $Env:USE_LOCAL_INCURSA_AGENTS_PROJECT = "true"
-$Env:LOCAL_INCURSA_AGENTS_REPO_ROOT = "C:\src\incursa\openai-agents-dotnet"
+$Env:LOCAL_INCURSA_AGENTS_REPO_ROOT = "<path-to-openai-agents-dotnet>"
 ```
 
 ## Repository layout

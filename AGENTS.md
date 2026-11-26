@@ -6,3 +6,4 @@
 - Update .NET tests only when they are needed to secure new or changed behavior from upstream, and keep those changes scoped to the translated files.
 - Keep every change minimal and reviewable, with clear linkage to the upstream commit summary and diff.
 - In repository markdown, turn in-repo references to classes, interfaces, specs, folders, and source files into relative links so they are clickable. Keep code styling inside the link text when needed, for example [[`ChatKitServer`](src/Incursa.OpenAI.ChatKit/ChatKitServer.cs)](src/Incursa.OpenAI.ChatKit/ChatKitServer.cs). Use absolute URLs only for destinations outside the repository, such as NuGet package pages or external sites.
+- Keep durable documentation free of branch, commit, deployment, point-in-time validation, test-count, package-count, exact-latest-version, and unfinished-work status. Put release history in the changelog and review outcomes in work items or pull requests.
